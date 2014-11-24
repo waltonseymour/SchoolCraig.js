@@ -3,9 +3,9 @@
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('users', { 
     id: {
-      type: 'UUID',
+      type: DataTypes.UUID,
       allowNull: false,
-      defaultValue: 'uuid_generate_v4()'
+      defaultValue: DataTypes.UUIDV4
     },
     fname: {
       type: DataTypes.STRING,

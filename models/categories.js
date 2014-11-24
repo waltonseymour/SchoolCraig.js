@@ -3,9 +3,9 @@
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('categories', { 
     id: {
-      type: 'UUID',
+      type: DataTypes.UUID,
       allowNull: false,
-      defaultValue: 'uuid_generate_v4()'
+      defaultValue: DataTypes.UUIDV4
     },
     name: {
       type: DataTypes.STRING,
