@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('posts', { 
+  return sequelize.define('Post', { 
     id: {
       type: DataTypes.UUID,
       allowNull: false,

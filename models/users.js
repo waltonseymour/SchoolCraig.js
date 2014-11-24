@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('users', { 
+  return sequelize.define('User', { 
     id: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -31,5 +31,8 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: true,
     }
+  },
+  {
+    tableName: 'users'
   });
 };
