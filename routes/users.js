@@ -17,7 +17,7 @@ router.get('/all', function(req, res) {
 router.get('/id/:id', function(req, res) {
   var options = _.extend({where: {id: req.params.id}}, publicOptions);
   models.User.find(options).success(function(user){
-    res.send(user);
+    user ? res.send(user) : res.send(404);
   });
 });
 
@@ -26,7 +26,7 @@ router.put('/id/:id', function(req, res) {
   var user = _.pick(req.body, publicOptions.attributes);
   var options = _.extend({where: {id: req.params.id}}, publicOptions);
   models.User.update(user, options).success(function(user){
-    res.send(200);
+    user[0] ? res.send(200) : res.send(404);
   });
 });
 
@@ -34,7 +34,7 @@ router.put('/id/:id', function(req, res) {
 router.delete('/id/:id', function(req, res) {
   var options = _.extend({where: {id: req.params.id}}, publicOptions);
   models.User.destroy(options).success(function(user){
-    res.send(200);
+    user ? res.send(200) : res.send(404);
   });
 });
 
