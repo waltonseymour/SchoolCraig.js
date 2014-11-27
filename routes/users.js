@@ -2,14 +2,43 @@ var express = require('express');
 var router = express.Router();
 var models = require('../models');
 var crypto = require('crypto');
+var _ = require('underscore');
 
-/* GET users listing. */
+var publicOptions = {attributes: ['id', 'fname', 'lname', 'email']};
+
+// Retrieves all users
 router.get('/all', function(req, res) {
-  models.User.findAll({attributes: ['id', 'fname', 'lname', 'email']}).success(function(users){
+  models.User.findAll(publicOptions).success(function(users){
     res.send(users);
   });
 });
 
+// Retreives user by id
+router.get('/id/:id', function(req, res) {
+  var options = _.extend({where: {id: req.params.id}}, publicOptions);
+  models.User.find(options).success(function(user){
+    res.send(user);
+  });
+});
+
+// Modifies User by id
+router.put('/id/:id', function(req, res) {
+  var user = _.pick(req.body, publicOptions.attributes);
+  var options = _.extend({where: {id: req.params.id}}, publicOptions);
+  models.User.update(user, options).success(function(user){
+    res.send(200);
+  });
+});
+
+// Deletes User by id
+router.delete('/id/:id', function(req, res) {
+  var options = _.extend({where: {id: req.params.id}}, publicOptions);
+  models.User.destroy(options).success(function(user){
+    res.send(200);
+  });
+});
+
+// Creates new user
 router.post('/', function(req, res) {
   var user = req.body;
   if (user.fname && user.lname && user.email && user.password){
@@ -23,6 +52,6 @@ router.post('/', function(req, res) {
   else{
     res.send(401);
   }
-
 });
+
 module.exports = router;
