@@ -46,7 +46,7 @@ router.post('/auth', function(req, res) {
 
 // Destroys current session
 router.post('/deauth', function (req, res) {
-  req.session = null;
+  req.session.destroy();
   res.send(200);
 });
 
