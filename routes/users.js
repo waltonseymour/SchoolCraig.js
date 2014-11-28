@@ -8,21 +8,52 @@ var publicOptions = {attributes: ['id', 'fname', 'lname', 'email']};
 
 // Retrieves all users
 router.get('/all', function(req, res) {
-  models.User.findAll(publicOptions).success(function(users){
+  if (req.session.userID === undefined) { res.send(403); }
+
+  models.User.findAll(publicOptions).success(function (users) {
     res.send(users);
   });
 });
 
 // Retreives user by id
 router.get('/id/:id', function(req, res) {
+  if (req.session.userID === undefined) { res.send(403); }
+
   var options = _.extend({where: {id: req.params.id}}, publicOptions);
   models.User.find(options).success(function(user){
     user ? res.send(user) : res.send(404);
   });
 });
 
+// Authenticates user
+router.post('/auth', function(req, res) {
+  var email = req.body.email;
+  var password = req.body.password;
+
+  models.User.find({where: {email: email}}).success(function (user) {
+    // returns 401 if user does not exist
+    if (!user) { res.send(401); }
+    var salt = user.salt;
+    var DBPassword = user.password;
+    password = crypto.createHash('sha256').update(salt + password).digest('hex');
+
+    // returns 401 if password is incorrect
+    if (password !== DBPassword) { res.send(401); }
+    req.session.userID = user.id;
+    res.send(200);
+  });
+});
+
+// Destroys current session
+router.post('/deauth', function (req, res) {
+  req.session = null;
+  res.send(200);
+});
+
 // Modifies User by id
 router.put('/id/:id', function(req, res) {
+  if (req.session.userID !== req.params.id) { res.send(403); }
+
   var user = _.pick(req.body, publicOptions.attributes);
   var options = _.extend({where: {id: req.params.id}}, publicOptions);
   models.User.update(user, options).success(function(user){
@@ -32,16 +63,18 @@ router.put('/id/:id', function(req, res) {
 
 // Deletes User by id
 router.delete('/id/:id', function(req, res) {
+  if (req.session.userID !== req.params.id) { res.send(403); }
+
   var options = _.extend({where: {id: req.params.id}}, publicOptions);
-  models.User.destroy(options).success(function(user){
+  models.User.destroy(options).success(function (user) {
     user ? res.send(200) : res.send(404);
   });
 });
 
 // Creates new user
 router.post('/', function(req, res) {
-  var user = req.body;
-  if (user.fname && user.lname && user.email && user.password){
+  var user = _.pick(req.body, publicOptions.attributes);
+  if (user.fname && user.lname && user.email && user.password) {
     var salt = crypto.randomBytes(16).toString('hex'); 
     var password = crypto.createHash('sha256').update(salt + user.password).digest('hex');
     user.salt = salt;
@@ -49,7 +82,7 @@ router.post('/', function(req, res) {
     models.User.create(user);
     res.send(200);
   }
-  else{
+  else {
     res.send(401);
   }
 });
