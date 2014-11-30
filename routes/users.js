@@ -76,6 +76,19 @@ router.delete('/id/:id', function(req, res) {
 // Creates new user
 router.post('/', function(req, res) {
   var user = req.body;
+  if (user.id) {
+    if (!util.isUUID(user.id)) { return res.send(401); }
+    models.User.find({where: {id: user.id}}).success(function (temp) {
+      if (temp) { return res.send(401); }
+      else { CreateUser(user, req, res); }
+    });
+  }
+  else{
+    CreateUser(user, req, res);
+  }
+});
+
+function CreateUser (user, req, res) {
   if (user.fname && user.lname && user.email && user.password) {
     var salt = crypto.randomBytes(16).toString('hex'); 
     var password = crypto.createHash('sha256').update(salt + user.password).digest('hex');
@@ -87,6 +100,7 @@ router.post('/', function(req, res) {
   else {
     res.send(401);
   }
-});
+}
+
 
 module.exports = router;
