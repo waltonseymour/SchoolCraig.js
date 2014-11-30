@@ -73,22 +73,28 @@ router.delete('/id/:id', function(req, res) {
   });
 });
 
-// Creates new user
-router.post('/', function(req, res) {
+// Route for creating a new user
+router.post('/', function (req, res) {
   var user = req.body;
-  if (user.id) {
-    if (!util.isUUID(user.id)) { return res.send(401); }
-    models.User.find({where: {id: user.id}}).success(function (temp) {
-      if (temp) { return res.send(401); }
-      else { CreateUser(user, req, res); }
-    });
+  if (user.id && Exists(user, "id")) {
+    return res.send(401);
   }
-  else{
-    CreateUser(user, req, res);
+  else {
+    CreateUser(req, res, user);
   }
 });
 
-function CreateUser (user, req, res) {
+// Retrns true if user exists with a given field
+// false otherwise.
+function Exists (user, field) {
+  if (field === "id" && !util.isUUID(user.id)) { return true; }
+  models.User.find({where: {id: user.id}}).success(function (temp) {
+    return !!temp;
+  });
+}
+
+// Creates user
+function CreateUser (req, res, user) {
   if (user.fname && user.lname && user.email && user.password) {
     var salt = crypto.randomBytes(16).toString('hex'); 
     var password = crypto.createHash('sha256').update(salt + user.password).digest('hex');
