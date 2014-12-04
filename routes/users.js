@@ -3,7 +3,7 @@ var router = express.Router();
 var models = require('../models');
 var crypto = require('crypto');
 var _ = require('underscore');
-var util = require('../utilities');
+var utils = require('../utilities');
 
 var publicOptions = {attributes: ['id', 'fname', 'lname', 'email']};
 
@@ -19,7 +19,7 @@ router.get('/all', function(req, res) {
 // Retreives user by id
 router.get('/id/:id', function(req, res) {
   if (req.session.userID === undefined) { return res.send(403); }
-  if (!util.isUUID(req.params.id)) { return res.send(401); }
+  if (!utils.isUUID(req.params.id)) { return res.send(401); }
 
   var options = _.extend({where: {id: req.params.id}}, publicOptions);
   models.User.find(options).success(function(user){
@@ -64,7 +64,7 @@ router.put('/id/:id', function(req, res) {
 });
 
 // Deletes User by id
-router.delete('/id/:id', function(req, res) {
+router.delete('/id/:id', function (req, res) {
   if (req.session.userID !== req.params.id) { return res.send(403); }
 
   var options = _.extend({where: {id: req.params.id}}, publicOptions);
@@ -76,24 +76,33 @@ router.delete('/id/:id', function(req, res) {
 // Route for creating a new user
 router.post('/', function (req, res) {
   var user = req.body;
-  if (user.id && Exists(user, "id")) {
-    return res.send(401);
-  }
-  else {
-    CreateUser(req, res, user);
-  }
+  models.User.find({where: {email: user.email}}).then(function (ret) {
+    // returns true if user with email exists
+    return !!ret;
+  }).then(function(user_email_exists) {
+    // short circuits if emails exists
+    if (user_email_exists) { return true; }
+    // otherwise check if id is passed in
+    if (user.id){
+      if (!utils.isUUID(user.id)) { return true; }
+        return !!models.User.find({where: {id: user.id}});
+    }
+    else{
+      return false;
+    }
+  }).then(function (user_exists) {
+    if (user_exists){
+      // sends 401 if user exists
+      return res.send(401);
+    }
+    else {
+     // creates user otherwise
+      CreateUser(req, res, user);
+    }
+  });
 });
 
-// Retrns true if user exists with a given field
-// false otherwise.
-function Exists (user, field) {
-  if (field === "id" && !util.isUUID(user.id)) { return true; }
-  models.User.find({where: {id: user.id}}).success(function (temp) {
-    return !!temp;
-  });
-}
-
-// Creates user
+// Creates user with sepecified fields
 function CreateUser (req, res, user) {
   if (user.fname && user.lname && user.email && user.password) {
     var salt = crypto.randomBytes(16).toString('hex'); 
@@ -107,6 +116,5 @@ function CreateUser (req, res, user) {
     res.send(401);
   }
 }
-
 
 module.exports = router;

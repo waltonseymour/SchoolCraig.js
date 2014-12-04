@@ -16,6 +16,7 @@
     "sequelize-cli": "~0.3.3",
     "sequelize": "~2.0.0-rc1",
     "underscore": "~1.7.0",
-    "express-session": "~1.9.2"
+    "express-session": "~1.9.2",
+    "q": "~1.1.2"
   }
 }
