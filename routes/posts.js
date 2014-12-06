@@ -7,7 +7,7 @@ var util = require('../utilities');
 var publicOptions = {attributes: ['id', 'title', 'description', 'cost', 'user_id', 'category_id']};
 
 // Retrieves all posts
-router.get('/all', function(req, res) {
+router.get('/', function(req, res) {
   if (req.session.userID === undefined) { return res.send(403); }
 
   models.Post.findAll(publicOptions).success(function (posts) {

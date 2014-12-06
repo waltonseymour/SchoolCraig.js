@@ -8,7 +8,7 @@ var utils = require('../utilities');
 var publicOptions = {attributes: ['id', 'fname', 'lname', 'email']};
 
 // Retrieves all users
-router.get('/all', function(req, res) {
+router.get('/', function(req, res) {
   if (req.session.userID === undefined) { return res.send(403); }
 
   models.User.findAll(publicOptions).success(function (users) {

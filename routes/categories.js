@@ -5,7 +5,7 @@ var _ = require('underscore');
 var util = require('../utilities');
 
 // Retrieves all categories
-router.get('/all', function(req, res) {
+router.get('/', function(req, res) {
   models.Category.findAll().success(function (users) {
     res.send(users);
   });
