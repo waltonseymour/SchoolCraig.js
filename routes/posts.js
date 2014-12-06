@@ -1,22 +1,21 @@
 var express = require('express');
 var router = express.Router();
 var models = require('../models');
-var crypto = require('crypto');
 var _ = require('underscore');
 var util = require('../utilities');
 
-var publicOptions = {attributes: ['id', 'fname', 'lname', 'email']};
+var publicOptions = {attributes: ['id', 'title', 'description', 'cost', 'user_id', 'category_id']};
 
-// Retrieves all users
+// Retrieves all posts
 router.get('/all', function(req, res) {
   if (req.session.userID === undefined) { return res.send(403); }
 
-  models.Post.findAll(publicOptions).success(function (users) {
-    res.send(users);
+  models.Post.findAll(publicOptions).success(function (posts) {
+    res.send(posts);
   });
 });
 
-// Retreives user by id
+// Retreives post by id
 router.get('/id/:id', function(req, res) {
   if (req.session.userID === undefined) { return res.send(403); }
   if (!util.isUUID(req.params.id)) { return res.send(401); }
@@ -27,61 +26,61 @@ router.get('/id/:id', function(req, res) {
   });
 });
 
-// Modifies User by id
+// Modifies post by id
 router.put('/id/:id', function(req, res) {
   if (req.session.userID !== req.params.id) { return res.send(403); }
 
-  var post = _.pick(req.body, publicOptions.attributes);
-  var options = _.extend({where: {id: req.params.id}}, publicOptions);
+  var post = _.pick(req.body, ['title', 'description', 'cost']);
+  var options = {where: {id: req.params.id}};
   models.Post.update(post, options).success(function(ret){
-    ret[0] ? res.send(200) : res.send(404);
+    ret[0] ? res.send(204) : res.send(404);
   });
 });
 
-// Deletes User by id
+// Deletes Post by id
 router.delete('/id/:id', function(req, res) {
-  if (req.session.userID !== req.params.id) { return res.send(403); }
-
-  var options = _.extend({where: {id: req.params.id}}, publicOptions);
-  models.Post.destroy(options).success(function (ret) {
-    ret ? res.send(200) : res.send(404);
+  if (!util.isUUID(req.params.id)) { return res.send(401); }
+  var options = {where: {id: req.params.id}};
+  // verifies user owns post
+  models.Post.find(options).success(function (ret) {
+    return ret.user_id === req.session.userID;
+  }).then(function (valid){
+    if (!valid) { return res.send(403); }
+    models.Post.destroy(options).success(function (ret) {
+      ret ? res.send(200) : res.send(404);
+    });
   });
 });
 
 // Route for creating a new user
 router.post('/', function (req, res) {
+  if (req.session.userID === undefined) { return res.send(403); }
   var post = req.body;
-  if (user.id && Exists(user, "id")) {
-    return res.send(401);
-  }
-  else {
-    CreateUser(req, res, user);
-  }
+  models.Post.find({where: {id: post.id}}).then(function (ret) {
+    // returns true if post with id exists
+    return !!ret;
+  }).then(function (post_exists) {
+    if (post_exists){
+      // sends 401 if user exists
+      return res.send(401);
+    }
+    else {
+     // creates user otherwise
+      CreatePost(req, res, post);
+    }
+  });
 });
 
-// Retrns true if user exists with a given field
-// false otherwise.
-function Exists (user, field) {
-  if (field === "id" && !util.isUUID(user.id)) { return true; }
-  models.User.find({where: {id: user.id}}).success(function (temp) {
-    return !!temp;
-  });
-}
-
-// Creates user
-function CreateUser (req, res, user) {
-  if (user.fname && user.lname && user.email && user.password) {
-    var salt = crypto.randomBytes(16).toString('hex'); 
-    var password = crypto.createHash('sha256').update(salt + user.password).digest('hex');
-    user.salt = salt;
-    user.password = password;
-    models.User.create(user);
-    res.send(200);
+// Creates user with sepecified fields
+function CreatePost (req, res, post) {
+  if (post.title && post.description && post.category_id && post.cost) {
+    post.user_id = req.session.userID;
+    models.Post.create(post);
+    res.send(204);
   }
   else {
     res.send(401);
   }
 }
-
 
 module.exports = router;
