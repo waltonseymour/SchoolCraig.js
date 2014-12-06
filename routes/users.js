@@ -17,7 +17,7 @@ router.get('/all', function(req, res) {
 });
 
 // Retreives user by id
-router.get('/id/:id', function(req, res) {
+router.get('/:id', function(req, res) {
   if (req.session.userID === undefined) { return res.send(403); }
   if (!utils.isUUID(req.params.id)) { return res.send(401); }
 
@@ -53,7 +53,7 @@ router.post('/deauth', function (req, res) {
 });
 
 // Modifies User by id
-router.put('/id/:id', function(req, res) {
+router.put('/:id', function(req, res) {
   if (req.session.userID !== req.params.id) { return res.send(403); }
 
   var user = _.pick(req.body, publicOptions.attributes);
@@ -64,7 +64,7 @@ router.put('/id/:id', function(req, res) {
 });
 
 // Deletes User by id
-router.delete('/id/:id', function (req, res) {
+router.delete('/:id', function (req, res) {
   if (req.session.userID !== req.params.id) { return res.send(403); }
 
   var options = _.extend({where: {id: req.params.id}}, publicOptions);

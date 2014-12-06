@@ -16,7 +16,7 @@ router.get('/all', function(req, res) {
 });
 
 // Retreives post by id
-router.get('/id/:id', function(req, res) {
+router.get('/:id', function(req, res) {
   if (req.session.userID === undefined) { return res.send(403); }
   if (!util.isUUID(req.params.id)) { return res.send(401); }
 
@@ -27,7 +27,7 @@ router.get('/id/:id', function(req, res) {
 });
 
 // Modifies post by id
-router.put('/id/:id', function(req, res) {
+router.put('/:id', function(req, res) {
   if (req.session.userID !== req.params.id) { return res.send(403); }
 
   var post = _.pick(req.body, ['title', 'description', 'cost']);
@@ -38,7 +38,7 @@ router.put('/id/:id', function(req, res) {
 });
 
 // Deletes Post by id
-router.delete('/id/:id', function(req, res) {
+router.delete('/:id', function(req, res) {
   if (!util.isUUID(req.params.id)) { return res.send(401); }
   var options = {where: {id: req.params.id}};
   // verifies user owns post

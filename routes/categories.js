@@ -12,7 +12,7 @@ router.get('/all', function(req, res) {
 });
 
 // Retreives category by id
-router.get('/id/:id', function(req, res) {
+router.get('/:id', function(req, res) {
   if (req.session.userID === undefined) { return res.send(403); }
   if (!util.isUUID(req.params.id)) { return res.send(401); }
 
