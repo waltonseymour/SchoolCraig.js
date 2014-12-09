@@ -5,7 +5,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-var conString = process.env.DATABASE_URL || "postgres://postgres:root@localhost:5432/postgres";
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -18,27 +17,6 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false
 }));
-
-var Sequelize = require('sequelize');
-
-var match = conString.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/);
-var sequelize = new Sequelize(match[5], match[1], match[2], {
-  dialect:  'postgres',
-  protocol: 'postgres',
-  port:     match[4],
-  host:     match[3],
-  logging:  true
-});
-
-sequelize
-  .authenticate()
-  .complete(function(err) {
-    if (!!err) {
-      console.log('Unable to connect to the database:', err)
-    } else {
-      console.log('Connection has been established successfully.')
-    }
-});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

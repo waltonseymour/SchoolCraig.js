@@ -5,7 +5,15 @@ var path      = require("path");
 var Sequelize = require("sequelize");
 var env       = process.env.NODE_ENV || "development";
 var config    = require(__dirname + '/../config/config.json')[env];
-var sequelize = new Sequelize(config.database, config.username, config.password, config);
+var conString = process.env.DATABASE_URL || "postgres://postgres:root@localhost:5432/node";
+var match = conString.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/);
+var sequelize = new Sequelize(match[5], match[1], match[2], {
+  dialect:  'postgres',
+  protocol: 'postgres',
+  port:     match[4],
+  host:     match[3],
+  logging:  console.log
+});
 var db        = {};
 
 fs
