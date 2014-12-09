@@ -85,7 +85,9 @@ router.post('/', function (req, res) {
     // otherwise check if id is passed in
     if (user.id){
       if (!utils.isUUID(user.id)) { return true; }
-        return !!models.User.find({where: {id: user.id}});
+      models.User.find({where: {id: user.id}}).success(function (user_by_id) {
+        return !!user_by_id;
+      });
     }
     else{
       return false;
@@ -110,8 +112,9 @@ function CreateUser (req, res, user) {
     user.salt = salt;
     user.password = password;
     user.email = user.email.toLowerCase();
-    models.User.create(user);
-    res.send(200);
+    models.User.create(user).then(function (){
+      res.send(200);
+    });
   }
   else {
     res.send(401);
