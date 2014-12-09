@@ -29,7 +29,7 @@ router.get('/:id', function(req, res) {
 
 // Authenticates user
 router.post('/auth', function(req, res) {
-  var email = req.body.email;
+  var email = req.body.email.toLowerCase();
   var password = req.body.password;
 
   models.User.find({where: {email: email}}).success(function (user) {
@@ -109,6 +109,7 @@ function CreateUser (req, res, user) {
     var password = crypto.createHash('sha256').update(salt + user.password).digest('hex');
     user.salt = salt;
     user.password = password;
+    user.email = user.email.toLowerCase();
     models.User.create(user);
     res.send(200);
   }
