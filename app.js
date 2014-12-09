@@ -20,10 +20,7 @@ app.use(session({
 }));
 
 var Sequelize = require('sequelize')
-  , sequelize = new Sequelize(conString, {
-      dialect: "postgres", // or 'sqlite', 'postgres', 'mariadb'
-      port:    5432, // or 5432 (for postgres)
-});
+  , sequelize = new Sequelize(conString);
  
 sequelize
   .authenticate()
