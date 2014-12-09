@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-var conString = process.env.DATABASE_URL || "postgres://postgres:root@localhost/postgres";
+var conString = process.env.DATABASE_URL || "postgres://postgres:root@localhost:5432/postgres";
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -19,9 +19,17 @@ app.use(session({
   resave: false
 }));
 
-var Sequelize = require('sequelize')
-  , sequelize = new Sequelize(conString);
- 
+var Sequelize = require('sequelize');
+
+var match = conString.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/);
+var sequelize = new Sequelize(match[5], match[1], match[2], {
+  dialect:  'postgres',
+  protocol: 'postgres',
+  port:     match[4],
+  host:     match[3],
+  logging:  true
+});
+
 sequelize
   .authenticate()
   .complete(function(err) {
