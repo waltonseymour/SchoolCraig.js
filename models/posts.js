@@ -24,7 +24,7 @@ module.exports = function(sequelize, DataTypes) {
       type: 'UUID',
       allowNull: true,
     },
-    cost: {
+    price: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },

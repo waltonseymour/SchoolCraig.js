@@ -4,7 +4,7 @@ var models = require('../models');
 var _ = require('underscore');
 var util = require('../utilities');
 
-var publicOptions = {attributes: ['id', 'title', 'description', 'date', 'cost']};
+var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'price']};
 var userOptions = {attributes: ['id', 'fname', 'lname', 'email']};
 var categoryOptions = {attributes: ['id', 'name']};
 
@@ -15,7 +15,10 @@ models.Post.belongsTo(models.Category, {as: 'category', foreignKey: 'category_id
 router.get('/', function(req, res) {
   if (req.session.userID === undefined) { return res.send(403); }
 
-  var options = _.extend(publicOptions, {include: [
+  // defaults ordering by date
+  var order = _.contains(['createdAt', 'price'], req.params.order) ? req.params.order : 'createdAt';
+
+  var options = _.extend(publicOptions, {order: [[order, 'DESC']], include: [
     {model: models.User, as: 'user', attributes: userOptions.attributes},
     {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
   models.Post.findAll(options).success(function (posts) {
