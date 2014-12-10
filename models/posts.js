@@ -11,11 +11,6 @@ module.exports = function(sequelize, DataTypes) {
       type: 'UUID',
       allowNull: true,
     },
-    date: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: '2014-11-04 22:03:08.837431'
-    },
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
