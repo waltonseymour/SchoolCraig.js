@@ -43,7 +43,7 @@ router.get('/:id', function(req, res) {
 router.put('/:id', function(req, res) {
   if (req.session.userID !== req.params.id) { return res.send(403); }
 
-  var post = _.pick(req.body, ['title', 'description', 'cost']);
+  var post = _.pick(req.body, ['title', 'description', 'price']);
   var options = {where: {id: req.params.id}};
   models.Post.update(post, options).success(function(ret){
     ret[0] ? res.send(204) : res.send(404);
@@ -86,7 +86,7 @@ router.post('/', function (req, res) {
 
 // Creates user with sepecified fields
 function CreatePost (req, res, post) {
-  if (post.title && post.description && post.category_id && post.cost) {
+  if (post.title && post.description && post.category_id && post.price) {
     post.user_id = req.session.userID;
     models.Post.create(post);
     res.send(204);
