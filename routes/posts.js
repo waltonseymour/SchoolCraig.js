@@ -28,7 +28,9 @@ router.get('/:id', function(req, res) {
   if (req.session.userID === undefined) { return res.send(403); }
   if (!util.isUUID(req.params.id)) { return res.send(401); }
 
-  var options = _.extend({where: {id: req.params.id}}, publicOptions);
+  var options = _.extend(publicOptions, {where: {id: req.params.id}, include: [
+    {model: models.User, as: 'user', attributes: userOptions.attributes},
+    {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
   models.Post.find(options).success(function(post){
     post ? res.send(post) : res.send(404);
   });
