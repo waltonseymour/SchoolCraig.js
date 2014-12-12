@@ -3,6 +3,7 @@ var router = express.Router();
 var models = require('../models');
 var crypto = require('crypto');
 var _ = require('underscore');
+var sendgrid = require('sendgrid')(process.env.SENDGRID_USERNAME, process.env.SENDGRID_PASSWORD);
 var utils = require('../utilities');
 
 var publicOptions = {attributes: ['id', 'fname', 'lname', 'email']};
@@ -48,7 +49,7 @@ router.post('/auth', function(req, res) {
 
 // Destroys current session
 router.post('/deauth', function (req, res) {
-  req.session.destroy();
+  req.session = null;
   res.send(200);
 });
 
@@ -68,7 +69,10 @@ router.delete('/:id', function (req, res) {
   if (req.session.userID !== req.params.id) { return res.send(403); }
 
   var options = _.extend({where: {id: req.params.id}}, publicOptions);
-  models.User.destroy(options).success(function (user) {
+  models.Post.destroy({where: {user_id: req.params.id}})
+  .then(models.User.destroy(options))
+  .then(function (user) {
+    req.session = null;
     user ? res.send(200) : res.send(404);
   });
 });
@@ -113,7 +117,16 @@ function CreateUser (req, res, user) {
     user.password = password;
     user.email = user.email.toLowerCase();
     models.User.create(user).then(function (){
-      res.send(200);
+      sendgrid.send({
+        to: user.email,
+        from: 'sender@heroku.com',
+        subject: 'hello world',
+        text: 'swag'
+      }, function(err, json){
+        if (err) { console.log(err); }
+        console.log(json);
+      });
+      res.send(204);
     });
   }
   else {

@@ -88,8 +88,9 @@ router.post('/', function (req, res) {
 function CreatePost (req, res, post) {
   if (post.title && post.description && post.category_id && post.price) {
     post.user_id = req.session.userID;
-    models.Post.create(post);
-    res.send(204);
+    models.Post.create(post).then(function () {
+      res.send(204);
+    });
   }
   else {
     res.send(401);
