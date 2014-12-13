@@ -43,7 +43,7 @@ router.post('/auth', function(req, res) {
     // returns 401 if password is incorrect
     if (password !== DBPassword) { return res.send(401); }
     req.session.userID = user.id;
-    res.send(200);
+    res.send(_.pick(user, publicOptions.attributes));
   });
 });
 
@@ -73,7 +73,7 @@ router.delete('/:id', function (req, res) {
   .then(models.User.destroy(options))
   .then(function (user) {
     req.session = null;
-    user ? res.send(200) : res.send(404);
+    res.send(204);
   });
 });
 
