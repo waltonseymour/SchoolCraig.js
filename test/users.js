@@ -19,7 +19,7 @@ describe("User Suite", function(){
     models.User.destroy({where: {email: "test@test.com"}}).success(function(ret){
       request.post(host + '/users').send(user).end(function(e, res){
         expect(e).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(res.statusCode).to.equal(204);
         request.post(host + '/users/auth').send({"email": "test@test.com", "password": "password"}).end(function(e, res){
           expect(e).to.equal(null);
           expect(res.statusCode).to.equal(200);

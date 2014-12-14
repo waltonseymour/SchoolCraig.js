@@ -36,7 +36,7 @@ router.post('/auth', function(req, res) {
 
   models.User.find({where: {email: email}}).success(function (user) {
     // returns 401 if user does not exist
-    if (!user || !user.activated) { return res.send(401); }
+    if (!user || (process.env.NODE_ENV === 'production' && !user.activated)) { return res.send(401); }
     var salt = user.salt;
     var DBPassword = user.password;
     password = crypto.createHash('sha256').update(salt + password).digest('hex');
@@ -132,7 +132,7 @@ function CreateUser (req, res, user) {
   if (user.fname && user.lname && user.email && user.password) {
     var salt = crypto.randomBytes(16).toString('hex'); 
     var password = crypto.createHash('sha256').update(salt + user.password).digest('hex');
-    user.id = uuid.v4();
+    user.id = user.id || uuid.v4();
     user.salt = salt;
     user.password = password;
     user.email = user.email.toLowerCase();
