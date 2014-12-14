@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var models = require('../models');
 var crypto = require('crypto');
+var uuid = require('node-uuid');
 var _ = require('underscore');
 var sendgrid = require('sendgrid')(process.env.SENDGRID_USERNAME, process.env.SENDGRID_PASSWORD);
 var utils = require('../utilities');
@@ -108,20 +109,41 @@ router.post('/', function (req, res) {
   });
 });
 
+
+router.get('/activate/:id', function (req, res) {
+  if (!utils.isUUID(req.params.id)) { return res.send(401); }
+  
+  models.User.find({where: {id: req.params.id}}).then(function(user){
+    if (crypto.createHash('sha256').update(user.salt).digest('hex') === req.query.key) {
+      user.activated = true;
+      user.save().then(function (){ 
+        req.session.userID = user.id;
+        res.send("Success!");
+      });
+    }
+    else{
+      return res.send(401);
+    }
+  });
+});
+
 // Creates user with sepecified fields
 function CreateUser (req, res, user) {
   if (user.fname && user.lname && user.email && user.password) {
     var salt = crypto.randomBytes(16).toString('hex'); 
     var password = crypto.createHash('sha256').update(salt + user.password).digest('hex');
+    user.id = uuid.v4();
     user.salt = salt;
     user.password = password;
     user.email = user.email.toLowerCase();
+    user.activated = false;
     models.User.create(user).then(function (){
+      var url = "https://schoolcraigslist.herokuapp.com/user/activate/" + user.id + '?key=' + crypto.createHash('sha256').update(salt).digest('hex');
       sendgrid.send({
         to: user.email,
         from: 'sender@heroku.com',
         subject: 'hello world',
-        text: 'swag'
+        html: 'Please click <a href="' + url+ '">here</a> to register your account.'
       }, function(err, json){
         if (err) { console.log(err); }
         console.log(json);
