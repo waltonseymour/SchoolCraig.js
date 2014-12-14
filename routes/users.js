@@ -138,7 +138,7 @@ function CreateUser (req, res, user) {
     user.email = user.email.toLowerCase();
     user.activated = false;
     models.User.create(user).then(function (){
-      var url = "https://schoolcraigslist.herokuapp.com/user/activate/" + user.id + '?key=' + crypto.createHash('sha256').update(salt).digest('hex');
+      var url = "https://schoolcraigslist.herokuapp.com/users/activate/" + user.id + '?key=' + crypto.createHash('sha256').update(salt).digest('hex');
       sendgrid.send({
         to: user.email,
         from: 'sender@heroku.com',
