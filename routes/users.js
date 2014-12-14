@@ -36,7 +36,7 @@ router.post('/auth', function(req, res) {
 
   models.User.find({where: {email: email}}).success(function (user) {
     // returns 401 if user does not exist
-    if (!user) { return res.send(401); }
+    if (!user || !user.activated) { return res.send(401); }
     var salt = user.salt;
     var DBPassword = user.password;
     password = crypto.createHash('sha256').update(salt + password).digest('hex');
