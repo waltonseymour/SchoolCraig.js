@@ -12,10 +12,8 @@ describe("User Suite", function(){
     var app = require('../app');
     app.set('port', process.env.PORT || 3000);
     var server = app.listen(app.get('port'));
-
     userID = uuid.v4();
     var user = {"id": userID, "email": "test@test.com", "password": "password", "fname": "adam", "lname": "smith"};
-
     models.User.destroy({where: {email: "test@test.com"}}).success(function(ret){
       request.post(host + '/users').send(user).end(function(e, res){
         expect(e).to.equal(null);
