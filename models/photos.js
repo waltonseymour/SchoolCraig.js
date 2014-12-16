@@ -4,6 +4,7 @@ module.exports = function(sequelize, DataTypes) {
   return sequelize.define('Photo', { 
     id: {
       type: 'UUID',
+      primaryKey: true,
       allowNull: false
     },
     post_id: {
