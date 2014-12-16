@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     user_id: {
       type: 'UUID',
-      allowNull: true,
+      allowNull: false,
     },
     description: {
       type: DataTypes.TEXT,
@@ -17,7 +17,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     category_id: {
       type: 'UUID',
-      allowNull: true,
+      allowNull: false,
     },
     price: {
       type: DataTypes.INTEGER,
@@ -25,7 +25,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     title: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     }
   },
   {

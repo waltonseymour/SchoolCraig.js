@@ -17,19 +17,19 @@ module.exports = function(sequelize, DataTypes) {
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     salt: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     activated: {
       type: DataTypes.BOOLEAN,
-      allowNull: true,
+      allowNull: false,
     }
   },
   {
