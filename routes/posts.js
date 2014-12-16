@@ -8,9 +8,9 @@ var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'pr
 var userOptions = {attributes: ['id', 'fname', 'lname', 'email']};
 var categoryOptions = {attributes: ['id', 'name']};
 
-models.Post.belongsTo(models.User, {as: 'user', foreignKey: 'user_id'})
+models.Post.belongsTo(models.User, {as: 'user', foreignKey: 'user_id'});
 models.Post.belongsTo(models.Category, {as: 'category', foreignKey: 'category_id'});
-models.Photo.belongsTo(models.Post, {as: 'post', foreignKey: 'post_id'})
+models.Photo.belongsTo(models.Post, {as: 'post', foreignKey: 'post_id'});
 
 // Retrieves all posts
 router.get('/', function(req, res) {
