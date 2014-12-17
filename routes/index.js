@@ -7,7 +7,12 @@ var S3_BUCKET = process.env.S3_BUCKET;
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'Express' });
+  if(req.session.userID){
+    res.render('main');
+  }
+  else {
+    res.render('index', { title: 'Express' });
+  }
 });
 
 router.get('/sign_s3', function(req, res){
