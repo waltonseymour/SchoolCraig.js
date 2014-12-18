@@ -17,7 +17,7 @@ $('#login-password').keydown(function(e) {
 function login(){
   var data = {email: $('#login-email').val(), password: $('#login-password').val()};
   $.ajax({
-    url: 'http://localhost:3000/users/auth', // the presigned URL
+    url: 'users/auth', // the presigned URL
     type: 'POST',
     data: data,
     success: function() { location.reload(); },
