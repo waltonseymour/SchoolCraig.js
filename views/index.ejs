@@ -30,14 +30,13 @@
     <div class="container-narrow">
         <div class="masthead">
             <ul class="nav nav-pills pull-right">
-                <li class="active">
-                    <a href="#">Home</a>
-                </li>
-                <li>
-                    <a href="#">About</a>
-                </li>
-                <li>
-                    <a href="#">Contact</a>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
+                  <div class="dropdown-menu" id="login-dropdown-menu">
+                    <input class="form-control" type="text" placeholder="Email" id="login-email">
+                    <input class="form-control" type="password" placeholder="Password" id="login-password">
+                    <input class="form-control btn btn-primary btn-block" type="button" id="login-submit" value="Sign In">
+                  </div>
                 </li>
             </ul>
             <h3 class="muted">School Craigslist</h3>
@@ -84,9 +83,9 @@
     </div>
     <!-- /container -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
-    </script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="/javascripts/index.js"></script>
 </body>
 
 </html>
