@@ -22,7 +22,7 @@ module.exports = {
   
   create: function (req, res) {
     var category = req.body;
-    if (!category.id) { return CreateCategory(req, res, category); }
+    if (!category.id) { return createCategory(req, res, category); }
 
     models.Category.find({where: {id: category.id}}).then(function (ret) {
       // returns true if category with id exists
@@ -34,7 +34,7 @@ module.exports = {
       }
       else {
        // creates category otherwise
-        createCategory(req, res, post);
+        createCategory(req, res, category);
       }
     });
   }

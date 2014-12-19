@@ -13,7 +13,7 @@ models.Photo.belongsTo(models.Post, {as: 'post', foreignKey: 'post_id'});
 module.exports = {
 
   // lists all posts
-  listAll: function(req, res) {
+  listAll: function(req, res, callback) {
     if (req.session.userID === undefined) { return res.send(403); }
 
     // defaults ordering by date
@@ -23,7 +23,12 @@ module.exports = {
       {model: models.User, as: 'user', attributes: userOptions.attributes},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
     models.Post.findAll(options).success(function (posts) {
-      res.send(posts);
+      if (callback) {
+        callback(posts);
+      }
+      else {
+        res.send(posts);
+      }
     });
   },
 

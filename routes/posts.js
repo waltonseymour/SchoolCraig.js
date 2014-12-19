@@ -3,7 +3,7 @@ var router = express.Router();
 var controller = require('../controllers/posts');
 
 // Retrieves all posts
-router.get('/', controller.listAll);
+router.get('/', function (req, res) { controller.listAll(req, res); });
 
 // Retreives post by id
 router.get('/:id', controller.getByID);
