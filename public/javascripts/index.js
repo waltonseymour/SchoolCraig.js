@@ -23,5 +23,4 @@ function login(){
     success: function() { location.reload(); },
     error: function(err) { console.log("login failed");}
   });
-  
 }
