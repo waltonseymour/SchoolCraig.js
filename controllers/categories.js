@@ -4,9 +4,14 @@ var util = require('../utilities');
 
 
 module.exports = {
-  listAll: function (req, res) {
-    models.Category.findAll().success(function (users) {
-      res.send(users);
+  listAll: function (req, res, callback) {
+    models.Category.findAll().success(function (categories) {
+      if (callback) {
+        callback(categories);
+      }
+      else {
+        res.send(categories);
+      }
     });
   },
 

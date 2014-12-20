@@ -3,13 +3,16 @@ var aws = require('aws-sdk');
 aws.config.reigon = 'us-west-2';
 var S3_BUCKET = process.env.S3_BUCKET;
 var postController = require('../controllers/posts');
+var categoryController = require('../controllers/categories');
 
 
 module.exports = {
   main: function (req, res) {
     if(req.session.userID){
-      postController.listAll(req, res, function (posts){
-        res.render('main', {posts: posts});
+      postController.listAll(req, res, function (posts) {
+        categoryController.listAll(req, res, function (categories) {
+          res.render('main', {posts: posts, categories: categories});
+        });
       }); 
     }
     else {

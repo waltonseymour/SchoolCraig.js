@@ -4,6 +4,8 @@ $('.post').click(function(event){
   // handle displaying post here
 });
 
+
+
 $('#logout').click(logout);
 
 function logout(){
