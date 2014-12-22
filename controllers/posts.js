@@ -19,7 +19,7 @@ module.exports = {
     // defaults ordering by date
     var order = _.contains(['createdAt', 'price'], req.param('order')) ? req.param('order') : 'createdAt';
 
-    var options = _.extend(publicOptions, {order: [[order, 'DESC']], include: [
+    var options = _.extend({}, publicOptions, {order: [[order, 'DESC']], include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
     models.Post.findAll(options).success(function (posts) {
@@ -37,7 +37,7 @@ module.exports = {
     if (req.session.userID === undefined) { return res.send(403); }
     if (!util.isUUID(req.params.id)) { return res.send(401); }
 
-    var options = _.extend(publicOptions, {where: {id: req.params.id}, include: [
+    var options = _.extend({}, publicOptions, {where: {id: req.params.id}, include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
     models.Post.find(options).success(function(post){

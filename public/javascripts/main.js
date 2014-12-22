@@ -3,8 +3,8 @@
 $('.post').click(function(event){
   var $this = $(this);
   var id = $this.attr('data-id');
+  getPost(id);
 });
-
 
 $('#create-submit').click(function () {
   var post = {};
@@ -17,9 +17,19 @@ $('#create-submit').click(function () {
 
 $('#logout').click(logout);
 
+
+function getPost(id) {
+  $.ajax({
+    url: 'posts/' + id,
+    type: 'GET',
+    success: function(data) { console.log(data); },
+    error: function(err) { console.log("create post failed");}
+  });
+}
+
 function createPost(post){
     $.ajax({
-    url: 'posts', // the presigned URL
+    url: 'posts',
     type: 'POST',
     data: post,
     success: function() { location.reload(); },
@@ -29,7 +39,7 @@ function createPost(post){
 
 function logout(){
   $.ajax({
-    url: 'users/deauth', // the presigned URL
+    url: 'users/deauth',
     type: 'POST',
     success: function() { location.reload(); },
     error: function(err) { console.log("login failed");}
