@@ -67,22 +67,35 @@
         </div>
       </div>
 
+      <!-- Post Modal -->
+      <div class="modal fade" id="post-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <h4 class="modal-title">Post Title</h4>
+            </div>
+            <div class="modal-body">
+            description  description  description description description description description description description
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-success" data-dismiss="modal">Contact</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
         <hr>
         <div class="row">
-          <div class="col-md-8 col-md-offset-2 bg-primary post-container">        
-            <div class="row post">
-              <div class="col-sm-10"><h3>Brand new textbook for math 275</h3>
-                <div class="row"><div class="col-sm-10"><h5>After dropping the class, I am looking to sell it quickly.</h5></div></div>
-              </div>
-              <div class="col-sm-2 bg-success price"><h4>$85</h4></div>
-            </div> <!-- end post -->
-            <hr class="end-post row">
+          <div class="col-md-8 col-md-offset-2 bg-primary post-container">
             <% for (var i = 0; i < posts.length; i++) {  %>
               <div class="row post" data-id="<%= posts[i].id %>">
                 <div class="col-sm-10"><h3><%= posts[i].title%></h3>
                   <div class="row"><div class="col-sm-10"><h5><%= posts[i].description%></h5></div></div>
                 </div>
-                <div class="col-sm-2 bg-success price"><h4>$<%= posts[i].price%></h4></div>
+                <% var price = posts[i].price > 0 ? '$' + posts[i].price : 'Free'; %>
+                <div class="col-sm-2 bg-success price"><h4><%= price %></h4></div>
               </div>
               <hr class="end-post row">
             <% } %>

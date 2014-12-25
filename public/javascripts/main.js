@@ -17,12 +17,19 @@ $('#create-submit').click(function () {
 
 $('#logout').click(logout);
 
-
 function getPost(id) {
   $.ajax({
     url: 'posts/' + id,
     type: 'GET',
-    success: function(data) { console.log(data); },
+    success: function(data) {
+      var title = data.title;
+      if (data.price > 0) {
+        title += " - $" + data.price;
+      }
+      $('#post-modal .modal-title').text(title);
+      $('#post-modal .modal-body').text(data.description);
+      $('#post-modal').modal('show');
+    },
     error: function(err) { console.log("create post failed");}
   });
 }

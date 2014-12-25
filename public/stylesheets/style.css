@@ -79,6 +79,10 @@ i {
   margin-top: 5px;
 }
 
+#create-modal .form-control{
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
 
 .modal-backdrop {
   position: fixed;
