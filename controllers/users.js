@@ -32,7 +32,7 @@ module.exports = {
 
     models.User.find({where: {email: email}}).success(function (user) {
       // returns 401 if user does not exist
-      if (!user || (process.env.NODE_ENV === 'production' && !user.activated)) { return res.send(401); }
+      if (!user || !user.activated) { return res.send(401); }
       var salt = user.salt;
       var DBPassword = user.password;
       password = crypto.createHash('sha256').update(salt + password).digest('hex');
@@ -121,25 +121,27 @@ module.exports = {
 
 // Creates user with sepecified fields
 function createUser (req, res, user) {
-  if (user.fname && user.lname && user.email && user.password) {
+  if (user.email && user.password) {
     var salt = crypto.randomBytes(16).toString('hex'); 
     var password = crypto.createHash('sha256').update(salt + user.password).digest('hex');
     user.id = user.id || uuid.v4();
     user.salt = salt;
     user.password = password;
     user.email = user.email.toLowerCase();
-    user.activated = false;
+    user.activated = process.env.NODE_ENV !== 'production';
     models.User.create(user).then(function (){
-      var url = "https://schoolcraigslist.herokuapp.com/users/activate/" + user.id + '?key=' + crypto.createHash('sha256').update(salt).digest('hex');
-      sendgrid.send({
-        to: user.email,
-        from: 'sender@heroku.com',
-        subject: 'hello world',
-        html: 'Please click <a href="' + url+ '">here</a> to register your account.'
-      }, function(err, json){
-        if (err) { console.log(err); }
-        console.log(json);
-      });
+      if(!user.activated){
+        var url = "https://schoolcraigslist.herokuapp.com/users/activate/" + user.id + '?key=' + crypto.createHash('sha256').update(salt).digest('hex');
+        sendgrid.send({
+          to: user.email,
+          from: 'noreply@heroku.com',
+          subject: 'Account Activation',
+          html: 'Please click <a href="' + url+ '">here</a> to confirm your email.'
+        }, function(err, json){
+          if (err) { console.log(err); }
+          console.log(json);
+        });
+      }
       res.send(204);
     });
   }

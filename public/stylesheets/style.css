@@ -84,6 +84,11 @@ i {
   margin-bottom: 5px;
 }
 
+#signup-modal .form-control{
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 .modal-backdrop {
   position: fixed;
   top: 0;

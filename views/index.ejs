@@ -19,7 +19,7 @@
             <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
     <!-- Fav and touch icons -->
-    <link rel="shortcut icon" href="../assets/ico/favicon.ico">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
@@ -27,65 +27,83 @@
 </head>
 
 <body>
-    <div class="container-narrow">
-        <div class="masthead">
-            <ul class="nav nav-pills pull-right">
-                <li class="dropdown">
-                  <a class="dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
-                  <div class="dropdown-menu" id="login-dropdown-menu">
-                    <input class="form-control" name="email" type="text" placeholder="Email" id="login-email">
-                    <input class="form-control" name="password" type="password" placeholder="Password" id="login-password">
-                    <input class="form-control btn btn-primary btn-block" type="button" id="login-submit" value="Sign In">
-                  </div>
-                </li>
-            </ul>
-            <h3 class="muted">School Craigslist</h3>
-
-        </div>
-        <hr>
-        <div class="jumbotron">
-            <h1>A marketplace for students</h1>
-
-            <p class="lead">School Craigslist is a place to buy and sell everyday items exclusively on campus.</p>
-            <a class="btn btn-large btn-success" href="#">Sign up today</a>
-        </div>
-        <hr>
-        <div class="row-fluid marketing">
-            <div class="span6">
-                <h4>Simplicity</h4>
-
-                <p>Find textbooks, electronics, tutors and more, all in one place.
-                </p>
-                <h4>Campus Only</h4>
-
-                <p>All users are verified to have a school email, ensuring all postings are from colleagues.</p>
-                <h4>Subheading</h4>
-
-                <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+  <div class="modal fade" id="signup-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <h4 class="modal-title">Sign Up</h4>
             </div>
-            <div class="span6">
-                <h4>Subheading</h4>
-
-                <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.
-                </p>
-                <h4>Subheading</h4>
-
-                <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-                <h4>Subheading</h4>
-
-                <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+            <div class="modal-body" id="signup-form">
+              <input class="form-control" type="email" placeholder="University Email">
+              <input class="form-control" type="password" placeholder="Password">
+              <input class="form-control" type="password" placeholder="Confirm Password">
             </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" id="signup-submit" class="btn btn-primary">Submit</button>
+            </div>
+          </div>
         </div>
-        <hr>
-        <div class="footer">
-            <p>&copy; Company 2013</p>
-        </div>
-    </div>
-    <!-- /container -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-    <script src="/javascripts/index.js"></script>
+  </div>
+  <div class="container-narrow">
+      <div class="masthead">
+          <ul class="nav nav-pills pull-right">
+              <li class="dropdown">
+                <a class="dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
+                <div class="dropdown-menu" id="login-dropdown-menu">
+                  <input class="form-control" name="email" type="text" placeholder="Email" id="login-email">
+                  <input class="form-control" name="password" type="password" placeholder="Password" id="login-password">
+                  <input class="form-control btn btn-primary btn-block" type="button" id="login-submit" value="Sign In">
+                </div>
+              </li>
+          </ul>
+          <h3 class="muted">School Craigslist</h3>
+      </div>
+      <hr>
+      <div class="jumbotron">
+          <h1>A marketplace for students</h1>
+
+          <p class="lead">School Craigslist is a place to buy and sell everyday items exclusively on campus.</p>
+          <a class="btn btn-large btn-success" data-toggle="modal" data-target="#signup-modal" id="signup">Sign up today</a>
+      </div>
+      <hr>
+      <div class="row-fluid marketing">
+          <div class="span6">
+              <h4>Simplicity</h4>
+
+              <p>Find textbooks, electronics, tutors and more, all in one place.
+              </p>
+              <h4>Campus Only</h4>
+
+              <p>All users are verified to have a school email, ensuring all postings are from colleagues.</p>
+              <h4>Subheading</h4>
+
+              <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+          </div>
+          <div class="span6">
+              <h4>Subheading</h4>
+
+              <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.
+              </p>
+              <h4>Subheading</h4>
+
+              <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
+              <h4>Subheading</h4>
+
+              <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+          </div>
+      </div>
+      <hr>
+      <div class="footer">
+          <p>&copy; Company 2013</p>
+      </div>
+  </div>
+  <!-- /container -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+  <script src="/javascripts/index.js"></script>
 </body>
 
 </html>
