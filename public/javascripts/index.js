@@ -5,7 +5,12 @@ $('.dropdown-menu').click(function (e) {
   e.stopPropagation();
 });
 
-$('#signup-submit').click(signup);
+$('#signup-form').parsley({
+  successClass: 'success',
+  errorClass: 'error'
+});
+
+$('#signup-form').submit(signup);
 
 $('#login-submit').click(login);
 
@@ -17,7 +22,7 @@ $('#login-password').keydown(function(e) {
 });
 
 function signup() {
-  var data = {email: $('#signup-form input[type="email"]').val(), password: $('#signup-form input[type="password"').val()};
+  var data = {email: $('#signup-email').val(), password: $('#signup-password').val()};
   $.ajax({
     url: 'users',
     type: 'POST',
