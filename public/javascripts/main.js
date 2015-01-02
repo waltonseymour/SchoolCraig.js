@@ -6,7 +6,12 @@ $('.post').click(function(event){
   getPost(id);
 });
 
-$('#create-submit').click(function () {
+$('#create-form').parsley({
+  successClass: 'success',
+  errorClass: 'error'
+});
+
+$('#create-submit').submit(function () {
   var post = {};
   post.title = $('#create-form .create-title').val();
   post.description = $('#create-form .create-description').val();
@@ -30,7 +35,7 @@ function getPost(id) {
       $('#post-modal .modal-body').text(data.description);
       $('#post-modal').modal('show');
     },
-    error: function(err) { console.log("create post failed");}
+    error: function(err) { console.log("get post failed"); }
   });
 }
 
@@ -40,7 +45,7 @@ function createPost(post){
     type: 'POST',
     data: post,
     success: function() { location.reload(); },
-    error: function(err) { console.log("create post failed");}
+    error: function(err) { console.log("create post failed"); }
   });
 }
 
@@ -49,6 +54,6 @@ function logout(){
     url: 'users/deauth',
     type: 'POST',
     success: function() { location.reload(); },
-    error: function(err) { console.log("login failed");}
+    error: function(err) { console.log("login failed"); }
   });
 }
