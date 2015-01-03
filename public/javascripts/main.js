@@ -11,7 +11,7 @@ $('#create-form').parsley({
   errorClass: 'error'
 });
 
-$('#create-submit').submit(function () {
+$('#create-form').submit(function () {
   var post = {};
   post.title = $('#create-form .create-title').val();
   post.description = $('#create-form .create-description').val();
