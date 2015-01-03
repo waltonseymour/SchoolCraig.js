@@ -33,6 +33,7 @@ function getPost(id) {
       }
       $('#post-modal .modal-title').text(title);
       $('#post-modal .modal-body').text(data.description);
+      $('#modal-contact').attr("href", "https://mail.google.com/mail/?view=cm&fs=1&to="+data.user.email+"&su="+data.title+"&body=Hello I would like to buy");
       $('#post-modal').modal('show');
     },
     error: function(err) { console.log("get post failed"); }
