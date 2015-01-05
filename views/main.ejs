@@ -32,10 +32,10 @@
         <div class="masthead">
             <ul class="nav nav-pills pull-right">
                 <li>
-                    <a href="#" id="create" data-toggle="modal" data-target="#create-modal"><i class="fa fa-plus-circle fa-lg"></i></a>
+                    <a href="#" id="create" data-toggle="modal" data-target="#create-modal"><i class="fa fa-plus-circle fa-2x"></i></a>
                 </li>
                 <li>
-                    <a href="#" id="logout"><i class="fa fa-cog fa-lg"></i></a>
+                    <a href="#" id="logout"><i class="fa fa-cog fa-2x"></i></a>
                 </li>
             </ul>
             <h3 class="muted">School Craigslist</h3>
@@ -87,7 +87,17 @@
       </div>
         <hr>
         <div class="row">
-          <div class="col-md-8 col-md-offset-2 bg-primary post-container">
+          <div class="col-md-2 col-md-offset-8">
+            <select class="form-control" id="category-filter">
+              <option>All</option>
+              <% for (var i = 0; i < categories.length; i++) { %>
+                <option value="<%= categories[i].id %>"><%= categories[i].name %></option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="post-container col-md-8 col-md-offset-2 bg-primary">
             <% for (var i = 0; i < posts.length; i++) {  %>
               <div class="row post" data-id="<%= posts[i].id %>">
                 <div class="col-sm-10"><h3><%= posts[i].title%></h3>

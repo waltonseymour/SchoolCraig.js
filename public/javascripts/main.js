@@ -6,6 +6,11 @@ $('.post').click(function(event){
   getPost(id);
 });
 
+
+$('#category-filter').change(function(event){
+  console.log($(this).val());
+});
+
 $('#create-form').parsley({
   successClass: 'success',
   errorClass: 'error'
@@ -33,7 +38,7 @@ function getPost(id) {
       }
       $('#post-modal .modal-title').text(title);
       $('#post-modal .modal-body').text(data.description);
-      $('#modal-contact').attr("href", "https://mail.google.com/mail/?view=cm&fs=1&to="+data.user.email+"&su="+data.title+"&body=Hello I would like to buy");
+      $('#modal-contact').attr("href", "https://mail.google.com/mail/?view=cm&fs=1&to="+data.user.email+"&su="+data.title);
       $('#post-modal').modal('show');
     },
     error: function(err) { console.log("get post failed"); }

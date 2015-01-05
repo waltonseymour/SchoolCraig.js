@@ -104,12 +104,12 @@ module.exports = {
   activate: function (req, res) {
     if (!utils.isUUID(req.params.id)) { return res.send(401); }
   
-    models.User.find({where: {id: req.params.id}}).then(function(user){
-      if (crypto.createHash('sha256').update(user.salt).digest('hex') === req.query.key) {
+    models.User.find({where: {id: req.params.id}}).then(function (user) {
+      if (user && crypto.createHash('sha256').update(user.salt).digest('hex') === req.query.key) {
         user.activated = true;
         user.save().then(function (){ 
           req.session.userID = user.id;
-          res.send("Success!");
+          res.redirect('/');
         });
       }
       else{

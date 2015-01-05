@@ -2,6 +2,11 @@ body {
   padding-top: 20px;
   padding-bottom: 40px;
 }
+
+h5{
+  font-size: 17px;
+}
+
 /* Custom container */
 .container-narrow {
   margin: 0 auto;
@@ -89,6 +94,11 @@ i {
   margin-bottom: 5px;
 }
 
+#category-filter{
+  margin-bottom: 10px;
+  margin-left: 15px;
+}
+
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -144,4 +154,9 @@ textarea.parsley-success {
 
 .parsley-errors-list.filled {
   opacity: 1;
+}
+
+.nav li a{
+  margin-top: -6px;
+  padding: 10px 15px;
 }

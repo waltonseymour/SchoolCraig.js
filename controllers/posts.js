@@ -18,10 +18,16 @@ module.exports = {
 
     // defaults ordering by date
     var order = _.contains(['createdAt', 'price'], req.param('order')) ? req.param('order') : 'createdAt';
+    var category = req.param('category');
 
     var options = _.extend({}, publicOptions, {order: [[order, 'DESC']], include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
+
+    if (util.isUUID(category)){
+      options = _.extend(options, {where: {category_id: category}});
+    }
+
     models.Post.findAll(options).success(function (posts) {
       if (callback) {
         callback(posts);
