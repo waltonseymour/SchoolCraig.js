@@ -1,14 +1,13 @@
 "use strict";
 
-$('.post').click(function(event){
+$('body').on('click', '.post', function (event) {
   var $this = $(this);
   var id = $this.attr('data-id');
   getPost(id);
 });
 
-
 $('#category-filter').change(function(event){
-  console.log($(this).val());
+  reloadPosts($(this).val());
 });
 
 $('#create-form').parsley({
@@ -45,8 +44,24 @@ function getPost(id) {
   });
 }
 
+function reloadPosts (category) {
+  $.ajax({
+    url: 'posts?category=' + category,
+    type: 'GET',
+    success: function(data) {
+      var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: data});
+      var $container  = $('#post-container')
+      $container.fadeOut(300, function(){
+        $container.html(posts);
+        $container.fadeIn(300);
+      });
+    },
+    error: function(err) { console.log("create post failed"); }
+  });
+}
+
 function createPost(post){
-    $.ajax({
+  $.ajax({
     url: 'posts',
     type: 'POST',
     data: post,

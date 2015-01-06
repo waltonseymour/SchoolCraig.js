@@ -64,7 +64,7 @@ i {
   background-color: #3498db;
 }
 
-.post-container {
+#post-container {
   overflow: hidden;
   border-radius: 8px;
 }
