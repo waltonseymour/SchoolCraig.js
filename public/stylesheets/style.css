@@ -19,6 +19,7 @@ h5{
 .jumbotron {
   margin: 60px 0;
   text-align: center;
+  word-break: break-all;
 }
 .jumbotron h1 {
   font-size: 72px;
@@ -157,6 +158,5 @@ textarea.parsley-success {
 }
 
 .nav li a{
-  margin-top: -6px;
   padding: 10px 15px;
 }
