@@ -19,7 +19,7 @@ h5{
 .jumbotron {
   margin: 60px 0;
   text-align: center;
-  word-break: break-all;
+  word-break: break-word;
 }
 .jumbotron h1 {
   font-size: 72px;
