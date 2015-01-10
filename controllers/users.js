@@ -131,7 +131,7 @@ function createUser (req, res, user) {
     user.activated = process.env.NODE_ENV !== 'production';
     models.User.create(user).then(function (){
       if(!user.activated){
-        var url = "https://schoolcraigslist.herokuapp.com/users/activate/" + user.id + '?key=' + crypto.createHash('sha256').update(salt).digest('hex');
+        var url = "http://getbazaar.io/users/activate/" + user.id + '?key=' + crypto.createHash('sha256').update(salt).digest('hex');
         sendgrid.send({
           to: user.email,
           from: 'noreply@heroku.com',
