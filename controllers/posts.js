@@ -1,6 +1,7 @@
 var models = require('../models');
 var _ = require('underscore');
 var util = require('../utilities');
+var uuid = require('node-uuid');
 
 var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'price']};
 var userOptions = {attributes: ['id', 'fname', 'lname', 'email']};
@@ -93,6 +94,13 @@ module.exports = {
         CreatePost(req, res, post);
       }
     });
+  },
+
+  upload: function(req, res) {
+    if (req.session.userID === undefined) { return res.send(403); }
+    var photoID = uuid.v4();
+    var contentType = req.body.contentType;
+    res.redirect('/sign_s3?method=put&key=bazaar/' + photoID + '&contentType=' + contentType);
   }
 
 };

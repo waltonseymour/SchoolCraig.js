@@ -17,4 +17,7 @@ router.delete('/:id', controller.deleteByID);
 // Route for creating a new post
 router.post('/', controller.create);
 
+// uploads a new image
+router.post('/:id/photos', controller.upload);
+
 module.exports = router;
