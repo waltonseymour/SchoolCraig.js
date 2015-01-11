@@ -1,5 +1,6 @@
 var models = require('../models');
 var _ = require('underscore');
+var async = require('async');
 var util = require('../utilities');
 var uuid = require('node-uuid');
 
@@ -96,11 +97,37 @@ module.exports = {
     });
   },
 
+  // inserts row into database and returns presigned url for uploading
   upload: function(req, res) {
     if (req.session.userID === undefined) { return res.send(403); }
-    var photoID = uuid.v4();
-    var contentType = req.body.contentType;
-    res.redirect('/sign_s3?method=put&key=bazaar/' + photoID + '&contentType=' + contentType);
+    if (!util.isUUID(req.params.id) || !req.body.contentType) { return res.send(401); }
+    var photoID = req.body.id || uuid.v4();
+    var postID = req.params.id;
+    var photo = { id: photoID, post_id: postID }; 
+    models.Photo.create(photo).then(function (ret) {
+      var contentType = req.body.contentType;
+      var options = {key: 'bazaar/' + photoID, method: 'put', contentType: contentType};
+      util.sign_s3(options, function (data) {
+        res.send(data);
+      });
+    });
+  },
+
+  // returns a list of presigned urls associated with a post
+  getPhotos: function(req, res) {
+    if (req.session.userID === undefined) { return res.send(403); }
+    var postID = req.params.id;
+    models.Photo.findAll({where: {post_id: postID}}).then(function (photos) {
+      async.map(photos, function(photo, callback) {
+        var options = {key: 'bazaar/' + photo.id, method: 'get'};
+        util.sign_s3(options, function(signed_url) {
+          callback(null, signed_url);
+        });
+      }, function(err, result){
+        res.send(result);
+      }); 
+
+    }); 
   }
 
 };

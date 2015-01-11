@@ -20,4 +20,7 @@ router.post('/', controller.create);
 // uploads a new image
 router.post('/:id/photos', controller.upload);
 
+// Retrieves urls for photos
+router.get('/:id/photos', controller.getPhotos);
+
 module.exports = router;
