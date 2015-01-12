@@ -69,6 +69,9 @@
                     <option value="<%= categories[i].id %>"><%= categories[i].name %></option>
                   <% } %>
                 </select>
+                <span class="btn btn-default btn-file form-control">
+                  Upload an Image <input id='create-file' type="file">
+                </span>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -120,6 +123,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="/javascripts/jquery.min.js"></script>
     <script src="/javascripts/bootstrap.min.js"></script>
+    <script src="/javascripts/uuid.js"></script>
     <script src="/javascripts/parsley.min.js"></script>
     <script src="/javascripts/ejs_production.js"></script>
     <script src="/javascripts/main.js"></script>

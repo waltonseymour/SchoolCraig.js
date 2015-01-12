@@ -17,11 +17,13 @@ $('#create-form').parsley({
 
 $('#create-form').submit(function () {
   var post = {};
+  post.id =  uuid.v4();
   post.title = $('#create-form .create-title').val();
   post.description = $('#create-form .create-description').val();
   post.price = $('#create-form .create-price').val();
   post.category_id = $('#create-form select').val();
   createPost(post);
+  return false;
 });
 
 $('#logout').click(logout);
@@ -65,8 +67,49 @@ function createPost(post){
     url: 'posts',
     type: 'POST',
     data: post,
-    success: function() { location.reload(); },
+    success: function(){
+      getSignedUrl(post.id);
+    },
     error: function(err) { console.log("create post failed"); }
+  });
+}
+
+function getSignedUrl(postID) {
+  var contentType = $('#create-file').val().split('.').pop();
+  if (!contentType) {
+    location.reload();
+    return;
+  }
+  var MIME = {
+    "jpg": 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png'
+  };
+  contentType = MIME[contentType];
+  var photo = {contentType: contentType};
+  $.ajax({
+    url: 'posts/' + postID + '/photos',
+    type: 'POST',
+    data: photo,
+    success: function(url) {
+      uploadFile({url: url, contentType: contentType});
+    },
+    error: function(err) { console.log("get signed url failed"); }
+  });
+}
+
+function uploadFile(options) {
+  var file = document.getElementById('create-file').files[0];
+  $.ajax({
+    url: options.url,
+    type: 'PUT',
+    data: file,
+    contentType: options.contentType,
+    processData: false,
+    success: function(){
+      location.reload();
+    },
+    error: function(err) { console.log("upload file failed"); }
   });
 }
 
