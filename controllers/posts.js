@@ -10,6 +10,7 @@ var categoryOptions = {attributes: ['id', 'name']};
 
 models.Post.belongsTo(models.User, {as: 'user', foreignKey: 'user_id'});
 models.Post.belongsTo(models.Category, {as: 'category', foreignKey: 'category_id'});
+models.Post.hasMany(models.Photo, {as: 'photos', foreignKey: 'post_id'});
 models.Photo.belongsTo(models.Post, {as: 'post', foreignKey: 'post_id'});
 
 module.exports = {
@@ -24,6 +25,7 @@ module.exports = {
 
     var options = _.extend({}, publicOptions, {order: [[order, 'DESC']], include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
+      {model: models.Photo, as: 'photos'},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
 
     if (util.isUUID(category)){
@@ -47,6 +49,7 @@ module.exports = {
 
     var options = _.extend({}, publicOptions, {where: {id: req.params.id}, include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
+      {model: models.Photo, as: 'photos'},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
     models.Post.find(options).success(function(post){
       post ? res.send(post) : res.send(404);
@@ -128,6 +131,18 @@ module.exports = {
       }); 
 
     }); 
+  },
+
+  // returns a list of presigned urls associated with a post
+  getPhotoByID: function(req, res) {
+    if (req.session.userID === undefined) { return res.send(403); }
+    var postID = req.params.id;
+    var photoID = req.params.photoID;
+    models.Photo.find({where: {id: photoID}}).then(function (photo) {
+      util.sign_s3({method: 'get', key: 'bazaar/' + photo.id}, function(url){
+        res.redirect(301, url);
+      });
+    });
   }
 
 };
