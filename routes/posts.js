@@ -23,4 +23,7 @@ router.post('/:id/photos', controller.upload);
 // Retrieves urls for photos
 router.get('/:id/photos', controller.getPhotos);
 
+// Retrieves url for a photo
+router.get('/:id/photos/:photoID', controller.getPhotoByID);
+
 module.exports = router;
