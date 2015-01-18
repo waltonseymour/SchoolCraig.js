@@ -76,7 +76,9 @@ module.exports = {
       return ret.user_id === req.session.userID;
     }).then(function (valid){
       if (!valid) { return res.send(403); }
-      models.Post.destroy(options).success(function (ret) {
+      models.Photo.destroy({where: {post_id: req.params.id}})
+      .then(models.Post.destroy(options))
+      .then(function (ret) {
         ret ? res.send(200) : res.send(404);
       });
     });

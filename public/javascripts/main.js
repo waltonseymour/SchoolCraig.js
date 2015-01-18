@@ -3,22 +3,19 @@
 // Stores DOM elements after post has been loaded
 var POST_CACHE = {};
 
-function preload(arrayOfImages) {
-  $(arrayOfImages).each(function(){
+(function preload(){
+  var urls = [];
+  $('.post').each(function(){
+    var postID = $(this).attr('data-id');
+    var photoID = $(this).attr('data-photo');
+    if (photoID) {
+      urls.push('/posts/' + postID + '/photos/' + photoID);
+    }
+  });
+  $(urls).each(function(){
     $('<img/>')[0].src = this;
   });
-}
-
-
-var temp = [];
-$('.post').each(function(){
-  var postID = $(this).attr('data-id');
-  var photoID = $(this).attr('data-photo');
-  if (photoID) {
-    temp.push('/posts/' + postID + '/photos/' + photoID);
-  }
-});
-preload(temp);
+})();
 
 $('body').on('click', '.post', function (event) {
   var id = $(this).attr('data-id');
