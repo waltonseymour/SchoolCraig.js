@@ -32,6 +32,7 @@
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
     
       ga('create', 'UA-58300675-1', 'auto');
+      ga('require', 'displayfeatures');
       ga('send', 'pageview');
     
     </script>
@@ -69,6 +70,9 @@
                     <option value="<%= categories[i].id %>"><%= categories[i].name %></option>
                   <% } %>
                 </select>
+                <span class="btn btn-default btn-file form-control">
+                  Upload an Image <input id='create-file' type="file">
+                </span>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -87,6 +91,7 @@
               <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
               <h4 class="modal-title">Post Title</h4>
             </div>
+            <img class="modal-image" height="200" width="200">
             <div class="modal-body"></div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -120,6 +125,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="/javascripts/jquery.min.js"></script>
     <script src="/javascripts/bootstrap.min.js"></script>
+    <script src="/javascripts/uuid.js"></script>
     <script src="/javascripts/parsley.min.js"></script>
     <script src="/javascripts/ejs_production.js"></script>
     <script src="/javascripts/main.js"></script>
