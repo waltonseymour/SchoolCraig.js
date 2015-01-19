@@ -46,7 +46,7 @@ module.exports = {
 
   logout: function (req, res) {
     req.session = null;
-    res.send(200);
+    res.send(204);
   },
 
   putByID: function (req, res) {
@@ -55,7 +55,7 @@ module.exports = {
     var user = _.pick(req.body, publicOptions.attributes);
     var options = _.extend({where: {id: req.params.id}}, publicOptions);
     models.User.update(user, options).success(function(user){
-      user[0] ? res.send(200) : res.send(404);
+      user[0] ? res.send(204) : res.send(404);
     });
   },
 

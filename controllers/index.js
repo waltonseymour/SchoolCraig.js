@@ -6,7 +6,7 @@ module.exports = {
     if(req.session.userID){
       postController.listAll(req, res, function (posts) {
         categoryController.listAll(req, res, function (categories) {
-          res.render('main', {posts: posts, categories: categories});
+          res.render('main', {userID: req.session.userID, posts: posts, categories: categories});
         });
       }); 
     }

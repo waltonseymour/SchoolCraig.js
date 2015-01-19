@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+  <head>
     <meta charset="utf-8">
     <title>Main Page</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +11,7 @@
         -->
     <link href="bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="stylesheets/style.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/sweet-alert.css">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <!-- TODO: make sure bootstrap-responsive.min.css points to BootTheme
         generated file -->
@@ -36,9 +37,9 @@
       ga('send', 'pageview');
     
     </script>
-</head>
-
-<body>
+  </head>
+  <body>
+    <input type="hidden" id="user-id" value="<%=userID%>"></input>
     <div class="container">
         <div class="masthead">
             <ul class="nav nav-pills pull-right">
@@ -89,6 +90,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <i class="delete fa fa-trash"></i>
               <h4 class="modal-title">Post Title</h4>
             </div>
             <img class="modal-image" height="200" width="200">
@@ -128,7 +130,7 @@
     <script src="/javascripts/uuid.js"></script>
     <script src="/javascripts/parsley.min.js"></script>
     <script src="/javascripts/ejs_production.js"></script>
+    <script src="/javascripts/sweet-alert.min.js"></script>
     <script src="/javascripts/main.js"></script>
-</body>
-
+  </body>
 </html>

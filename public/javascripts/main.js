@@ -30,6 +30,36 @@ $('body').on('click', '.post', function (event) {
   }
 });
 
+$('body').on('click', '.delete', function (event) {
+  $('#post-modal').modal('hide');
+  var id = $('#post-modal').attr('data-id');
+  swal({
+    title: "Are you sure?",
+    text: "Your post cannot be recovered",
+    type: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#DD6B55",
+    confirmButtonText: "Yes, delete it!",
+    cancelButtonText: "No, cancel",
+    closeOnConfirm: false,
+    closeOnCancel: true
+  },
+  function(isConfirm){
+    if (isConfirm) {
+      swal("Deleted!", "Your post has been deleted.", "success");
+      $.ajax({
+        url: 'posts/' + id,
+        type: 'DELETE',
+        success: function() {setTimeout(function(){ location.reload(); }, 1000);},
+        error: function(err) { console.log("delete post failed"); }
+      });
+    }
+    else {
+      $('#post-modal').modal('show');
+    }
+  });
+});
+
 $('#category-filter').change(function(event){
   reloadPosts($(this).val());
 });
@@ -66,6 +96,12 @@ function renderPostModal(data) {
   var title = data.title;
   if (data.price > 0) {
     title += " - $" + data.price;
+  }
+  if (data.user.id === $('#user-id').val()) {
+    $('.delete').show();
+  }
+  else {
+    $('.delete').hide();
   }
   $('#post-modal .modal-title').text(title);
   $('#post-modal .modal-body').text(data.description);
@@ -137,6 +173,16 @@ function getSignedUrl(postID) {
 function uploadFile(options) {
   var file = document.getElementById('create-file').files[0];
   $.ajax({
+    xhr: function() {
+      var xhr = new window.XMLHttpRequest();
+      xhr.upload.addEventListener("progress", function(evt) {
+        if (evt.lengthComputable) {
+          var percentComplete = evt.loaded / evt.total;
+          // add in progress bar here
+        }
+      }, false);
+      return xhr;
+    },
     url: options.url,
     type: 'PUT',
     data: file,
