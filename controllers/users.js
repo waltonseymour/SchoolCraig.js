@@ -7,6 +7,7 @@ var utils = require('../utilities');
 
 var publicOptions = {attributes: ['id', 'fname', 'lname', 'email']};
 
+models.User.hasMany(models.Post, {as: 'posts', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'CASCADE'});
 module.exports = {
   listAll: function (req, res) {
     if (req.session.userID === undefined) { return res.send(403); }

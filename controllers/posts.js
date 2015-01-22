@@ -8,8 +8,8 @@ var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'pr
 var userOptions = {attributes: ['id', 'fname', 'lname', 'email']};
 var categoryOptions = {attributes: ['id', 'name']};
 
-models.Post.belongsTo(models.User, {as: 'user', foreignKey: 'user_id'});
-models.Post.belongsTo(models.Category, {as: 'category', foreignKey: 'category_id'});
+models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'CASCADE'});
+models.Post.belongsTo(models.Category, {as: 'category', foreignKey: {name: 'category_id', allowNull: false}, onDelete: 'cascade'});
 models.Post.hasMany(models.Photo, {as: 'photos', foreignKey: 'post_id', onDelete: 'cascade'});
 
 module.exports = {
@@ -77,7 +77,7 @@ module.exports = {
       if (!valid) { return res.send(403); }
       models.Post.destroy(options)
       .then(function (ret) {
-        ret ? res.send(204) : res.send(401);
+        ret ? res.status(204).end() : res.status(401).end();
       });
     });
   },
@@ -165,10 +165,10 @@ function CreatePost (req, res, post) {
   if (post.title && post.description && post.category_id && post.price) {
     post.user_id = req.session.userID;
     models.Post.create(post).then(function () {
-      res.send(204);
+      res.status(204).end();
     });
   }
   else {
-    res.send(401);
+    res.status(401).end();
   }
 }

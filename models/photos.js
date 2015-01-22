@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     post_id: {
       type: 'UUID',
-      allowNull: true,
+      allowNull: false,
     }
   },
   {
