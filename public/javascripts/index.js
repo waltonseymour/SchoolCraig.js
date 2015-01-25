@@ -10,15 +10,16 @@ $('#signup-form').parsley({
   errorClass: 'error'
 });
 
+$('#login-dropdown-menu').parsley({
+  successClass: 'success',
+  errorClass: 'error'
+});
+
 $('#signup-form').submit(signup);
 
-$('#login-submit').click(login);
-
-$('#login-password').keydown(function(e) {
-  var key = e.which;
-  if (key == 13) {
-    login();
-  }
+$('#login-dropdown-menu').submit(function(){
+  login();
+  return false;
 });
 
 function signup() {

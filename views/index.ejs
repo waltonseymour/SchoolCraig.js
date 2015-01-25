@@ -64,11 +64,11 @@
           <ul class="nav nav-pills pull-right">
               <li class="dropdown">
                 <a class="dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
-                <div class="dropdown-menu" id="login-dropdown-menu">
-                  <input class="form-control" name="email" type="text" placeholder="Email" id="login-email">
-                  <input class="form-control" name="password" type="password" placeholder="Password" id="login-password">
-                  <input class="form-control btn btn-primary btn-block" type="button" id="login-submit" value="Sign In">
-                </div>
+                <form class="dropdown-menu" id="login-dropdown-menu">
+                  <input class="form-control" name="email" type="email" placeholder="Email" id="login-email" required>
+                  <input class="form-control" name="password" type="password" placeholder="Password" id="login-password" required>
+                  <button class="form-control btn btn-primary btn-block" type="submit" id="login-submit">Sign In</button>
+                </form>
               </li>
           </ul>
           <h3 class="muted">Bazaar</h3>
