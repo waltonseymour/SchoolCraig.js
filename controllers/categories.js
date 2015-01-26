@@ -2,6 +2,7 @@ var models = require('../models');
 var _ = require('underscore');
 var util = require('../utilities');
 
+models.Category.hasMany(models.Post, {as: 'posts', foreignKey: {name: 'category_id', allowNull: false}, onDelete: 'CASCADE'});
 
 module.exports = {
   listAll: function (req, res, callback) {
@@ -49,10 +50,11 @@ module.exports = {
 // Creates user with sepecified fields
 function createCategory (req, res, category) {
   if (category.name) {
-    models.Category.create(category);
-    res.send(204);
+    models.Category.create(category).then(function(){
+      res.status(204).end();
+    });
   }
   else {
-    res.send(401);
+    res.status(401).end();
   }
 }

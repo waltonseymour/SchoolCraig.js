@@ -1,14 +1,16 @@
 var models = require('../models');
 var _ = require('underscore');
+var async = require('async');
 var util = require('../utilities');
+var uuid = require('node-uuid');
 
 var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'price']};
 var userOptions = {attributes: ['id', 'fname', 'lname', 'email']};
 var categoryOptions = {attributes: ['id', 'name']};
 
-models.Post.belongsTo(models.User, {as: 'user', foreignKey: 'user_id'});
-models.Post.belongsTo(models.Category, {as: 'category', foreignKey: 'category_id'});
-models.Photo.belongsTo(models.Post, {as: 'post', foreignKey: 'post_id'});
+models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'CASCADE'});
+models.Post.belongsTo(models.Category, {as: 'category', foreignKey: {name: 'category_id', allowNull: false}, onDelete: 'cascade'});
+models.Post.hasMany(models.Photo, {as: 'photos', foreignKey: 'post_id', onDelete: 'cascade'});
 
 module.exports = {
 
@@ -22,6 +24,7 @@ module.exports = {
 
     var options = _.extend({}, publicOptions, {order: [[order, 'DESC']], include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
+      {model: models.Photo, as: 'photos'},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
 
     if (util.isUUID(category)){
@@ -45,6 +48,7 @@ module.exports = {
 
     var options = _.extend({}, publicOptions, {where: {id: req.params.id}, include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
+      {model: models.Photo, as: 'photos'},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
     models.Post.find(options).success(function(post){
       post ? res.send(post) : res.send(404);
@@ -71,8 +75,9 @@ module.exports = {
       return ret.user_id === req.session.userID;
     }).then(function (valid){
       if (!valid) { return res.send(403); }
-      models.Post.destroy(options).success(function (ret) {
-        ret ? res.send(200) : res.send(404);
+      models.Post.destroy(options)
+      .then(function (ret) {
+        ret ? res.status(204).end() : res.status(401).end();
       });
     });
   },
@@ -93,6 +98,63 @@ module.exports = {
         CreatePost(req, res, post);
       }
     });
+  },
+
+  // inserts row into database and returns presigned url for uploading
+  upload: function(req, res) {
+    if (req.session.userID === undefined) { return res.send(403); }
+    if (!util.isUUID(req.params.id) || !req.body.contentType) { return res.send(401); }
+    var photoID = req.body.id || uuid.v4();
+    var postID = req.params.id;
+    var photo = { id: photoID, post_id: postID }; 
+    models.Post.find({where: {id: postID}})
+    .then(function (post) {
+      return post && post.user_id === req.session.userID;
+    })
+    .then(function (valid){
+      if (valid) {
+        models.Photo.create(photo)
+        .then(function (ret) {
+          var contentType = req.body.contentType;
+          var options = {key: 'bazaar/' + photoID, method: 'put', contentType: contentType};
+          util.sign_s3(options, function (data) {
+            res.send(data);
+          });
+        });
+      }
+      else {
+        return res.status(403).end();
+      }
+    });
+  },
+
+  // returns a list of presigned urls associated with a post
+  getPhotos: function(req, res) {
+    if (req.session.userID === undefined) { return res.send(403); }
+    var postID = req.params.id;
+    models.Photo.findAll({where: {post_id: postID}}).then(function (photos) {
+      async.map(photos, function(photo, callback) {
+        var options = {key: 'bazaar/' + photo.id, method: 'get'};
+        util.sign_s3(options, function(signed_url) {
+          callback(null, signed_url);
+        });
+      }, function(err, result){
+        res.send(result);
+      }); 
+
+    }); 
+  },
+
+  // returns a list of presigned urls associated with a post
+  getPhotoByID: function(req, res) {
+    if (req.session.userID === undefined) { return res.send(403); }
+    var postID = req.params.id;
+    var photoID = req.params.photoID;
+    models.Photo.find({where: {id: photoID}}).then(function (photo) {
+      util.sign_s3({method: 'get', key: 'bazaar/' + photo.id}, function(url){
+        res.redirect(301, url);
+      });
+    });
   }
 
 };
@@ -103,10 +165,10 @@ function CreatePost (req, res, post) {
   if (post.title && post.description && post.category_id && post.price) {
     post.user_id = req.session.userID;
     models.Post.create(post).then(function () {
-      res.send(204);
+      res.status(204).end();
     });
   }
   else {
-    res.send(401);
+    res.status(401).end();
   }
 }
