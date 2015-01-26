@@ -127,12 +127,12 @@ i {
 }
 
 
-@media (max-width: 767px) {
+@media (max-width: 992px) {
   .post {
     text-align: center;
   }
   .price {
-    width: 100px;
+    width: 100px !important;
     margin-left: calc(50% - 50px);
   }
   .row{
@@ -156,6 +156,7 @@ i {
   .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
     padding-left: 0;
     padding-right: 0;
+    width: 100%;
   }
   .row .post{
     padding-bottom: 10px;
