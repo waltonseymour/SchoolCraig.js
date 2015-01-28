@@ -1,6 +1,6 @@
 body {
-  padding-top: 20px;
-  padding-bottom: 40px;
+  padding-top: 20px !important;
+  padding-bottom: 40px !important;
 }
 
 h5{
@@ -128,6 +128,9 @@ i {
 
 
 @media (max-width: 983px) {
+  .marketing p + h4 {
+    margin-top: 0;
+  }
   .post {
     text-align: center;
   }
