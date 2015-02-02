@@ -21,7 +21,7 @@ module.exports = {
     if (!util.isUUID(req.params.id)) { return res.send(401); }
 
     var options = {where: {id: req.params.id}};
-    models.Post.find(options).success(function(category){
+    models.Category.find(options).success(function(category){
       category ? res.send(category) : res.send(404);
     });
   },
