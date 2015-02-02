@@ -61,6 +61,10 @@
     });
   });
 
+  $('#create-modal').on('shown.bs.modal', function () {
+    $('.create-title').focus();
+  })
+
   $('#category-filter').change(function(event){
     reloadPosts($(this).val());
   });

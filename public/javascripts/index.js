@@ -1,10 +1,19 @@
 (function() {
   "use strict";
 
-  $('.dropdown-toggle').dropdown();
   $('.dropdown-menu').click(function (e) {
     e.stopPropagation();
   });
+
+  $('.dropdown-toggle').click(function () {
+    setTimeout(function(){
+      $('#login-email').focus();
+    }, 0);
+  });
+
+  $('#signup-modal').on('shown.bs.modal', function (e) {
+    $('#signup-email').focus();
+  })
 
   $('#signup-form').parsley({
     successClass: 'success',

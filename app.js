@@ -14,7 +14,7 @@ var categories = require('./routes/categories');
 var app = express();
 
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET
 }));
 
 // view engine setup
