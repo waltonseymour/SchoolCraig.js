@@ -74,10 +74,18 @@ module.exports = {
     models.Post.find(options).then(function (ret) {
       return ret.user_id === req.session.userID;
     }).then(function (valid){
+      // sends 403 if user does not own post
       if (!valid) { return res.send(403); }
-      models.Post.destroy(options)
+      // otherwise deletes photos and  post
+      // will delete all photos in database with ondelete cascade
+      models.Photo.findAll({where: {post_id: req.params.id}})
+      .then(function(photos) {
+        var photoIDs = _.map(photos, function(photo){ return photo.id; });
+        if (photoIDs) { util.deletePhotos(photoIDs); }
+      })
+      .then(models.Post.destroy(options))
       .then(function (ret) {
-        ret ? res.status(204).end() : res.status(401).end();
+        res.status(204).end();
       });
     });
   },

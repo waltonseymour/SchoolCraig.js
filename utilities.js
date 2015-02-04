@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var aws = require('aws-sdk');
 aws.config.reigon = 'us-west-2';
-var S3_BUCKET = process.env.S3_BUCKET;
+var s3 = new aws.S3({params: {Bucket: process.env.S3_BUCKET}});
 
 module.exports = {
   isUUID: function (id) {
@@ -9,8 +9,8 @@ module.exports = {
     return id ? !!id.match(regex) : false;
   },
 
+  // Generates presigned urls for image uploads or retrievals
   sign_s3: function(options, callback) {
-    var s3 = new aws.S3({params: {Bucket: S3_BUCKET}});
     if (!_.contains(['get', 'put'], options.method)){ return new Error('method must be get or put'); }
     var s3_params = {
       Key: options.key,
@@ -25,6 +25,20 @@ module.exports = {
         console.log(err);
       }
       else {
+        callback(data);
+      }
+    });
+  },
+
+  // Deletes all photos in s3, receieves a list of photos ids as a param
+  deletePhotos: function(photos, callback) {
+    var params = {Bucket: process.env.S3_BUCKET, Delete: {Objects: []}};
+    params.Delete.Objects = _.map(photos, function(photoID){
+      return {Key: "bazaar/" + photoID};
+    });
+    s3.deleteObjects(params, function(err, data){
+      console.log(err);
+      if (callback && typeof(callback) === "function") {
         callback(data);
       }
     });
