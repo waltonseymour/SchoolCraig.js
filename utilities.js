@@ -37,8 +37,8 @@ module.exports = {
       return {Key: "bazaar/" + photoID};
     });
     s3.deleteObjects(params, function(err, data){
-      console.log(err);
-      if (callback && typeof(callback) === "function") {
+      if (err) { console.log(err); }
+      else if (callback && typeof(callback) === "function") {
         callback(data);
       }
     });
