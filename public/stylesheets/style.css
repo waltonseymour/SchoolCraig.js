@@ -1,10 +1,14 @@
 body {
-  padding-top: 20px;
-  padding-bottom: 40px;
+  padding-top: 20px !important;
+  padding-bottom: 40px !important;
 }
 
 h5{
   font-size: 17px;
+}
+
+.btn-info{
+  background-color: #2980b9;
 }
 
 /* Custom container */
@@ -58,7 +62,7 @@ i {
   background-color: #34495e;
 }
 .post:active {
-  background-color: #3498db;
+  background-color: #2980b9;
 }
 
 #post-container {
@@ -84,9 +88,23 @@ i {
   opacity: 1;
 }
 
+.nav-pills{
+  margin-top: -6px;
+}
+
 #login-dropdown-menu{
   left: -124px;
   padding: 15px;
+}
+
+#settings-dropdown-menu > li > a:hover{
+  background-color: #2980b9;
+}
+
+#settings-dropdown-menu{
+  left: -113px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 #login-dropdown-menu > input{
@@ -128,6 +146,12 @@ i {
 
 
 @media (max-width: 983px) {
+  .jumbotron h1{
+    font-size: 65px;
+  }
+  .marketing p + h4 {
+    margin-top: 0;
+  }
   .post {
     text-align: center;
   }

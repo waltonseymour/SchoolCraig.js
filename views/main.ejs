@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
   <head>
     <meta charset="utf-8">
-    <title>Main Page</title>
+    <title>Bazaar</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimum-scale=1" />
-
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- TODO: make sure bootstrap.min.css points to BootTheme generated file
         -->
     <link href="bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="stylesheets/style.css" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/style.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="stylesheets/sweet-alert.css">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <!-- TODO: make sure bootstrap-responsive.min.css points to BootTheme
@@ -33,7 +31,7 @@
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
     
-      ga('create', 'UA-58300675-1', 'auto');
+      ga('create', 'UA-58300675-1', {'userID': '<%=userID%>'});
       ga('require', 'displayfeatures');
       ga('send', 'pageview');
     
@@ -48,7 +46,11 @@
                     <a href="#" id="create" data-toggle="modal" data-target="#create-modal"><i class="fa fa-plus-circle fa-lg"></i></a>
                 </li>
                 <li>
-                    <a href="#" id="logout"><i class="fa fa-cog fa-lg"></i></a>
+                  <a href="#" id="settings" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog fa-lg"></i></a>
+                  <ul class="dropdown-menu" id="settings-dropdown-menu">
+                  <li><a href="#">Settings</a></li>
+                  <li><a href="#" id="logout">Log out</a></li>
+                </ul>
                 </li>
             </ul>
             <h3 class="muted">Bazaar</h3>
@@ -72,7 +74,7 @@
                     <option value="<%= categories[i].id %>"><%= categories[i].name %></option>
                   <% } %>
                 </select>
-                <span class="btn btn-default btn-file form-control">
+                <span class="btn btn-info btn-file form-control">
                   Upload an Image <input id='create-file' type="file">
                 </span>
               </div>
@@ -136,6 +138,6 @@
     <script src="/javascripts/uuid.js"></script>
     <script src="/javascripts/ejs_production.js"></script>
     <script src="/javascripts/sweet-alert.min.js"></script>
-    <script src="/javascripts/main.js"></script>
+    <script src="/javascripts/main.min.js"></script>
   </body>
 </html>
