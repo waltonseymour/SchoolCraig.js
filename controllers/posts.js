@@ -170,7 +170,7 @@ module.exports = {
 
 // Creates user with sepecified fields
 function CreatePost (req, res, post) {
-  if (post.title && post.description && post.category_id && post.price) {
+  if (post.title && post.description && post.category_id && post.price && !isNaN(post.price)) {
     post.user_id = req.session.userID;
     models.Post.create(post).then(function () {
       res.status(204).end();
