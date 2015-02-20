@@ -21,8 +21,55 @@ h1, h2, h3, h4, h5, h6{
   background-color: #2980b9;
 }
 
-ul .navbar-right{
+ul, .navbar-right{
   color: #18bc9c;
+  margin-right: 0;
+}
+
+.navbar-nav>li{
+  float: left;
+}
+.navbar-nav>li>a{
+  padding-top: 19.5px;
+  padding-bottom: 19.5px;
+}
+
+
+.navbar-nav{
+  margin: 0;
+}
+
+.navbar-form{
+  border: none;
+}
+.navbar-form .form-group{
+  display: inline-block;
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+.navbar-form .input-group{
+  display: inline-table;
+  vertical-align: middle;
+  width: 250px;
+}
+
+@media (max-width: 448px) {
+  .navbar-form .input-group{
+    width: 250px;
+  }
+}
+
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus{
+  background-color: inherit;
+}
+
+.navbar-right{
+  float: right !important;
+}
+
+.navbar-right~.navbar-right{
+  margin-right: 0;
 }
 
 .btn{
@@ -277,6 +324,7 @@ textarea.parsley-success {
 .navbar-default .navbar-brand {
   color: #eeeeee;
   font-weight: 500;
+  font-size: 28px;
 }
 .navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
   color: #18bc9c;
