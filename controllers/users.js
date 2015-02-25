@@ -5,7 +5,7 @@ var _ = require('underscore');
 var sendgrid = require('sendgrid')(process.env.SENDGRID_USERNAME, process.env.SENDGRID_PASSWORD);
 var utils = require('../utilities');
 
-var publicOptions = {attributes: ['id', 'fname', 'lname', 'email']};
+var publicOptions = {attributes: ['id', 'email']};
 
 models.User.hasMany(models.Post, {as: 'posts', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'CASCADE'});
 module.exports = {

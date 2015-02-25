@@ -5,7 +5,7 @@ var util = require('../utilities');
 var uuid = require('node-uuid');
 
 var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'price']};
-var userOptions = {attributes: ['id', 'fname', 'lname', 'email']};
+var userOptions = {attributes: ['id', 'email']};
 var categoryOptions = {attributes: ['id', 'name']};
 
 models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'CASCADE'});
