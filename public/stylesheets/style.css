@@ -20,7 +20,6 @@ h1, h2, h3, h4, h5, h6{
 .btn-info{
   background-color: #2980b9;
 }
-
 ul, .navbar-right{
   color: #18bc9c;
   margin-right: 0;
@@ -34,13 +33,18 @@ ul, .navbar-right{
   padding-bottom: 19.5px;
 }
 
-
 .navbar-nav{
   margin: 0;
 }
 
+.navbar-brand:hover{
+  color: #eeeeee !important;
+}
+
 .navbar-form{
   border: none;
+  box-shadow: none;
+  padding: 0;
 }
 .navbar-form .form-group{
   display: inline-block;
@@ -52,6 +56,13 @@ ul, .navbar-right{
   display: inline-table;
   vertical-align: middle;
   width: 250px;
+}
+
+.input-group .form-control{
+  z-index: 0;
+}
+.input-group-btn .btn:hover{
+  background-color: #18BC9C;
 }
 
 @media (max-width: 448px) {
@@ -72,9 +83,18 @@ ul, .navbar-right{
   margin-right: 0;
 }
 
-.btn{
-  background-color: #18bc9c;
-  border-color: #18bc9c;
+.input-group-btn{
+  color: #ffffff;
+}
+
+.btn-primary{
+  background-color: #34495e;
+  border-color: #34495e;
+}
+
+.btn-primary:hover{
+  background-color: #3b536b;
+  border-color: #3b536b;
 }
 
 .form-control:focus{
@@ -130,7 +150,7 @@ ul, .navbar-right{
 }
 
 .post:hover {
-  background-color: #044F67;
+  background-color: #3b536b;
 }
 .post:active {
   background-color: #317589;
@@ -356,7 +376,6 @@ textarea.parsley-success {
   background-color: #18bc9c;
 }
 .navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
-  color: #18bc9c;
   background-color: #18bc9c;
 }
 .navbar-default .navbar-toggle {

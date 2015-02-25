@@ -9,7 +9,6 @@
     <!-- TODO: make sure bootstrap.min.css points to BootTheme generated file
         -->
     <link href="bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://bootflat.github.io/bootflat/css/bootflat.css" rel="stylesheet" type="text/css" />
     <link href="stylesheets/style.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="stylesheets/sweet-alert.css">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -63,7 +62,7 @@
                   <div class="input-group">
                     <input class="form-control" type="search" placeholder="Search">
                     <span class="input-group-btn">
-                      <button type="submit" class="btn"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-success"><i class="fa fa-search"></i></button>
                     </span>
                   </div>
                 </div>
@@ -91,13 +90,13 @@
                     <option value="<%= categories[i].id %>"><%= categories[i].name %></option>
                   <% } %>
                 </select>
-                <span class="btn btn-info btn-file form-control">
+                <span class="btn btn-primary btn-file form-control">
                   Upload an Image <input id='create-file' type="file">
                 </span>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" id="create-submit" class="btn btn-primary">Save changes</button>
+                <button type="submit" id="create-submit" class="btn btn-success">Save changes</button>
               </div>
             </form>
           </div>
