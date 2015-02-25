@@ -1,8 +1,16 @@
 
 @media (max-width: 979px){
+  .jumbotron{
+    margin-top: 0;
+    padding-top: 10px;
+  }
+  hr{
+    margin-bottom: 0 !important;
+  }
   .main{
     background: fixed;
     background-size: cover !important;
+    background-position: center;
   }
   body{
     padding-left: 0 !important;
