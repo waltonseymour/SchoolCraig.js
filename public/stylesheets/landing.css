@@ -1,0 +1,21 @@
+.main{
+  background-image: url("/images/splash.jpg");
+  background-size: 100%;
+  background-position: center;
+  color: white;
+}
+
+.jumbotron{
+  background-color: transparent;
+}
+
+body{
+  padding-top: 0 !important;
+  margin: 0;
+}
+
+h1, .h1, h2, .h2, h3, .h3, .dropdown{
+  margin-top: 0;
+  padding-top: 21px;
+}
+
