@@ -8,9 +8,7 @@
     margin-bottom: 0 !important;
   }
   .main{
-    background: fixed;
     background-size: cover !important;
-    background-position: center;
   }
   body{
     padding-left: 0 !important;
@@ -23,9 +21,10 @@
 }
 
 .main{
+  background-attachment: scroll;
   background-image: url("/images/splash-min.jpg");
   background-size: 100%;
-  background-position: center;
+  background-position: center center;
   color: white;
 }
 
