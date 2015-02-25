@@ -5,7 +5,7 @@ var util = require('../utilities');
 var uuid = require('node-uuid');
 
 var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'price']};
-var userOptions = {attributes: ['id', 'fname', 'lname', 'email']};
+var userOptions = {attributes: ['id', 'email']};
 var categoryOptions = {attributes: ['id', 'name']};
 
 models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'CASCADE'});
@@ -170,7 +170,7 @@ module.exports = {
 
 // Creates user with sepecified fields
 function CreatePost (req, res, post) {
-  if (post.title && post.description && post.category_id && post.price) {
+  if (post.title && post.description && post.category_id && post.price && !isNaN(post.price)) {
     post.user_id = req.session.userID;
     models.Post.create(post).then(function () {
       res.status(204).end();

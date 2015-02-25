@@ -1,11 +1,13 @@
 var models = require('../models');
 var _ = require('underscore');
 var util = require('../utilities');
+var Sequelize = require('sequelize');
 
 models.Category.hasMany(models.Post, {as: 'posts', foreignKey: {name: 'category_id', allowNull: false}, onDelete: 'CASCADE'});
 
 module.exports = {
   listAll: function (req, res, callback) {
+    if (req.session.userID === undefined) { return res.send(403); }
     models.Category.findAll().success(function (categories) {
       if (callback) {
         callback(categories);
@@ -27,10 +29,14 @@ module.exports = {
   },
   
   create: function (req, res) {
+    if (req.session.userID === undefined) { return res.send(403); }
     var category = req.body;
+
     if (!category.id) { return createCategory(req, res, category); }
 
-    models.Category.find({where: {id: category.id}}).then(function (ret) {
+    var options = {where: Sequelize.or({id: category.id}, {name: category.name})};
+
+    models.Category.find(options).then(function (ret) {
       // returns true if category with id exists
       return !!ret;
     }).then(function (category_exists) {

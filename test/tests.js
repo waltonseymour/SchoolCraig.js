@@ -29,6 +29,7 @@ describe("Test Suite", function(){
         request.post(host + '/users/auth').send({"email": "test@test.com", "password": "password"}).end(function(e, res){
           expect(e).to.equal(null);
           expect(res.statusCode).to.equal(200);
+          request.saveCookies(res);
           // creates new category
           request.post(host + '/categories').send({id: categoryID, name: 'test'}).end(function(e,res) {
             expect(e).to.equal(null);

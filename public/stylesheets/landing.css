@@ -1,0 +1,44 @@
+
+@media (max-width: 979px){
+  .jumbotron{
+    margin-top: 0;
+    padding-top: 10px;
+  }
+  hr{
+    margin-bottom: 0 !important;
+  }
+  .main{
+    background-size: cover !important;
+  }
+  body{
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .container-narrow{
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.main{
+  background-attachment: scroll;
+  background-image: url("/images/splash-min.jpg");
+  background-size: 100%;
+  background-position: center center;
+  color: white;
+}
+
+.jumbotron{
+  background-color: transparent;
+}
+
+body{
+  padding-top: 0 !important;
+  margin: 0;
+}
+
+h1, .h1, h2, .h2, h3, .h3, .dropdown{
+  margin-top: 0;
+  padding-top: 21px;
+}
+
