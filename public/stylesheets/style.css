@@ -398,7 +398,19 @@ textarea.parsley-success {
   color: #18bc9c;
 }
 
+@media (max-width: 510px){
+  .navbar-search{
+    display: none;
+  }
+}
+
 @media (max-width: 767px) {
+  .navbar{
+    border-radius: 4px;
+  }
+  .navbar-nav .open .dropdown-menu{
+    position: absolute;
+  }
   .navbar-default .navbar-nav .open .dropdown-menu > li > a {
     color: #eeeeee;
   }
