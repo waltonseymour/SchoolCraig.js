@@ -81,7 +81,13 @@
     post.description = $('#create-form .create-description').val();
     post.price = $('#create-form .create-price').val();
     post.category_id = $('#create-form select').val();
-    createPost(post);
+
+    getLocation(function(pos){
+      var crd = pos.coords;
+      post.latitude = crd.latitude;
+      post.longitude = crd.longitude;
+      createPost(post);
+    });
     return false;
   });
 
@@ -208,4 +214,13 @@
       error: function(err) { console.log("login failed"); }
     });
   }
+
+  function getLocation(callback) {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(callback);
+    } else {
+      // get location from IP
+    }
+  }
+
 }());

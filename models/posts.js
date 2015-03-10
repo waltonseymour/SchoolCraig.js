@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('Post', { 
+  return sequelize.define('Post', {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -10,23 +10,31 @@ module.exports = function(sequelize, DataTypes) {
     },
     user_id: {
       type: 'UUID',
-      allowNull: false,
+      allowNull: false
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: true
     },
     category_id: {
       type: 'UUID',
-      allowNull: false,
+      allowNull: false
     },
     price: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: true
     },
     title: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
+    },
+    latitude: {
+      type: DataTypes.FLOAT,
+      allowNull: false
+    },
+    longitude: {
+      type: DataTypes.FLOAT,
+      allowNull: false
     }
   },
   {

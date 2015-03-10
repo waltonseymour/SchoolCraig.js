@@ -54,7 +54,7 @@ module.exports = {
       post ? res.send(post) : res.send(404);
     });
   },
-  
+
   // modifies by id
   putByID: function(req, res) {
     models.Post.find(options).then(function (post) {
@@ -66,7 +66,7 @@ module.exports = {
     });
   },
 
-  // deletes by id 
+  // deletes by id
   deleteByID: function(req, res) {
     if (!util.isUUID(req.params.id)) { return res.send(401); }
     var options = {where: {id: req.params.id}};
@@ -114,7 +114,7 @@ module.exports = {
     if (!util.isUUID(req.params.id) || !req.body.contentType) { return res.send(401); }
     var photoID = req.body.id || uuid.v4();
     var postID = req.params.id;
-    var photo = { id: photoID, post_id: postID }; 
+    var photo = { id: photoID, post_id: postID };
     models.Post.find({where: {id: postID}})
     .then(function (post) {
       return post && post.user_id === req.session.userID;
@@ -148,9 +148,9 @@ module.exports = {
         });
       }, function(err, result){
         res.send(result);
-      }); 
+      });
 
-    }); 
+    });
   },
 
   // returns a list of presigned urls associated with a post
@@ -168,9 +168,11 @@ module.exports = {
 };
 
 
-// Creates user with sepecified fields
+// Creates post with sepecified fields
 function CreatePost (req, res, post) {
-  if (post.title && post.description && post.category_id && post.price && !isNaN(post.price)) {
+  if (post.title && post.description && post.category_id && post.price
+    && !isNaN(post.price) && post.latitude && post.longitude) {
+
     post.user_id = req.session.userID;
     models.Post.create(post).then(function () {
       res.status(204).end();
