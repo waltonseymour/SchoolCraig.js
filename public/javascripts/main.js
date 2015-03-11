@@ -18,8 +18,20 @@
     });
   })();
 
+  $(document).keydown(function(e) {
+      switch(e.which) {
+          case 37: changePage(false);
+          break;
+          case 39: changePage(true);
+          break;
+          default: return; // exit this handler for other keys
+      }
+      e.preventDefault(); // prevent the default action (scroll / move caret)
+  });
+
   $('#post-container nav .pager .next, #post-container nav .pager .previous').click(function(event){
     changePage($(event.target).parent().hasClass('next'));
+    return false;
   });
 
   $('body').on('click', '.post', function (event) {
@@ -106,7 +118,9 @@
     else{
       pageNum -= 1
     }
-    getPagedPosts({pageNum: pageNum});
+    if(pageNum > 0){
+      getPagedPosts({pageNum: pageNum});
+    }
   }
 
   function getPost(id) {
