@@ -30,11 +30,11 @@
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    
+
       ga('create', 'UA-58300675-1', {'userID': '<%=userID%>'});
       ga('require', 'displayfeatures');
       ga('send', 'pageview');
-    
+
     </script>
   </head>
   <body>
@@ -133,11 +133,20 @@
         </div>
         <div class="row">
           <div id="post-container" class="col-md-8 col-md-offset-2 bg-primary">
-            <% if (posts[0]) { %>
-              <% include ../public/templates/posts.ejs %>
-            <% } else { %>
-              No posts
-            <% } %>
+            <div class="posts">
+              <% if (posts[0]) { %>
+                <% include ../public/templates/posts.ejs %>
+              <% } else { %>
+                No posts
+              <% } %>
+            </div>
+
+            <nav>
+              <ul class="pager">
+                <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> Newer</a></li>
+                <li class="next"><a href="#">Older <span aria-hidden="true">&rarr;</span></a></li>
+              </ul>
+            </nav>
           </div>
         </div>
         <hr>

@@ -18,6 +18,10 @@
     });
   })();
 
+  $('#post-container nav .pager .next, #post-container nav .pager .previous').click(function(event){
+    changePage($(event.target).parent().hasClass('next'));
+  });
+
   $('body').on('click', '.post', function (event) {
     var id = $(this).attr('data-id');
     if (POST_CACHE[id] === undefined) {
@@ -66,7 +70,7 @@
   })
 
   $('#category-filter').change(function(event){
-    reloadPosts($(this).val());
+    getPostsByCategory({category: $(this).val()});
   });
 
   $('#create-form').parsley({
@@ -93,6 +97,18 @@
 
   $('#logout').click(logout);
 
+  function changePage(isNext){
+    var pageNum = $('#post-container').attr('data-pageNum') || 1;
+    pageNum = parseInt(pageNum);
+    if(isNext){
+      pageNum += 1
+    }
+    else{
+      pageNum -= 1
+    }
+    getPagedPosts({pageNum: pageNum});
+  }
+
   function getPost(id) {
     $('#post-modal').attr('data-id', id);
     $.ajax({
@@ -100,6 +116,25 @@
       type: 'GET',
       success: renderPostModal,
       error: function(err) { console.log("get post failed"); }
+    });
+  }
+
+  function getPagedPosts(options){
+    $('#post-container').attr('data-pageNum', options.pageNum);
+    $.ajax({
+      url: 'posts' + '?page=' + options.pageNum,
+      type: 'GET',
+      success: renderPosts,
+      error: function(err) { console.log("get post failed"); }
+    });
+  }
+
+  function getPostsByCategory(options){
+    $.ajax({
+      url: 'posts?category=' + options.category,
+      type: 'GET',
+      success: renderPosts,
+      error: function(err) { console.log("create post failed"); }
     });
   }
 
@@ -129,19 +164,12 @@
     $('#post-modal').modal('show');
   }
 
-  function reloadPosts (category) {
-    $.ajax({
-      url: 'posts?category=' + category,
-      type: 'GET',
-      success: function(data) {
-        var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: data});
-        var $container  = $('#post-container');
-        $container.fadeOut(300, function(){
-          $container.html(posts);
-          $container.fadeIn(300);
-        });
-      },
-      error: function(err) { console.log("create post failed"); }
+  function renderPosts (data) {
+    var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: data});
+    var $container  = $('#post-container .posts');
+    $container.fadeOut(300, function(){
+      $container.html(posts);
+      $container.fadeIn(300);
     });
   }
 

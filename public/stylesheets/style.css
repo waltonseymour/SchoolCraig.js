@@ -13,6 +13,10 @@ h1, h2, h3, h4, h5, h6{
   font-weight: 500;
 }
 
+.bg-primary{
+  background-color: #34495e;
+}
+
 .footer{
   background-color: transparent;
 }
@@ -142,7 +146,6 @@ ul, .navbar-right{
 }
 
 .post {
-  background-color: #34495e;
   color: #eeeeee !important;
   transition: background-color 0.2s;
   cursor: pointer;
