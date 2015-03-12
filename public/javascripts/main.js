@@ -18,6 +18,16 @@
     });
   })();
 
+
+  function getCurrentOptions(overrides){
+    overrides = overrides || {};
+    var options = _.defaults(overrides, {
+      page: parseInt($('#post-container').attr('data-page')) || 1,
+      category: $('#category-filter').val()
+    });
+    return options;
+  }
+
   $(document).keydown(function(e) {
       switch(e.which) {
           case 37: changePage(false);
@@ -79,10 +89,12 @@
 
   $('#create-modal').on('shown.bs.modal', function () {
     $('.create-title').focus();
-  })
+  });
 
   $('#category-filter').change(function(event){
-    getPostsByCategory({category: $(this).val()});
+    // resets to front page on a category change
+    var options = getCurrentOptions({page: 1});
+    getPosts(options);
   });
 
   $('#create-form').parsley({
@@ -110,16 +122,10 @@
   $('#logout').click(logout);
 
   function changePage(isNext){
-    var pageNum = $('#post-container').attr('data-pageNum') || 1;
-    pageNum = parseInt(pageNum);
-    if(isNext){
-      pageNum += 1
-    }
-    else{
-      pageNum -= 1
-    }
-    if(pageNum > 0){
-      getPagedPosts({pageNum: pageNum});
+    var options = getCurrentOptions();
+    options.page = isNext ? options.page + 1 : options.page - 1;
+    if(options.page > 0){
+      getPosts(options);
     }
   }
 
@@ -133,22 +139,18 @@
     });
   }
 
-  function getPagedPosts(options){
-    $('#post-container').attr('data-pageNum', options.pageNum);
+  function getPosts(options){
+
+    options = options || getCurrentOptions();
+    // sets data in the DOM
+    $('#post-container').attr('data-page', options.page);
+    // Converts to url parameters
+    var params = jQuery.param(options);
     $.ajax({
-      url: 'posts' + '?page=' + options.pageNum,
+      url: 'posts?' + params,
       type: 'GET',
       success: renderPosts,
       error: function(err) { console.log("get post failed"); }
-    });
-  }
-
-  function getPostsByCategory(options){
-    $.ajax({
-      url: 'posts?category=' + options.category,
-      type: 'GET',
-      success: renderPosts,
-      error: function(err) { console.log("create post failed"); }
     });
   }
 
