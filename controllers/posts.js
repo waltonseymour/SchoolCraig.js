@@ -24,7 +24,7 @@ module.exports = {
     var category = req.param('category');
     var page = req.param('page');
 
-    var options =  {limit: POSTS_PER_PAGE, order: [[order, 'DESC']], include: [
+    var options = {limit: POSTS_PER_PAGE, order: [[order, 'DESC']], include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
       {model: models.Photo, as: 'photos'},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]};
