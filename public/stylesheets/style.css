@@ -13,6 +13,14 @@ h1, h2, h3, h4, h5, h6{
   font-weight: 500;
 }
 
+.control-panel{
+  padding: 0;
+  margin
+}
+
+.navbar-container{
+  padding: 0;
+}
 .bg-primary{
   background-color: #34495e;
 }
@@ -213,11 +221,6 @@ ul, .navbar-right{
 #signup-modal .form-control{
   margin-top: 5px;
   margin-bottom: 5px;
-}
-
-#category-filter{
-  margin-bottom: 10px;
-  margin-left: 15px;
 }
 
 .modal-backdrop {
