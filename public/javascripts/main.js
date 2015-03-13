@@ -23,7 +23,8 @@
     overrides = overrides || {};
     var options = _.defaults(overrides, {
       page: parseInt($('#post-container').attr('data-page')) || 1,
-      category: $('#category-filter').val()
+      category: $('#category-filter').val(),
+      order: $('input[type=radio][name=order]:checked').val()
     });
     return options;
   }
@@ -56,7 +57,10 @@
       $('#post-modal').modal('show');
     }
   });
-
+  $('input[type=radio][name=order]').change(function() {
+    // resets page to 1 on ordering change
+    getPosts({page: 1});
+  });
 
   $('body').on('click', '.modal', function (event) {
     if(typeof $(event.target).attr('id') != 'undefined'){
@@ -147,7 +151,6 @@
   }
 
   function getPosts(options){
-
     options = options || getCurrentOptions();
     // sets data in the DOM
     $('#post-container').attr('data-page', options.page);
