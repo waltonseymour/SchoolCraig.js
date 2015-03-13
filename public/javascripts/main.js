@@ -59,7 +59,7 @@
   });
   $('input[type=radio][name=order]').change(function() {
     // resets page to 1 on ordering change
-    getPosts({page: 1});
+    getPosts(getCurrentOptions({page: 1}));
   });
 
   $('body').on('click', '.modal', function (event) {
