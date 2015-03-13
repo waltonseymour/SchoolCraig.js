@@ -130,7 +130,7 @@
               <div class="list-group">
                 <div class="list-group-item form-inline">
                   <i class="fa fa-filter list-group-item-heading"></i>
-                  <select class="form-control" id="category-filter">
+                  <select class="form-control" data-style="btn-primary" id="category-filter">
                     <option>All</option>
                     <% for (var i = 0; i < categories.length; i++) { %>
                       <option value="<%= categories[i].id %>"><%= categories[i].name %></option>
@@ -140,10 +140,13 @@
                 <div class="list-group-item">
                   <i class="fa fa-sort-amount-desc"></i> Order by
                 </div>
+                <div class="list-group-item">
+                  <i class="fa fa-map-marker"></i> Radius
+                </div>
               </div>
             </div>
           </div>
-          <div id="post-container" class="col-md-7 col-md-offset-1 bg-primary">
+          <div id="post-container" class="col-md-7 col-md-offset-1 bg-primary panel">
             <div class="posts">
               <% if (posts[0]) { %>
                 <% include ../public/templates/posts.ejs %>

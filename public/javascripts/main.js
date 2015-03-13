@@ -57,6 +57,13 @@
     }
   });
 
+
+  $('body').on('click', '.modal', function (event) {
+    if(typeof $(event.target).attr('id') != 'undefined'){
+      $(event.target).modal('hide');
+    }
+  });
+
   $('body').on('click', '.delete', function (event) {
     $('#post-modal').modal('hide');
     var id = $('#post-modal').attr('data-id');

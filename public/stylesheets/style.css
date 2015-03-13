@@ -169,7 +169,7 @@ ul, .navbar-right{
 
 #post-container {
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .end-post {
@@ -240,7 +240,6 @@ ul, .navbar-right{
   opacity: 0.8;
   filter: alpha(opacity=80);
 }
-
 
 @media (max-width: 983px) {
   .jumbotron h1{
@@ -341,8 +340,6 @@ textarea.parsley-success {
   background-color: rgba(0,0,0,0.8) !important;
 }
 
-
-
 .navbar-default {
   background-color: #34495e;
   border-color: #18bc9c;
@@ -411,9 +408,15 @@ textarea.parsley-success {
 }
 
 @media (max-width: 767px) {
-  .navbar{
-    border-radius: 4px;
+
+  .container{
+    width: 100%;
+    padding: 0;
   }
+  body{
+    padding: 0 !important;
+  }
+
   .navbar-nav .open .dropdown-menu{
     position: absolute;
   }
