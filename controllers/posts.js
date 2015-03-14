@@ -7,7 +7,6 @@ var uuid = require('node-uuid');
 var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'price']};
 var userOptions = {attributes: ['id', 'email']};
 var categoryOptions = {attributes: ['id', 'name']};
-var POSTS_PER_PAGE = 5;
 
 models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'cascade'});
 models.Post.belongsTo(models.Category, {as: 'category', foreignKey: {name: 'category_id', allowNull: false}, onDelete: 'cascade'});
@@ -23,8 +22,9 @@ module.exports = {
     var order = _.contains(['createdAt', 'price'], req.param('order')) ? req.param('order') : 'createdAt';
     var category = req.param('category');
     var page = req.param('page');
+    var postsPerPage = req.param('postsPerPage') || 5;
 
-    var options = {limit: POSTS_PER_PAGE, order: [[order, 'DESC']], include: [
+    var options = {limit: postsPerPage, order: [[order, 'DESC']], include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
       {model: models.Photo, as: 'photos'},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]};
@@ -34,7 +34,7 @@ module.exports = {
     }
     // page number starts at 1
     if (page && !isNaN(page) && page > 1){
-      options = _.extend(options, {offset: (page - 1) * POSTS_PER_PAGE});
+      options = _.extend(options, {offset: (page - 1) * postsPerPage});
     }
 
     models.Post.findAll(options).success(function (posts) {

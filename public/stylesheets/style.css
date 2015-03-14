@@ -13,6 +13,14 @@ h1, h2, h3, h4, h5, h6{
   font-weight: 500;
 }
 
+.control-panel{
+  padding: 0;
+  margin
+}
+
+.navbar-container{
+  padding: 0;
+}
 .bg-primary{
   background-color: #34495e;
 }
@@ -161,7 +169,7 @@ ul, .navbar-right{
 
 #post-container {
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .end-post {
@@ -215,11 +223,6 @@ ul, .navbar-right{
   margin-bottom: 5px;
 }
 
-#category-filter{
-  margin-bottom: 10px;
-  margin-left: 15px;
-}
-
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -237,7 +240,6 @@ ul, .navbar-right{
   opacity: 0.8;
   filter: alpha(opacity=80);
 }
-
 
 @media (max-width: 983px) {
   .jumbotron h1{
@@ -338,8 +340,6 @@ textarea.parsley-success {
   background-color: rgba(0,0,0,0.8) !important;
 }
 
-
-
 .navbar-default {
   background-color: #34495e;
   border-color: #18bc9c;
@@ -408,9 +408,15 @@ textarea.parsley-success {
 }
 
 @media (max-width: 767px) {
-  .navbar{
-    border-radius: 4px;
+
+  .container{
+    width: 100%;
+    padding: 0;
   }
+  body{
+    padding: 0 !important;
+  }
+
   .navbar-nav .open .dropdown-menu{
     position: absolute;
   }
@@ -424,4 +430,34 @@ textarea.parsley-success {
     color: #18bc9c;
     background-color: #18bc9c;
   }
+}
+
+input[type=range]{
+    -webkit-appearance: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 300px;
+    height: 5px;
+    background: #ddd;
+    border: none;
+    border-radius: 3px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: goldenrod;
+    margin-top: -4px;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #ccc;
 }
