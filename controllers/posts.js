@@ -8,7 +8,7 @@ var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'pr
 var userOptions = {attributes: ['id', 'email']};
 var categoryOptions = {attributes: ['id', 'name']};
 
-models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'CASCADE'});
+models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'cascade'});
 models.Post.belongsTo(models.Category, {as: 'category', foreignKey: {name: 'category_id', allowNull: false}, onDelete: 'cascade'});
 models.Post.hasMany(models.Photo, {as: 'photos', foreignKey: 'post_id', onDelete: 'cascade'});
 
@@ -21,14 +21,20 @@ module.exports = {
     // defaults ordering by date
     var order = _.contains(['createdAt', 'price'], req.param('order')) ? req.param('order') : 'createdAt';
     var category = req.param('category');
+    var page = req.param('page');
+    var postsPerPage = req.param('postsPerPage') || 5;
 
-    var options = _.extend({}, publicOptions, {order: [[order, 'DESC']], include: [
+    var options = {limit: postsPerPage, order: [[order, 'DESC']], include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
       {model: models.Photo, as: 'photos'},
-      {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
+      {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]};
 
     if (util.isUUID(category)){
       options = _.extend(options, {where: {category_id: category}});
+    }
+    // page number starts at 1
+    if (page && !isNaN(page) && page > 1){
+      options = _.extend(options, {offset: (page - 1) * postsPerPage});
     }
 
     models.Post.findAll(options).success(function (posts) {
@@ -54,7 +60,7 @@ module.exports = {
       post ? res.send(post) : res.send(404);
     });
   },
-  
+
   // modifies by id
   putByID: function(req, res) {
     models.Post.find(options).then(function (post) {
@@ -66,7 +72,7 @@ module.exports = {
     });
   },
 
-  // deletes by id 
+  // deletes by id
   deleteByID: function(req, res) {
     if (!util.isUUID(req.params.id)) { return res.send(401); }
     var options = {where: {id: req.params.id}};
@@ -114,7 +120,7 @@ module.exports = {
     if (!util.isUUID(req.params.id) || !req.body.contentType) { return res.send(401); }
     var photoID = req.body.id || uuid.v4();
     var postID = req.params.id;
-    var photo = { id: photoID, post_id: postID }; 
+    var photo = { id: photoID, post_id: postID };
     models.Post.find({where: {id: postID}})
     .then(function (post) {
       return post && post.user_id === req.session.userID;
@@ -148,9 +154,9 @@ module.exports = {
         });
       }, function(err, result){
         res.send(result);
-      }); 
+      });
 
-    }); 
+    });
   },
 
   // returns a list of presigned urls associated with a post
@@ -168,9 +174,11 @@ module.exports = {
 };
 
 
-// Creates user with sepecified fields
+// Creates post with sepecified fields
 function CreatePost (req, res, post) {
-  if (post.title && post.description && post.category_id && post.price && !isNaN(post.price)) {
+  if (post.title && post.description && post.category_id && post.price
+    && !isNaN(post.price) && post.latitude && post.longitude) {
+
     post.user_id = req.session.userID;
     models.Post.create(post).then(function () {
       res.status(204).end();

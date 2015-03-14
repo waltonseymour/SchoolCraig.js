@@ -18,6 +18,33 @@
     });
   })();
 
+
+  function getCurrentOptions(overrides){
+    overrides = overrides || {};
+    var options = _.defaults(overrides, {
+      page: parseInt($('#post-container').attr('data-page')) || 1,
+      category: $('#category-filter').val(),
+      order: $('input[type=radio][name=order]:checked').val()
+    });
+    return options;
+  }
+
+  $(document).keydown(function(e) {
+      switch(e.which) {
+          case 37: changePage(false);
+          break;
+          case 39: changePage(true);
+          break;
+          default: return; // exit this handler for other keys
+      }
+      e.preventDefault(); // prevent the default action (scroll / move caret)
+  });
+
+  $('#post-container nav .pager .next, #post-container nav .pager .previous').click(function(event){
+    changePage($(event.target).parent().hasClass('next'));
+    return false;
+  });
+
   $('body').on('click', '.post', function (event) {
     var id = $(this).attr('data-id');
     if (POST_CACHE[id] === undefined) {
@@ -28,6 +55,16 @@
       // otherwise pulls from cache
       $('#post-modal')[0].parentNode.replaceChild(POST_CACHE[id], $('#post-modal')[0]);
       $('#post-modal').modal('show');
+    }
+  });
+  $('input[type=radio][name=order]').change(function() {
+    // resets page to 1 on ordering change
+    getPosts(getCurrentOptions({page: 1}));
+  });
+
+  $('body').on('click', '.modal', function (event) {
+    if(typeof $(event.target).attr('id') != 'undefined'){
+      $(event.target).modal('hide');
     }
   });
 
@@ -63,10 +100,12 @@
 
   $('#create-modal').on('shown.bs.modal', function () {
     $('.create-title').focus();
-  })
+  });
 
   $('#category-filter').change(function(event){
-    reloadPosts($(this).val());
+    // resets to front page on a category change
+    var options = getCurrentOptions({page: 1});
+    getPosts(options);
   });
 
   $('#create-form').parsley({
@@ -81,11 +120,25 @@
     post.description = $('#create-form .create-description').val();
     post.price = $('#create-form .create-price').val();
     post.category_id = $('#create-form select').val();
-    createPost(post);
+
+    getLocation(function(pos){
+      var crd = pos.coords;
+      post.latitude = crd.latitude;
+      post.longitude = crd.longitude;
+      createPost(post);
+    });
     return false;
   });
 
   $('#logout').click(logout);
+
+  function changePage(isNext){
+    var options = getCurrentOptions();
+    options.page = isNext ? options.page + 1 : options.page - 1;
+    if(options.page > 0){
+      getPosts(options);
+    }
+  }
 
   function getPost(id) {
     $('#post-modal').attr('data-id', id);
@@ -93,6 +146,20 @@
       url: 'posts/' + id,
       type: 'GET',
       success: renderPostModal,
+      error: function(err) { console.log("get post failed"); }
+    });
+  }
+
+  function getPosts(options){
+    options = options || getCurrentOptions();
+    // sets data in the DOM
+    $('#post-container').attr('data-page', options.page);
+    // Converts to url parameters
+    var params = jQuery.param(options);
+    $.ajax({
+      url: 'posts?' + params,
+      type: 'GET',
+      success: renderPosts,
       error: function(err) { console.log("get post failed"); }
     });
   }
@@ -123,19 +190,12 @@
     $('#post-modal').modal('show');
   }
 
-  function reloadPosts (category) {
-    $.ajax({
-      url: 'posts?category=' + category,
-      type: 'GET',
-      success: function(data) {
-        var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: data});
-        var $container  = $('#post-container');
-        $container.fadeOut(300, function(){
-          $container.html(posts);
-          $container.fadeIn(300);
-        });
-      },
-      error: function(err) { console.log("create post failed"); }
+  function renderPosts (data) {
+    var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: data});
+    var $container  = $('#post-container .posts');
+    $container.fadeOut(300, function(){
+      $container.html(posts);
+      $container.fadeIn(300);
     });
   }
 
@@ -208,4 +268,13 @@
       error: function(err) { console.log("login failed"); }
     });
   }
+
+  function getLocation(callback) {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(callback);
+    } else {
+      // get location from IP
+    }
+  }
+
 }());

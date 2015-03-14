@@ -15,7 +15,7 @@ describe("Test Suite", function(){
     var app = require('../app');
     app.set('port', process.env.PORT || 3000);
     var server = app.listen(app.get('port'));
-    var user = {"id": userID, "email": "test@test.com", "password": "password", "fname": "adam", "lname": "smith"};
+    var user = {"id": userID, "email": "test@test.com", "password": "password"};
     // deletes any test users
     var chainer = new sequelize.Utils.QueryChainer();
 
@@ -57,8 +57,6 @@ describe("Test Suite", function(){
       expect(e).to.equal(null);
       expect(res.statusCode).to.equal(200);
       expect(res.body.id).to.equal(userID);
-      expect(res.body.fname).to.equal('adam');
-      expect(res.body.lname).to.equal('smith');
       expect(res.body.email).to.equal('test@test.com');
       done();
     });
@@ -75,7 +73,7 @@ describe("Test Suite", function(){
 
   // tests posts
   it("should allow user to create and delete post", function(done){
-    var post = {id: postID, title: 'my test post', description: 'test description', price: 20, category_id: categoryID};
+    var post = {id: postID, title: 'my test post', description: 'test description', price: 20, category_id: categoryID, latitude: 36.1667, longitude: -86.767};
     // creates post
     request.post(host + '/posts').send(post).end(function (e, res){
       expect(e).to.equal(null);
@@ -87,8 +85,6 @@ describe("Test Suite", function(){
         expect(res.body.title).to.equal(post.title);
         expect(res.body.description).to.equal(post.description);
         expect(res.body.price).to.equal(post.price);
-        expect(res.body.user.fname).to.equal('adam');
-        expect(res.body.user.lname).to.equal('smith');
         request.del(host + '/posts/' + postID).end(function (e, res){
           expect(e).to.equal(null);
           expect(res.statusCode).to.equal(204);
