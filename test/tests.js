@@ -71,6 +71,18 @@ describe("Test Suite", function(){
     });
   });
 
+  // tests resetting password
+  it("should allow users to reset passwords", function(done){
+    var newUser = {"id": userID, "email": "test@test.com", "password": "password",
+    "new_password": "new_password"};
+    request.put(host + '/users/' + userID).send(newUser).end(function (e, res){
+      expect(e).to.equal(null);
+      expect(res.statusCode).to.equal(200);
+      done();
+    });
+  });
+
+
   // tests posts
   it("should allow user to create, modify and delete post", function(done){
     var post = {id: postID, title: 'my test post', description: 'test description', price: 20, category_id: categoryID, latitude: 36.1667, longitude: -86.767};
