@@ -63,11 +63,15 @@ module.exports = {
 
   // modifies by id
   putByID: function(req, res) {
+    var options = {where: {id: req.params.id}};
     models.Post.find(options).then(function (post) {
       if (req.session.userID !== post.user_id) { return res.send(403); }
-      var new_post = _.pick(req.body, ['title', 'description', 'price']);
-      models.Post.update(new_post, options).then(function(ret){
-        ret[0] ? res.send(204) : res.send(404);
+      var newPost = _.pick(req.body, ['title', 'description', 'price']);
+      post.title = newPost.title;
+      post.description = newPost.description;
+      post.price = newPost.price;
+      post.save().then(function () {
+        res.send(post);
       });
     });
   },

@@ -40,7 +40,7 @@ describe("Test Suite", function(){
       });
     });
   });
-  
+
   // cleans up test data
   after(function (done) {
     var chainer = new sequelize.Utils.QueryChainer();
@@ -72,7 +72,7 @@ describe("Test Suite", function(){
   });
 
   // tests posts
-  it("should allow user to create and delete post", function(done){
+  it("should allow user to create, modify and delete post", function(done){
     var post = {id: postID, title: 'my test post', description: 'test description', price: 20, category_id: categoryID, latitude: 36.1667, longitude: -86.767};
     // creates post
     request.post(host + '/posts').send(post).end(function (e, res){
@@ -85,10 +85,19 @@ describe("Test Suite", function(){
         expect(res.body.title).to.equal(post.title);
         expect(res.body.description).to.equal(post.description);
         expect(res.body.price).to.equal(post.price);
-        request.del(host + '/posts/' + postID).end(function (e, res){
+
+        var newPost = {id: postID, title: 'my new post', description: 'new description', price: 50, category_id: categoryID, latitude: 36.1667, longitude: -86.767};
+        request.put(host + '/posts/' + postID).send(newPost).end(function (e, res){
           expect(e).to.equal(null);
-          expect(res.statusCode).to.equal(204);
-          done();
+          expect(res.statusCode).to.equal(200);
+          expect(res.body.title).to.equal(newPost.title);
+          expect(res.body.description).to.equal(newPost.description);
+          expect(res.body.price).to.equal(newPost.price);
+          request.del(host + '/posts/' + postID).end(function (e, res){
+            expect(e).to.equal(null);
+            expect(res.statusCode).to.equal(204);
+            done();
+          });
         });
       });
     });
@@ -96,4 +105,3 @@ describe("Test Suite", function(){
 
 
 });
-
