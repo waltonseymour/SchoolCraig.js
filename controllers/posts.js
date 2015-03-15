@@ -68,17 +68,41 @@ module.exports = {
 
   // modifies by id
   putByID: function(req, res) {
-    var options = {where: {id: req.params.id}};
-    models.Post.find(options).then(function (post) {
+    models.Post.find({where: {id: req.params.id}}).then(function (post) {
       if (!post) { return res.status(404).end(); }
       if (req.session.userID !== post.user_id) { return res.status(403).end(); }
-      var newPost = _.pick(req.body, ['title', 'description', 'price']);
-      post.title = newPost.title;
-      post.description = newPost.description;
-      post.price = newPost.price;
-      post.save().then(function () {
-        res.send(post);
-      });
+      var newPost = req.body;
+      // ensures all fields are set
+      if (newPost.title && newPost.description && newPost.price && newPost.category_id &&
+      util.isUUID(newPost.category_id)){
+        post.title = newPost.title;
+        post.description = newPost.description;
+        post.price = newPost.price;
+
+        // ensures category_id is a valid foreign key if they differ
+        if (post.category_id !== newPost.category_id) {
+          models.Category.find({where: {id: newPost.category_id}}).then(function (category) {
+            if (category){
+              post.category_id = newPost.category_id;
+              post.save().then(function () {
+                res.send(post);
+              });
+            }
+            else{
+              res.status(401).end();
+            }
+          });
+        }
+        // else if category_id's are the same, save changes and return
+        else{
+          post.save().then(function () {
+            res.send(post);
+          });
+        }
+      }
+      else{
+        res.status(401).end();
+      }
     });
   },
 
@@ -182,7 +206,6 @@ module.exports = {
   }
 
 };
-
 
 // Creates post with sepecified fields
 function CreatePost (req, res, post) {
