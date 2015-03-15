@@ -27,7 +27,7 @@ module.exports = {
       category ? res.send(category) : res.send(404);
     });
   },
-  
+
   create: function (req, res) {
     if (req.session.userID === undefined) { return res.send(403); }
     var category = req.body;

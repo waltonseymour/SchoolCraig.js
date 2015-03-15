@@ -73,32 +73,18 @@ module.exports = {
       if (req.session.userID !== post.user_id) { return res.status(403).end(); }
       var newPost = req.body;
       // ensures all fields are set
-      if (newPost.title && newPost.description && newPost.price && newPost.category_id &&
-      util.isUUID(newPost.category_id)){
+      if (newPost.title && newPost.description && newPost.price &&
+        util.isUUID(newPost.category_id)){
         post.title = newPost.title;
         post.description = newPost.description;
         post.price = newPost.price;
-
-        // ensures category_id is a valid foreign key if they differ
-        if (post.category_id !== newPost.category_id) {
-          models.Category.find({where: {id: newPost.category_id}}).then(function (category) {
-            if (category){
-              post.category_id = newPost.category_id;
-              post.save().then(function () {
-                res.send(post);
-              });
-            }
-            else{
-              res.status(401).end();
-            }
-          });
-        }
-        // else if category_id's are the same, save changes and return
-        else{
-          post.save().then(function () {
-            res.send(post);
-          });
-        }
+        post.category_id = newPost.category_id;
+        post.save().then(function(){
+          res.send(post);
+        }).catch(function(error){
+          console.log(error);
+          res.status(401).end();
+        });
       }
       else{
         res.status(401).end();
@@ -211,7 +197,6 @@ module.exports = {
 function CreatePost (req, res, post) {
   if (post.title && post.description && post.category_id && post.price &&
     !isNaN(post.price) && post.latitude && post.longitude) {
-
     post.user_id = req.session.userID;
     models.Post.create(post).then(function () {
       res.status(204).end();
