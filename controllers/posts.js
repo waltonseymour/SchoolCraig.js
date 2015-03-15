@@ -65,7 +65,8 @@ module.exports = {
   putByID: function(req, res) {
     var options = {where: {id: req.params.id}};
     models.Post.find(options).then(function (post) {
-      if (req.session.userID !== post.user_id) { return res.send(403); }
+      if (!post) { return res.status(404).end(); }
+      if (req.session.userID !== post.user_id) { return res.status(403).end(); }
       var newPost = _.pick(req.body, ['title', 'description', 'price']);
       post.title = newPost.title;
       post.description = newPost.description;
