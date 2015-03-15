@@ -4,7 +4,7 @@ var async = require('async');
 var util = require('../utilities');
 var uuid = require('node-uuid');
 
-var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'price']};
+var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'updatedAt', 'price', 'latitude', 'longitude']};
 var userOptions = {attributes: ['id', 'email']};
 var categoryOptions = {attributes: ['id', 'name']};
 
@@ -57,7 +57,12 @@ module.exports = {
       {model: models.Photo, as: 'photos'},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
     models.Post.find(options).success(function(post){
-      post ? res.send(post) : res.send(404);
+      if(post){
+        res.send(post);
+      }
+      else{
+        res.status(404).end();
+      }
     });
   },
 
@@ -181,8 +186,8 @@ module.exports = {
 
 // Creates post with sepecified fields
 function CreatePost (req, res, post) {
-  if (post.title && post.description && post.category_id && post.price
-    && !isNaN(post.price) && post.latitude && post.longitude) {
+  if (post.title && post.description && post.category_id && post.price &&
+    !isNaN(post.price) && post.latitude && post.longitude) {
 
     post.user_id = req.session.userID;
     models.Post.create(post).then(function () {

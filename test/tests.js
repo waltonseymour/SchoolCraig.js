@@ -82,7 +82,6 @@ describe("Test Suite", function(){
     });
   });
 
-
   // tests posts
   it("should allow user to create, modify and delete post", function(done){
     var post = {id: postID, title: 'my test post', description: 'test description', price: 20, category_id: categoryID, latitude: 36.1667, longitude: -86.767};
