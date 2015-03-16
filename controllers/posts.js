@@ -37,14 +37,15 @@ module.exports = {
 
 
     var options = {limit: postsPerPage, order: [[order, 'DESC']],
-    where: ["(point(longitude, latitude) <@> point("+longitude+", "+latitude+")) < ?", radius],
+    where: ["(point(longitude, latitude) <@> point(?, ?)) < ?", longitude, latitude, radius],
     include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
       {model: models.Photo, as: 'photos'},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]};
 
     if (util.isUUID(category)){
-      options = _.extend(options, {where: {category_id: category}});
+      options.where[0] += " and category_id = ?";
+      options.where.push(category);
     }
     // page number starts at 1
     if (page && !isNaN(page) && page > 1){

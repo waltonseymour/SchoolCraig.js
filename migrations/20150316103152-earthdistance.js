@@ -8,7 +8,6 @@ module.exports = {
         done();
       });
     });
-
   },
 
   down: function(migration, DataTypes, done) {

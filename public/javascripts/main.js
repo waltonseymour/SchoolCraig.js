@@ -4,6 +4,10 @@
   // Stores DOM elements after post has been loaded
   var POST_CACHE = {};
 
+  // global location variables
+  var latitude;
+  var longitude;
+
   (function preload(){
     var urls = [];
     $('.post').each(function(){
@@ -18,13 +22,22 @@
     });
   })();
 
+  // retrieves location on load
+  getLocation(function(pos){
+    var crd = pos.coords;
+    latitude = crd.latitude;
+    longitude = crd.longitude;
+  });
+
 
   function getCurrentOptions(overrides){
     overrides = overrides || {};
     var options = _.defaults(overrides, {
       page: parseInt($('#post-container').attr('data-page')) || 1,
       category: $('#category-filter').val(),
-      order: $('input[type=radio][name=order]:checked').val()
+      order: $('input[type=radio][name=order]:checked').val(),
+      latitude: latitude,
+      longitude: longitude
     });
     return options;
   }
@@ -121,12 +134,9 @@
     post.price = $('#create-form .create-price').val();
     post.category_id = $('#create-form select').val();
 
-    getLocation(function(pos){
-      var crd = pos.coords;
-      post.latitude = crd.latitude;
-      post.longitude = crd.longitude;
-      createPost(post);
-    });
+    post.latitude = latitude;
+    post.longitude = longitude;
+    createPost(post);
     return false;
   });
 
