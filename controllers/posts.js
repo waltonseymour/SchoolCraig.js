@@ -71,15 +71,12 @@ module.exports = {
     models.Post.find({where: {id: req.params.id}}).then(function (post) {
       if (!post) { return res.status(404).end(); }
       if (req.session.userID !== post.user_id) { return res.status(403).end(); }
-      var newPost = req.body;
+      var newPost = _.pick(req.body, ['title', 'description', 'price', 'category_id']);
       // ensures all fields are set
       if (newPost.title && newPost.description && newPost.price &&
-        util.isUUID(newPost.category_id)){
-        post.title = newPost.title;
-        post.description = newPost.description;
-        post.price = newPost.price;
-        post.category_id = newPost.category_id;
-        post.save().then(function(){
+      util.isUUID(newPost.category_id)){
+
+        post.updateAttributes(newPost).then(function(){
           res.send(post);
         }).catch(function(error){
           console.log(error);
