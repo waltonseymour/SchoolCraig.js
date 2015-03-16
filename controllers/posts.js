@@ -3,6 +3,7 @@ var _ = require('underscore');
 var async = require('async');
 var util = require('../utilities');
 var uuid = require('node-uuid');
+var geoip = require('geoip-lite');
 
 var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'updatedAt', 'price', 'latitude', 'longitude']};
 var userOptions = {attributes: ['id', 'email']};
@@ -23,8 +24,21 @@ module.exports = {
     var category = req.param('category');
     var page = req.param('page');
     var postsPerPage = req.param('postsPerPage') || 5;
+    var latitude = req.param('latitude');
+    var longitude = req.param('longitude');
+    // radius of search in miles
+    var radius = req.param('radius') || 100;
+    if (!util.isValidCoordinate(latitude, longitude)) {
+      var ip = req.connection.remoteAddress;
+      var geo = geoip.lookup(ip);
+      latitude = geo ? geo.ll[0] : 36.1667;
+      longitude = geo ? geo.ll[1] : -86.7833;
+    }
 
-    var options = {limit: postsPerPage, order: [[order, 'DESC']], include: [
+
+    var options = {limit: postsPerPage, order: [[order, 'DESC']],
+    where: ["(point(longitude, latitude) <@> point("+longitude+", "+latitude+")) < ?", radius],
+    include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
       {model: models.Photo, as: 'photos'},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]};
@@ -75,7 +89,6 @@ module.exports = {
       // ensures all fields are set
       if (newPost.title && newPost.description && newPost.price &&
       util.isUUID(newPost.category_id)){
-
         post.updateAttributes(newPost).then(function(){
           res.send(post);
         }).catch(function(error){
@@ -92,22 +105,16 @@ module.exports = {
   // deletes by id
   deleteByID: function(req, res) {
     if (!util.isUUID(req.params.id)) { return res.send(401); }
-    var options = {where: {id: req.params.id}};
-    // verifies user owns post
-    models.Post.find(options).then(function (ret) {
-      return ret.user_id === req.session.userID;
-    }).then(function (valid) {
-      // sends 403 if user does not own post
-      if (!valid) { return res.send(403); }
-      // otherwise deletes photos and post
+    models.Post.find({where: {id: req.params.id}}).then(function (post) {
+      if (post.user_id !== req.session.userID) { return res.send(403); }
       // will delete all photos in database with ondelete cascade
       models.Photo.findAll({where: {post_id: req.params.id}})
       .then(function (photos) {
         var photoIDs = _.map(photos, function(photo){ return photo.id; });
         if (photoIDs) { util.deletePhotos(photoIDs); }
       })
-      .then(function () { models.Post.destroy(options); })
-      .then(function (ret) {
+      .then(function () { models.Post.destroy({where: {id: req.params.id}}); })
+      .then(function () {
         res.status(204).end();
       });
     });

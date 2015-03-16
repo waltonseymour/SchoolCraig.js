@@ -9,6 +9,10 @@ module.exports = {
     return id ? !!id.match(regex) : false;
   },
 
+  isValidCoordinate: function(lat, lon){
+    return Math.abs(lat) < 90 && Math.abs(lon) < 180;
+  },
+
   // Generates presigned urls for image uploads or retrievals
   sign_s3: function(options, callback) {
     if (!_.contains(['get', 'put'], options.method)){ return new Error('method must be get or put'); }
