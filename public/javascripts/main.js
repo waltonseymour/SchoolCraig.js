@@ -29,7 +29,6 @@
     longitude = crd.longitude;
   });
 
-
   function getCurrentOptions(overrides){
     overrides = overrides || {};
     var options = _.defaults(overrides, {
@@ -37,7 +36,8 @@
       category: $('#category-filter').val(),
       order: $('input[type=radio][name=order]:checked').val(),
       latitude: latitude,
-      longitude: longitude
+      longitude: longitude,
+      radius: $('input[type=range]').val()
     });
     return options;
   }
@@ -73,6 +73,10 @@
   $('input[type=radio][name=order]').change(function() {
     // resets page to 1 on ordering change
     getPosts(getCurrentOptions({page: 1}));
+  });
+
+  $('input[type=range]').change(function() {
+    getPosts(getCurrentOptions());
   });
 
   $('body').on('click', '.modal', function (event) {
