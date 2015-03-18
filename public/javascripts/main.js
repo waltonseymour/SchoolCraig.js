@@ -8,6 +8,19 @@
   var latitude;
   var longitude;
 
+  function initializeMap() {
+    var mapOptions = {
+      center: { lat: latitude, lng: longitude},
+      zoom: 11
+    };
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    var marker = new google.maps.Marker({
+      position: { lat: latitude, lng: longitude},
+      map: map,
+      animation: google.maps.Animation.DROP
+    });
+  }
+
   (function preload(){
     var urls = [];
     $('.post').each(function(){
@@ -27,6 +40,7 @@
     var crd = pos.coords;
     latitude = crd.latitude;
     longitude = crd.longitude;
+    initializeMap();
   });
 
   function getCurrentOptions(overrides){
