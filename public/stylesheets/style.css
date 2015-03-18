@@ -170,9 +170,11 @@ ul, .navbar-right{
   padding-bottom: 21px;
 }
 
-.post:hover {
+.post:hover, .post.hover {
   background-color: #3b536b;
 }
+
+
 .post:active {
   background-color: #317589;
 }

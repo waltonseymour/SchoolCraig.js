@@ -7,22 +7,38 @@
   // global variables
   var globals = {};
 
-
   function initializeMap() {
     var mapOptions = {
       center: { lat: globals.latitude, lng: globals.longitude},
-      zoom: 11
+      zoom: 14
     };
     globals.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     globals.markers = [];
   }
 
   function addMarkers(posts){
+    _.each(globals.markers, function(marker){
+      marker.setMap(null);
+    });
+    globals.markers = [];
     _.each(posts, function(post){
       var marker = new google.maps.Marker({
         position: { lat: post.latitude, lng: post.longitude},
         map: globals.map,
         animation: google.maps.Animation.DROP
+      });
+      marker.postID = post.id;
+      google.maps.event.addListener(marker, 'mouseover', function(marker) {
+        var $post = $("div").find("[data-id='" + this.postID + "']");
+        $post.addClass('hover');
+      });
+      google.maps.event.addListener(marker, 'click', function(marker) {
+        var $post = $("div").find("[data-id='" + this.postID + "']");
+        $post.trigger('click');
+      });
+      google.maps.event.addListener(marker, 'mouseout', function(marker) {
+        var $post = $("div").find("[data-id='" + this.postID + "']");
+        $post.removeClass('hover');
       });
       globals.markers.push(marker);
     });
@@ -232,9 +248,9 @@
     addMarkers(data);
     var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: data});
     var $container  = $('#post-container .posts');
-    $container.fadeOut(300, function(){
+    $container.fadeOut(200, function(){
       $container.html(posts);
-      $container.fadeIn(300);
+      $container.fadeIn(200);
     });
   }
 
