@@ -4,5 +4,6 @@ var controller = require('../controllers/index');
 
 /* GET home page. */
 router.get('/', controller.main);
+router.get('/settings', controller.settings);
 
 module.exports = router;

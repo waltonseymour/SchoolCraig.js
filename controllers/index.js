@@ -11,5 +11,13 @@ module.exports = {
     else {
       res.render('index');
     }
+  },
+  settings: function (req, res) {
+    if(req.session.userID){
+      res.render('settings', {userID: req.session.userID});
+    }
+    else {
+      res.redirect('/');
+    }
   }
 };

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Bazaar</title>
+    <title>Settings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimum-scale=1" />
     <meta name="description" content="">
     <meta name="author" content="">
@@ -36,7 +36,6 @@
       ga('send', 'pageview');
 
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
   </head>
   <body>
     <input type="hidden" id="user-id" value="<%=userID%>"></input>
@@ -44,7 +43,7 @@
       <div class="row">
         <div class="col-xs-12 navbar-container">
           <nav class="navbar navbar-default" role="navigation">
-            <a class="navbar-brand" href="#">Bazaar</a>
+            <a class="navbar-brand" href="/">Bazaar</a>
             <div class="">
               <ul class="nav navbar-nav navbar-right mynavbar">
                 <li>
@@ -53,7 +52,7 @@
                 <li>
                   <a href="#" id="settings" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog fa-lg"></i></a>
                   <ul class="dropdown-menu" id="settings-dropdown-menu">
-                    <li><a href="/settings">Settings</a></li>
+                    <li><a href="#">Settings</a></li>
                     <li><a href="#" id="logout">Log out</a></li>
                   </ul>
                 </li>
@@ -87,9 +86,6 @@
                 <input class="form-control create-description" required type="text" placeholder="Description">
                 <input class="form-control create-price" required type="number" placeholder="Price">
                 <select class='form-control create-categories' required>
-                  <% for (var i = 0; i < categories.length; i++) { %>
-                    <option value="<%= categories[i].id %>"><%= categories[i].name %></option>
-                  <% } %>
                 </select>
                 <span class="btn btn-primary btn-file form-control">
                   Upload an Image <input id='create-file' type="file">
@@ -123,56 +119,20 @@
         </div>
       </div>
         <div class="row">
-          <div class="col-md-3">
-            <div class="control-panel row panel panel-success">
-              <div class="panel-heading">
-                Control Panel
-              </div>
-              <div class="panel-body">
-                <div class="list-group">
-                  <div class="list-group-item form-inline">
-                    <i class="fa fa-filter list-group-item-heading"></i>
-                    <select class="form-control" data-style="btn-primary" id="category-filter">
-                      <option>All</option>
-                      <% for (var i = 0; i < categories.length; i++) { %>
-                        <option value="<%= categories[i].id %>"><%= categories[i].name %></option>
-                      <% } %>
-                    </select>
-                  </div>
-                  <div class="list-group-item">
-                    <i class="fa fa-sort-amount-desc"></i>
-                      <input type="radio" name='order' value="createdAt" checked="checked">Date
-                      <input type="radio" name='order' value="price">Price
-                  </div>
-                  <div class="list-group-item form-inline">
-                    <i class="fa fa-map-marker"></i>
-                    <input type="range" class='form-control'>
+          <div class="settings-panel col-md-6 col-md-offset-3 panel panel-success">
+            <div class="panel-heading">
+              Account Settings
+            </div>
+            <div class="panel-body">
+              <div class="list-group">
+                <div class="list-group-item">
+                  <button class='btn btn-primary form-control'><i class="fa fa-lock list-group-item-heading"></i> Change Password</button>
                 </div>
+                <div class="list-group-item">
+                  <button class='btn btn-danger form-control'><i class="fa  fa-times-circle"></i><span>Delete Account</span></button>
                 </div>
               </div>
             </div>
-
-            <div class="row panel panel-info">
-              <div class="panel-heading">
-                Map
-              </div>
-              <div class="panel-body">
-                <div id="map-canvas"></div>
-              </div>
-            </div>
-
-          </div>
-
-          <div id="post-container" class="col-md-7 col-md-offset-1 bg-primary">
-            <div class="posts">
-            </div>
-
-            <nav>
-              <ul class="pager">
-                <li class="previous"><a href="#" onclick="this.blur();"><span aria-hidden="true">&larr;</span> Newer</a></li>
-                <li class="next"><a href="#" onclick="this.blur();">Older <span aria-hidden="true">&rarr;</span></a></li>
-              </ul>
-            </nav>
           </div>
         </div>
         <hr>
