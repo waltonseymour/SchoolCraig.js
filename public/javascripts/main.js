@@ -58,8 +58,6 @@
     });
   })();
 
-
-
   // retrieves location on load
   getLocation(function(pos){
     var crd = pos.coords;
@@ -145,7 +143,10 @@
         $.ajax({
           url: 'posts/' + id,
           type: 'DELETE',
-          success: function() {setTimeout(function(){ location.reload(); }, 1000);},
+          success: function() {
+            ga('send', 'event', 'Posts', 'Delete', id);
+            setTimeout(function(){ location.reload(); }, 1000);
+            },
           error: function(err) { console.log("delete post failed"); }
         });
       }
@@ -163,6 +164,7 @@
     // resets to front page on a category change
     var options = getCurrentOptions({page: 1});
     getPosts(options);
+    ga('send', 'event', 'Catgeories', 'Select', $(this).val());
   });
 
   $('#create-form').parsley({
@@ -181,6 +183,7 @@
     post.latitude = globals.latitude;
     post.longitude = globals.longitude;
     createPost(post);
+    ga('send', 'event', 'Posts', 'Create', post.id);
     return false;
   });
 
@@ -191,6 +194,7 @@
     options.page = isNext ? options.page + 1 : options.page - 1;
     if(options.page > 0){
       getPosts(options);
+      ga('send', 'event', 'Page', 'Change', options.page.toString());
     }
   }
 
@@ -202,6 +206,7 @@
       success: renderPostModal,
       error: function(err) { console.log("get post failed"); }
     });
+    ga('send', 'event', 'Posts', 'Open', id);
   }
 
   function getPosts(options){
