@@ -8,11 +8,18 @@ module.exports = {
         categoryController.listAll(req, res, function (categories) {
           res.render('main', {userID: req.session.userID, posts: posts, categories: categories});
         });
-      }); 
+      });
     }
     else {
       res.render('index');
     }
+  },
+  settings: function (req, res) {
+    if(req.session.userID){
+      res.render('settings', {userID: req.session.userID});
+    }
+    else {
+      res.redirect('/');
+    }
   }
 };
-
