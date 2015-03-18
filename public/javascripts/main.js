@@ -4,9 +4,29 @@
   // Stores DOM elements after post has been loaded
   var POST_CACHE = {};
 
-  // global location variables
-  var latitude;
-  var longitude;
+  // global variables
+  var globals = {};
+
+
+  function initializeMap() {
+    var mapOptions = {
+      center: { lat: globals.latitude, lng: globals.longitude},
+      zoom: 11
+    };
+    globals.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    globals.markers = [];
+  }
+
+  function addMarkers(posts){
+    _.each(posts, function(post){
+      var marker = new google.maps.Marker({
+        position: { lat: post.latitude, lng: post.longitude},
+        map: globals.map,
+        animation: google.maps.Animation.DROP
+      });
+      globals.markers.push(marker);
+    });
+  }
 
   (function preload(){
     var urls = [];
@@ -22,11 +42,15 @@
     });
   })();
 
+
+
   // retrieves location on load
   getLocation(function(pos){
     var crd = pos.coords;
-    latitude = crd.latitude;
-    longitude = crd.longitude;
+    globals.latitude = crd.latitude;
+    globals.longitude = crd.longitude;
+    getPosts();
+    initializeMap();
   });
 
   function getCurrentOptions(overrides){
@@ -35,8 +59,8 @@
       page: parseInt($('#post-container').attr('data-page')) || 1,
       category: $('#category-filter').val(),
       order: $('input[type=radio][name=order]:checked').val(),
-      latitude: latitude,
-      longitude: longitude,
+      latitude: globals.latitude,
+      longitude: globals.longitude,
       radius: $('input[type=range]').val()
     });
     return options;
@@ -138,8 +162,8 @@
     post.price = $('#create-form .create-price').val();
     post.category_id = $('#create-form select').val();
 
-    post.latitude = latitude;
-    post.longitude = longitude;
+    post.latitude = globals.latitude;
+    post.longitude = globals.longitude;
     createPost(post);
     return false;
   });
@@ -205,6 +229,7 @@
   }
 
   function renderPosts (data) {
+    addMarkers(data);
     var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: data});
     var $container  = $('#post-container .posts');
     $container.fadeOut(300, function(){
