@@ -13,7 +13,14 @@
 
   $('#signup-modal').on('shown.bs.modal', function (e) {
     $('#signup-email').focus();
-  })
+  });
+
+  // custom student email validation
+  window.ParsleyValidator.addValidator('student',
+  function (val) {
+    return /.edu$/.test(val);
+  }, 32)
+  .addMessage('en', 'student', 'This should be a valid student email');
 
   $('#signup-form').parsley({
     successClass: 'success',
@@ -25,7 +32,10 @@
     errorClass: 'error'
   });
 
-  $('#signup-form').submit(signup);
+  $('#signup-form').submit(function(){
+    signup();
+    return false;
+  });
 
   $('#login-dropdown-menu').submit(function(){
     login();
@@ -38,8 +48,15 @@
       url: 'users',
       type: 'POST',
       data: data,
-      success: function() { location.reload(); },
-      error: function(err) { console.log("login failed");}
+      success: function(){
+        $('#signup-modal').modal('hide');
+        swal("Success!", "Please check your email to confirm your account.", "success");
+      },
+      error: function(err) {
+        console.log("signup failed");
+        $('#signup-modal').modal('hide');
+        swal("Error!", "Please make sure you have not already signed up with this email.", "error");
+      }
     });
   }
 
