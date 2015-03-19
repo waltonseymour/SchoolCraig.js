@@ -94,6 +94,10 @@ module.exports = {
 
   create: function (req, res) {
     var user = req.body;
+    if (!/.edu$/.test(user.email)){
+      return res.status(401).end();
+    }
+
     models.User.find({where: {email: user.email}}).then(function (ret) {
       // returns true if user with email exists
       return !!ret;
