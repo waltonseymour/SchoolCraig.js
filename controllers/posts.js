@@ -35,7 +35,6 @@ module.exports = {
       longitude = geo ? geo.ll[1] : -86.7833;
     }
 
-
     var options = {limit: postsPerPage, order: [[order, 'DESC']],
     where: ["(point(longitude, latitude) <@> point(?, ?)) < ?", longitude, latitude, radius],
     include: [
@@ -59,6 +58,9 @@ module.exports = {
       else {
         res.send(posts);
       }
+      var activity = {user: req.session.userID, activity: "Get Posts",
+      value: JSON.stringify(req.query)};
+      models.Activity.create(activity);
     });
   },
 
@@ -74,6 +76,9 @@ module.exports = {
     models.Post.find(options).success(function(post){
       if(post){
         res.send(post);
+        var activity = {user: req.session.userID, activity: "Open Post",
+        value: req.params.id};
+        models.Activity.create(activity);
       }
       else{
         res.status(404).end();
@@ -92,6 +97,9 @@ module.exports = {
       util.isUUID(newPost.category_id)){
         post.updateAttributes(newPost).then(function(){
           res.send(post);
+          var activity = {user: req.session.userID, activity: "Modify Post",
+          value: req.params.id};
+          models.Activity.create(activity);
         }).catch(function(error){
           console.log(error);
           res.status(401).end();
@@ -117,6 +125,9 @@ module.exports = {
       .then(function () { models.Post.destroy({where: {id: req.params.id}}); })
       .then(function () {
         res.status(204).end();
+        var activity = {user: req.session.userID, activity: "Delete Post",
+        value: req.params.id};
+        models.Activity.create(activity);
       });
     });
   },
@@ -205,6 +216,9 @@ function CreatePost (req, res, post) {
     post.user_id = req.session.userID;
     models.Post.create(post).then(function () {
       res.status(204).end();
+      var activity = {user: req.session.userID, activity: "Create Post",
+      value: post.id};
+      models.Activity.create(activity);
     });
   }
   else {
