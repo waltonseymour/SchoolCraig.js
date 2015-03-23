@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  // Stores DOM elements after post has been loaded
+  // Stores JSON data for posts
   var POST_CACHE = {};
 
   // global variables
@@ -97,16 +97,7 @@
   });
 
   $('body').on('click', '.post', function (event) {
-    var id = $(this).attr('data-id');
-    if (POST_CACHE[id] === undefined) {
-      // retrieves data if needed
-      getPost(id);
-    }
-    else {
-      // otherwise pulls from cache
-      $('#post-modal')[0].parentNode.replaceChild(POST_CACHE[id], $('#post-modal')[0]);
-      $('#post-modal').modal('show');
-    }
+    getPost($(this).attr('data-id'));
   });
   $('input[type=radio][name=order]').change(function() {
     // resets page to 1 on ordering change
@@ -241,12 +232,7 @@
 
   function getPost(id) {
     $('#post-modal').attr('data-id', id);
-    $.ajax({
-      url: 'posts/' + id,
-      type: 'GET',
-      success: renderPostModal,
-      error: function(err) { console.log("get post failed"); }
-    });
+    renderPostModal(POST_CACHE[id]);
     ga('send', 'event', 'Posts', 'Open', id);
   }
 
@@ -286,11 +272,13 @@
     }
 
     $('#modal-contact').attr("href", "https://mail.google.com/mail/?view=cm&fs=1&to="+data.user.email+"&su="+data.title);
-    POST_CACHE[data.id] = $('#post-modal')[0].cloneNode(true);
     $('#post-modal').modal('show');
   }
 
   function renderPosts (data) {
+    _.each(data, function(post){
+      POST_CACHE[post.id] = _.omit(post, 'id');
+    });
     addMarkers(data);
     var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: data});
     var $container  = $('#post-container .posts');
