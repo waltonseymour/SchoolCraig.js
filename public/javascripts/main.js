@@ -81,14 +81,15 @@
   }
 
   $(document).keydown(function(e) {
-      switch(e.which) {
-          case 37: changePage(false);
-          break;
-          case 39: changePage(true);
-          break;
-          default: return; // exit this handler for other keys
-      }
-      e.preventDefault(); // prevent the default action (scroll / move caret)
+    if($("input").is(":focus")){ return; }
+    switch(e.which) {
+      case 37: changePage(false);
+      break;
+      case 39: changePage(true);
+      break;
+      default: return; // exit this handler for other keys
+    }
+    e.preventDefault(); // prevent the default action (scroll / move caret)
   });
 
   $('#post-container nav .pager .next, #post-container nav .pager .previous').click(function(event){
