@@ -66,8 +66,8 @@ module.exports = {
 
   // get post by id
   getByID: function(req, res){
-    if (req.session.userID === undefined) { return res.send(403); }
-    if (!util.isUUID(req.params.id)) { return res.send(401); }
+    if (req.session.userID === undefined) { return res.status(403).end(); }
+    if (!util.isUUID(req.params.id)) { return res.status(401).end(); }
 
     var options = _.extend({}, publicOptions, {where: {id: req.params.id}, include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
@@ -83,6 +83,22 @@ module.exports = {
       else{
         res.status(404).end();
       }
+    });
+  },
+
+  // searches by full text
+  search: function(req, res){
+    if (req.session.userID === undefined) { return res.status(403).end(); }
+    var query = req.params.query;
+
+    console.log(query);
+    var options = {where: ["tsv @@ plainto_tsquery('english', ?)", query],
+    include: [
+      {model: models.User, as: 'user', attributes: userOptions.attributes},
+      {model: models.Photo, as: 'photos'},
+      {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]};
+    models.Post.findAll(options).then(function(posts){
+      res.send(posts);
     });
   },
 

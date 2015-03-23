@@ -38,6 +38,13 @@ module.exports = function(sequelize, DataTypes) {
     }
   },
   {
-    tableName: 'posts'
+    tableName: 'posts',
+    classMethods:{
+      search: function(query){
+        var Post = this;
+        query = sequelize.getQueryInterface().escape(query);
+        return sequelize.query("SELECT * FROM " + Post.tableName + " WHERE tsv @@ plainto_tsquery('english', " + query + ")", Post);
+      }
+    }
   });
 };

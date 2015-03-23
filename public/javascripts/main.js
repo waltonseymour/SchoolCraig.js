@@ -216,6 +216,18 @@
     return false;
   });
 
+  $('#search-form').submit(function () {
+    var query = $('input[type=search]').val();
+    $.ajax({
+      url: 'posts/search/' + query,
+      type: 'GET',
+      success: renderPosts,
+      error: function(err) { console.log("get post failed"); }
+    });
+    ga('send', 'event', 'Posts', 'Search', query);
+    return false;
+  });
+
   $('#logout').click(logout);
 
   function changePage(isNext){
