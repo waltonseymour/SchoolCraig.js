@@ -11,6 +11,7 @@
     <link href="bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="/stylesheets/style.min.css" rel="stylesheet" type="text/css" />
     <link href="/stylesheets/landing.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/sweet-alert.css">
     <!-- TODO: make sure bootstrap-responsive.min.css points to BootTheme
         generated file -->
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet">
@@ -45,9 +46,12 @@
             </div>
             <form id="signup-form">
               <div class="modal-body">
-                  <input class="form-control" id="signup-email" type="email" placeholder="University Email" required>
-                  <input class="form-control" id="signup-password" type="password" placeholder="Password" required data-parsley-minlength="6">
-                  <input class="form-control" id="signup-password-confirm" type="password" placeholder="Confirm Password" required data-parsley-equalto="#signup-password">
+                  <input class="form-control" id="signup-email" type="email" placeholder="University Email" data-parsley-student required
+                  data-parsley-required-message="Looks like you forgot to fill this out">
+                  <input class="form-control" id="signup-password" type="password" placeholder="Password" required data-parsley-minlength="6"
+                   data-parsley-required-message="Looks like you forgot to fill this out">
+                  <input class="form-control" id="signup-password-confirm" type="password" placeholder="Confirm Password" required data-parsley-equalto="#signup-password"
+                  data-parsley-required-message="Looks like you forgot to fill this out">
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -106,6 +110,7 @@
   <script src="/javascripts/jquery.min.js"></script>
   <script src="/javascripts/bootstrap.min.js"></script>
   <script src="/javascripts/parsley.min.js"></script>
+  <script src="/javascripts/sweet-alert.min.js"></script>
   <script src="/javascripts/index.min.js"></script>
 </body>
 

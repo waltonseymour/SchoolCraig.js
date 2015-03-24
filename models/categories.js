@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('Category', { 
+  return sequelize.define('Category', {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: true
     }
   },
   {

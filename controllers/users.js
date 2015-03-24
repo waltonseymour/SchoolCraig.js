@@ -18,12 +18,17 @@ module.exports = {
   },
 
   getByID: function (req, res) {
-    if (req.session.userID === undefined) { return res.send(403); }
-    if (!utils.isUUID(req.params.id)) { return res.send(401); }
+    if (req.session.userID === undefined) { return res.status(403).end(); }
+    if (!utils.isUUID(req.params.id)) { return res.status(401).end(); }
 
     var options = _.extend({where: {id: req.params.id}}, publicOptions);
     models.User.find(options).success(function(user){
-      user ? res.send(user) : res.send(404);
+      if(user){
+        res.send(user);
+      }
+      else{
+        res.status(404).end();
+      }
     });
   },
 
@@ -50,13 +55,28 @@ module.exports = {
     res.send(204);
   },
 
+  // changes password
   putByID: function (req, res) {
     if (req.session.userID !== req.params.id) { return res.send(403); }
-
-    var user = _.pick(req.body, publicOptions.attributes);
-    var options = _.extend({where: {id: req.params.id}}, publicOptions);
-    models.User.update(user, options).success(function(user){
-      user[0] ? res.send(204) : res.send(404);
+    var newUser = req.body;
+    models.User.find({where: {id: req.params.id}}).then(function (user) {
+      if(newUser.password && newUser.new_password){
+        var salt = user.salt;
+        var DBPassword = user.password;
+        var password = crypto.createHash('sha256').update(salt + newUser.password).digest('hex');
+        if (password === DBPassword){
+          user.password = crypto.createHash('sha256').update(salt + newUser.new_password).digest('hex');
+          user.save().then(function() {
+            res.status(200).end();
+          });
+        }
+        else{
+          res.status(401).end();
+        }
+      }
+      else{
+        res.status(401).end();
+      }
     });
   },
 
@@ -74,6 +94,10 @@ module.exports = {
 
   create: function (req, res) {
     var user = req.body;
+    if (!/.edu$/.test(user.email)){
+      return res.status(401).end();
+    }
+
     models.User.find({where: {email: user.email}}).then(function (ret) {
       // returns true if user with email exists
       return !!ret;
@@ -104,11 +128,11 @@ module.exports = {
 
   activate: function (req, res) {
     if (!utils.isUUID(req.params.id)) { return res.send(401); }
-  
+
     models.User.find({where: {id: req.params.id}}).then(function (user) {
       if (user && crypto.createHash('sha256').update(user.salt).digest('hex') === req.query.key) {
         user.activated = true;
-        user.save().then(function (){ 
+        user.save().then(function (){
           req.session.userID = user.id;
           res.redirect('/');
         });
@@ -123,7 +147,7 @@ module.exports = {
 // Creates user with sepecified fields
 function createUser (req, res, user) {
   if (user.email && user.password) {
-    var salt = crypto.randomBytes(16).toString('hex'); 
+    var salt = crypto.randomBytes(16).toString('hex');
     var password = crypto.createHash('sha256').update(salt + user.password).digest('hex');
     user.id = user.id || uuid.v4();
     user.salt = salt;
@@ -137,7 +161,7 @@ function createUser (req, res, user) {
           to: user.email,
           from: 'noreply@heroku.com',
           subject: 'Account Activation',
-          html: 'Please click <a href="' + url+ '">here</a> to confirm your email.'
+          html: 'Please click <a href="'+ url +'">here</a> to confirm your email.'
         }, function(err, json){
           if (err) { console.log(err); }
           console.log(json);

@@ -3,8 +3,9 @@ var _ = require('underscore');
 var async = require('async');
 var util = require('../utilities');
 var uuid = require('node-uuid');
+var geoip = require('geoip-lite');
 
-var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'price']};
+var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'updatedAt', 'price', 'latitude', 'longitude']};
 var userOptions = {attributes: ['id', 'email']};
 var categoryOptions = {attributes: ['id', 'name']};
 
@@ -23,14 +24,27 @@ module.exports = {
     var category = req.param('category');
     var page = req.param('page');
     var postsPerPage = req.param('postsPerPage') || 5;
+    var latitude = req.param('latitude');
+    var longitude = req.param('longitude');
+    // radius of search in miles
+    var radius = req.param('radius') || 100;
+    if (!util.isValidCoordinate(latitude, longitude)) {
+      var ip = req.connection.remoteAddress;
+      var geo = geoip.lookup(ip);
+      latitude = geo ? geo.ll[0] : 36.1667;
+      longitude = geo ? geo.ll[1] : -86.7833;
+    }
 
-    var options = {limit: postsPerPage, order: [[order, 'DESC']], include: [
+    var options = {limit: postsPerPage, order: [[order, 'DESC']],
+    where: ["(point(longitude, latitude) <@> point(?, ?)) < ?", longitude, latitude, radius],
+    include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
       {model: models.Photo, as: 'photos'},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]};
 
     if (util.isUUID(category)){
-      options = _.extend(options, {where: {category_id: category}});
+      options.where[0] += " and category_id = ?";
+      options.where.push(category);
     }
     // page number starts at 1
     if (page && !isNaN(page) && page > 1){
@@ -44,54 +58,92 @@ module.exports = {
       else {
         res.send(posts);
       }
+      var activity = {user: req.session.userID, activity: "Get Posts",
+      value: JSON.stringify(req.query)};
+      models.Activity.create(activity);
     });
   },
 
   // get post by id
   getByID: function(req, res){
-    if (req.session.userID === undefined) { return res.send(403); }
-    if (!util.isUUID(req.params.id)) { return res.send(401); }
+    if (req.session.userID === undefined) { return res.status(403).end(); }
+    if (!util.isUUID(req.params.id)) { return res.status(401).end(); }
 
     var options = _.extend({}, publicOptions, {where: {id: req.params.id}, include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
       {model: models.Photo, as: 'photos'},
       {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]});
     models.Post.find(options).success(function(post){
-      post ? res.send(post) : res.send(404);
+      if(post){
+        res.send(post);
+        var activity = {user: req.session.userID, activity: "Open Post",
+        value: req.params.id};
+        models.Activity.create(activity);
+      }
+      else{
+        res.status(404).end();
+      }
+    });
+  },
+
+  // searches by full text
+  search: function(req, res){
+    if (req.session.userID === undefined) { return res.status(403).end(); }
+    var query = req.params.query;
+
+    console.log(query);
+    var options = {where: ["tsv @@ plainto_tsquery('english', ?)", query],
+    include: [
+      {model: models.User, as: 'user', attributes: userOptions.attributes},
+      {model: models.Photo, as: 'photos'},
+      {model: models.Category, as: 'category', attributes: categoryOptions.attributes}]};
+    models.Post.findAll(options).then(function(posts){
+      res.send(posts);
     });
   },
 
   // modifies by id
   putByID: function(req, res) {
-    models.Post.find(options).then(function (post) {
-      if (req.session.userID !== post.user_id) { return res.send(403); }
-      var new_post = _.pick(req.body, ['title', 'description', 'price']);
-      models.Post.update(new_post, options).then(function(ret){
-        ret[0] ? res.send(204) : res.send(404);
-      });
+    models.Post.find({where: {id: req.params.id}}).then(function (post) {
+      if (!post) { return res.status(404).end(); }
+      if (req.session.userID !== post.user_id) { return res.status(403).end(); }
+      var newPost = _.pick(req.body, ['title', 'description', 'price', 'category_id']);
+      // ensures all fields are set
+      if (newPost.title && newPost.description && newPost.price &&
+      util.isUUID(newPost.category_id)){
+        post.updateAttributes(newPost).then(function(){
+          res.send(post);
+          var activity = {user: req.session.userID, activity: "Modify Post",
+          value: req.params.id};
+          models.Activity.create(activity);
+        }).catch(function(error){
+          console.log(error);
+          res.status(401).end();
+        });
+      }
+      else{
+        res.status(401).end();
+      }
     });
   },
 
   // deletes by id
   deleteByID: function(req, res) {
     if (!util.isUUID(req.params.id)) { return res.send(401); }
-    var options = {where: {id: req.params.id}};
-    // verifies user owns post
-    models.Post.find(options).then(function (ret) {
-      return ret.user_id === req.session.userID;
-    }).then(function (valid) {
-      // sends 403 if user does not own post
-      if (!valid) { return res.send(403); }
-      // otherwise deletes photos and post
+    models.Post.find({where: {id: req.params.id}}).then(function (post) {
+      if (post.user_id !== req.session.userID) { return res.send(403); }
       // will delete all photos in database with ondelete cascade
       models.Photo.findAll({where: {post_id: req.params.id}})
       .then(function (photos) {
         var photoIDs = _.map(photos, function(photo){ return photo.id; });
         if (photoIDs) { util.deletePhotos(photoIDs); }
       })
-      .then(function () { models.Post.destroy(options); })
-      .then(function (ret) {
+      .then(function () { models.Post.destroy({where: {id: req.params.id}}); })
+      .then(function () {
         res.status(204).end();
+        var activity = {user: req.session.userID, activity: "Delete Post",
+        value: req.params.id};
+        models.Activity.create(activity);
       });
     });
   },
@@ -173,15 +225,16 @@ module.exports = {
 
 };
 
-
 // Creates post with sepecified fields
 function CreatePost (req, res, post) {
-  if (post.title && post.description && post.category_id && post.price
-    && !isNaN(post.price) && post.latitude && post.longitude) {
-
+  if (post.title && post.description && post.category_id && post.price &&
+    !isNaN(post.price) && post.latitude && post.longitude) {
     post.user_id = req.session.userID;
     models.Post.create(post).then(function () {
       res.status(204).end();
+      var activity = {user: req.session.userID, activity: "Create Post",
+      value: post.id};
+      models.Activity.create(activity);
     });
   }
   else {

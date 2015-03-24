@@ -13,9 +13,19 @@ h1, h2, h3, h4, h5, h6{
   font-weight: 500;
 }
 
-.control-panel{
+#map-canvas {
+  height: 200px;
+  margin: 0;
   padding: 0;
-  margin
+}
+
+.control-panel, .settings-panel{
+  padding: 0;
+}
+
+.list-group-item button i{
+  float: left;
+  margin-top: 4px;
 }
 
 .navbar-container{
@@ -49,7 +59,7 @@ ul, .navbar-right{
   margin: 0;
 }
 
-.navbar-brand:hover{
+.navbar-brand:hover, .navbar-brand:focus{
   color: #eeeeee !important;
 }
 
@@ -160,9 +170,11 @@ ul, .navbar-right{
   padding-bottom: 21px;
 }
 
-.post:hover {
+.post:hover, .post.hover {
   background-color: #3b536b;
 }
+
+
 .post:active {
   background-color: #317589;
 }
@@ -349,9 +361,7 @@ textarea.parsley-success {
   font-weight: 500;
   font-size: 28px;
 }
-.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
-  color: #18bc9c;
-}
+
 .navbar-default .navbar-text {
   color: #eeeeee;
 }

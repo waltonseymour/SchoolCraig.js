@@ -8,6 +8,9 @@ router.get('/', function (req, res) { controller.listAll(req, res); });
 // Retreives post by id
 router.get('/:id', controller.getByID);
 
+// Searches posts by full text
+router.get('/search/:query', controller.search);
+
 // Modifies post by id
 router.put('/:id', controller.putByID);
 
