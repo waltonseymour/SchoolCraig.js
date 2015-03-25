@@ -253,8 +253,13 @@
 
   function renderPostModal(data) {
     var title = data.title;
-    if (data.price > 0) {
-      title += " - $" + data.price;
+    var price = data.price;
+    if (price > 1000){
+      price = numeral(price).format('$0.0a').toUpperCase();
+      title += " - " + price;
+    }
+    else if (price > 0){
+      title += " - $" + price;
     }
     if (data.user.id === $('#user-id').val()) {
       $('.delete').show();
