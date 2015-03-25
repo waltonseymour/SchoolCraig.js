@@ -4,11 +4,20 @@
       data-photo="<%= posts[i].photos[0].id %>"
     <% } %>
   >
-    <div class="col-sm-10"><h3><%= posts[i].title%></h3>
-      <div class="row"><div class="col-sm-10"><h5><%= posts[i].description%></h5></div></div>
+    <div class="col-sm-10">
+      <h3 class="post-title truncate">
+        <%= posts[i].title%>
+      </h3>
+      <div class="row">
+        <div class="col-sm-10">
+          <h5 class="post-description truncate">
+            <%= posts[i].description%>
+          </h5>
+        </div>
+      </div>
     </div>
-    <% var price = posts[i].price > 0 ? '$' + posts[i].price : 'Free'; %>
-    <div class="col-sm-2 bg-success price"><h4><%= price %></h4></div>
+
+    <div class="col-sm-2 bg-success price"><h4><%= posts[i].price %></h4></div>
   </div>
   <hr class="end-post row">
 <% } %>

@@ -222,6 +222,18 @@
 
   $('#logout').click(logout);
 
+  function formatPrice(price){
+    if (price > 1000){
+      return numeral(price).format('$0a').toUpperCase();
+    }
+    else if (price > 0){
+      return '$' + price;
+    }
+    else{
+      return "Free";
+    }
+  }
+
   function changePage(isNext){
     var options = getCurrentOptions();
     options.page = isNext ? options.page + 1 : options.page - 1;
@@ -254,12 +266,9 @@
   function renderPostModal(data) {
     var title = data.title;
     var price = data.price;
-    if (price > 1000){
-      price = numeral(price).format('$0.0a').toUpperCase();
-      title += " - " + price;
-    }
-    else if (price > 0){
-      title += " - $" + price;
+    price = formatPrice(price);
+    if (price != "Free"){
+      title += ' - ' + price;
     }
     if (data.user.id === $('#user-id').val()) {
       $('.delete').show();
@@ -286,7 +295,11 @@
       POST_CACHE[post.id] = _.omit(post, 'id');
     });
     addMarkers(data);
-    var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: data});
+    var temp = _.map(data, function(post){
+      post.price = formatPrice(post.price);
+      return post;
+    });
+    var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: temp});
     var $container  = $('#post-container .posts');
     $container.fadeOut(200, function(){
       $container.html(posts);
