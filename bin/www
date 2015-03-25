@@ -5,20 +5,23 @@ var models = require('../models');
 var fs = require('fs');
 var http = require('http');
 var https = require('https');
-var privateKey  = fs.readFileSync('/root/trybazaar.com.key', 'utf8');
-var certificate = fs.readFileSync('/root/trybazaar.com.crt', 'utf8');
-var interCA = fs.readFileSync('/root/trybazaar.com.intca.crt', 'utf8');
-
-var options = {
-    key: privateKey,
-    cert: certificate,
-    ca: interCA
-};
+if (process.NODE_ENV === 'production'){
+  var privateKey  = fs.readFileSync('/root/trybazaar.com.key', 'utf8');
+  var certificate = fs.readFileSync('/root/trybazaar.com.crt', 'utf8');
+  var interCA = fs.readFileSync('/root/trybazaar.com.intca.crt', 'utf8');
+  var options = {
+      key: privateKey,
+      cert: certificate,
+      ca: interCA
+  };
+}
 
 app.set('port', process.env.PORT || 3000);
 models.sequelize.sync().then(function () {
   var httpServer = http.createServer(app);
-  var httpsServer = https.createServer(options, app);
+  if (process.NODE_ENV === 'production'){
+    var httpsServer = https.createServer(options, app);
+    httpsServer.listen(443);
+  }
   httpServer.listen(app.get('port'));
-  httpsServer.listen(443);
 });

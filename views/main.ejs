@@ -37,7 +37,7 @@
       ga('send', 'pageview');
 
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"></script>
   </head>
   <body>
     <input type="hidden" id="user-id" value="<%=userID%>"></input>
@@ -145,10 +145,6 @@
                       <input type="radio" name='order' value="createdAt" checked="checked">Date
                       <input type="radio" name='order' value="price">Price
                   </div>
-                  <div class="list-group-item form-inline">
-                    <i class="fa fa-map-marker"></i>
-                    <input type="range" class='form-control'>
-                </div>
                 </div>
               </div>
             </div>

@@ -14,9 +14,19 @@
     };
     globals.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     globals.markers = [];
+
+    google.maps.event.addListener(globals.map, 'idle', function() {
+      var bounds = globals.map.getBounds();
+      var center = globals.map.getCenter();
+      globals.latitude = center.lat();
+      globals.longitude = center.lng();
+      var distance = google.maps.geometry.spherical.computeDistanceBetween(bounds.getNorthEast(), bounds.getSouthWest());
+      globals.radius = distance*0.000621371192;
+      getPosts();
+    });
   }
 
-  function addMarkers(posts){
+  function addMarkers(posts, initial){
     _.each(globals.markers, function(marker){
       marker.setMap(null);
     });
@@ -25,7 +35,7 @@
       var marker = new google.maps.Marker({
         position: { lat: post.latitude, lng: post.longitude},
         map: globals.map,
-        animation: google.maps.Animation.DROP
+        animation: initial ? google.maps.Animation.DROP : null
       });
       marker.postID = post.id;
       google.maps.event.addListener(marker, 'mouseover', function(marker) {
@@ -79,7 +89,7 @@
       order: $('input[type=radio][name=order]:checked').val(),
       latitude: globals.latitude,
       longitude: globals.longitude,
-      radius: $('input[type=range]').val()
+      radius: globals.radius || 20
     });
     return options;
   }
@@ -107,10 +117,6 @@
   $('input[type=radio][name=order]').change(function() {
     // resets page to 1 on ordering change
     getPosts(getCurrentOptions({page: 1}));
-  });
-
-  $('input[type=range]').change(function() {
-    getPosts(getCurrentOptions());
   });
 
   $('body').on('click', '.modal', function (event) {
@@ -300,10 +306,17 @@
   }
 
   function renderPosts (data) {
+    var initial = !globals.current_posts;
+    if (_.isEqual(globals.current_posts, _.map(data, function(post){return post.id;}))){
+      return;
+    }
+    globals.current_posts = _.map(data, function(post){
+      return post.id;
+    });
     _.each(data, function(post){
       POST_CACHE[post.id] = _.omit(post, 'id');
     });
-    addMarkers(data);
+    addMarkers(data, initial);
     var temp = _.map(data, function(post){
       post.price = formatPrice(post.price);
       return post;
