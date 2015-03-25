@@ -7,10 +7,12 @@ var http = require('http');
 var https = require('https');
 var privateKey  = fs.readFileSync('/root/trybazaar.com.key', 'utf8');
 var certificate = fs.readFileSync('/root/trybazaar.com.crt', 'utf8');
+var interCA = fs.readFileSync('/root/trybazaar.com.intca.crt', 'utf8');
 
 var options = {
     key: privateKey,
-    cert: certificate
+    cert: certificate,
+    ca: interCA
 };
 
 app.set('port', process.env.PORT || 3000);
