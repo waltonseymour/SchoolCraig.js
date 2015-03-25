@@ -5,7 +5,7 @@ var models = require('../models');
 var fs = require('fs');
 var http = require('http');
 var https = require('https');
-if (process.NODE_ENV === 'production'){
+if (process.env.NODE_ENV === 'production'){
   var privateKey  = fs.readFileSync('/root/trybazaar.com.key', 'utf8');
   var certificate = fs.readFileSync('/root/trybazaar.com.crt', 'utf8');
   var interCA = fs.readFileSync('/root/trybazaar.com.intca.crt', 'utf8');
@@ -19,7 +19,7 @@ if (process.NODE_ENV === 'production'){
 app.set('port', process.env.PORT || 3000);
 models.sequelize.sync().then(function () {
   var httpServer = http.createServer(app);
-  if (process.NODE_ENV === 'production'){
+  if (process.env.NODE_ENV === 'production'){
     var httpsServer = https.createServer(options, app);
     httpsServer.listen(443);
   }
