@@ -65,6 +65,10 @@
     globals.longitude = crd.longitude;
     getPosts();
     initializeMap();
+  },
+  function(error){
+    console.log(error);
+    swal("Oops...", "You must have location enabled to see posts around you", "error");
   });
 
   function getCurrentOptions(overrides){
@@ -382,11 +386,11 @@
     });
   }
 
-  function getLocation(callback) {
+  function getLocation(callback, error) {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(callback);
+      navigator.geolocation.getCurrentPosition(callback, error);
     } else {
-      // get location from IP
+      // handle unsupported browser
     }
   }
 
