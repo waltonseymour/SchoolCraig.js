@@ -156,10 +156,10 @@ function createUser (req, res, user) {
     user.activated = process.env.NODE_ENV !== 'production';
     models.User.create(user).then(function (){
       if(!user.activated){
-        var url = "http://getbazaar.io/users/activate/" + user.id + '?key=' + crypto.createHash('sha256').update(salt).digest('hex');
+        var url = "https://trybazaar/users/activate/" + user.id + '?key=' + crypto.createHash('sha256').update(salt).digest('hex');
         sendgrid.send({
           to: user.email,
-          from: 'noreply@heroku.com',
+          from: 'noreply@trybazaar.com',
           subject: 'Account Activation',
           html: 'Please click <a href="'+ url +'">here</a> to confirm your email.'
         }, function(err, json){
