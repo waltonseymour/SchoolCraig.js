@@ -35,6 +35,7 @@ h1, h2, h3, h4, h5, h6{
   padding: 0;
 }
 
+
 .list-group-item button i{
   float: left;
   margin-top: 4px;
@@ -224,6 +225,15 @@ ul, .navbar-right{
   margin-top: -6px;
 }
 
+#category-filter{
+  width: calc(100% - 20px);
+  margin-left: 2px;
+}
+
+input[type="radio"]{
+  margin-left: 25px;
+}
+
 #login-dropdown-menu{
   left: -124px;
   padding: 15px;
@@ -290,6 +300,7 @@ ul, .navbar-right{
     margin-right: 0;
   }
   #category-filter{
+    display: inline-block !important;
     margin-left: 0;
   }
   .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1,
