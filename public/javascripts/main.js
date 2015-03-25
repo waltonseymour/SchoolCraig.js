@@ -210,6 +210,10 @@
 
   $('#search-form').submit(function () {
     var query = $('input[type=search]').val();
+    if(query === ""){
+      getPosts();
+      return false;
+    }
     $.ajax({
       url: 'posts/search/' + query,
       type: 'GET',
@@ -235,6 +239,7 @@
   }
 
   function changePage(isNext){
+    if ($(".no-posts-warning")[0] && isNext){ return; }
     var options = getCurrentOptions();
     options.page = isNext ? options.page + 1 : options.page - 1;
     if(options.page > 0){

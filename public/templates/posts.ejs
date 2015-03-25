@@ -1,3 +1,10 @@
+<% if (posts.length == 0) { %>
+  <div class="row bg-danger">
+    <div class="col-sm-12 no-posts-warning">
+      <i class="fa fa-exclamation-circle"></i> No posts found
+    </div>
+  </div>
+<% } %>
 <% for (var i = 0; i < posts.length; i++) {  %>
   <div class="row post" data-id="<%= posts[i].id %>"
     <% if (posts[i].photos[0]){ %>
@@ -16,7 +23,6 @@
         </div>
       </div>
     </div>
-
     <div class="col-sm-2 bg-success price"><h4><%= posts[i].price %></h4></div>
   </div>
   <hr class="end-post row">
