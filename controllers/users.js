@@ -156,7 +156,7 @@ function createUser (req, res, user) {
     user.activated = process.env.NODE_ENV !== 'production';
     models.User.create(user).then(function (){
       if(!user.activated){
-        var url = "https://trybazaar/users/activate/" + user.id + '?key=' + crypto.createHash('sha256').update(salt).digest('hex');
+        var url = "https://trybazaar.com/users/activate/" + user.id + '?key=' + crypto.createHash('sha256').update(salt).digest('hex');
         sendgrid.send({
           to: user.email,
           from: 'noreply@trybazaar.com',
