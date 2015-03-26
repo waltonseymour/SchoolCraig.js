@@ -15,6 +15,13 @@
     $('#signup-email').focus();
   });
 
+  $('body').on('click', '.modal', function (event) {
+    if(typeof $(event.target).attr('id') != 'undefined'){
+      $(event.target).modal('hide');
+    }
+  });
+
+
   // custom student email validation
   window.ParsleyValidator.addValidator('student',
   function (val) {

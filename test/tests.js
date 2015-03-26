@@ -15,18 +15,18 @@ describe("Test Suite", function(){
     var app = require('../app');
     app.set('port', process.env.PORT || 3000);
     var server = app.listen(app.get('port'));
-    var user = {"id": userID, "email": "test@test.com", "password": "password"};
+    var user = {"id": userID, "email": "test@test.edu", "password": "password"};
     // deletes any test users
     var chainer = new sequelize.Utils.QueryChainer();
 
     chainer.add(models.Category.destroy({where: {name: 'test'}}));
-    chainer.add(models.User.destroy({where: {email: "test@test.com"}}));
+    chainer.add(models.User.destroy({where: {email: "test@test.edu"}}));
     chainer.runSerially().done(function(ret){
      // creates a new user
       request.post(host + '/users').send(user).end(function(e, res){
         expect(e).to.equal(null);
         expect(res.statusCode).to.equal(204);
-        request.post(host + '/users/auth').send({"email": "test@test.com", "password": "password"}).end(function(e, res){
+        request.post(host + '/users/auth').send({"email": "test@test.edu", "password": "password"}).end(function(e, res){
           expect(e).to.equal(null);
           expect(res.statusCode).to.equal(200);
           request.saveCookies(res);
@@ -44,7 +44,7 @@ describe("Test Suite", function(){
   // cleans up test data
   after(function (done) {
     var chainer = new sequelize.Utils.QueryChainer();
-    chainer.add(models.User.destroy({where: {email: "test@test.com"}}));
+    chainer.add(models.User.destroy({where: {email: "test@test.edu"}}));
     chainer.add(models.Category.destroy({where: {name: 'test'}}));
     chainer.runSerially().done(function(data) {
       done();
@@ -57,7 +57,7 @@ describe("Test Suite", function(){
       expect(e).to.equal(null);
       expect(res.statusCode).to.equal(200);
       expect(res.body.id).to.equal(userID);
-      expect(res.body.email).to.equal('test@test.com');
+      expect(res.body.email).to.equal('test@test.edu');
       done();
     });
   });
@@ -73,7 +73,7 @@ describe("Test Suite", function(){
 
   // tests resetting password
   it("should allow users to reset passwords", function(done){
-    var newUser = {"id": userID, "email": "test@test.com", "password": "password",
+    var newUser = {"id": userID, "email": "test@test.edu", "password": "password",
     "new_password": "new_password"};
     request.put(host + '/users/' + userID).send(newUser).end(function (e, res){
       expect(e).to.equal(null);
