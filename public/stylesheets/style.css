@@ -263,6 +263,10 @@ input[type="radio"]{
   margin-bottom: 5px;
 }
 
+#post-modal .modal-body{
+  white-space: pre-wrap;
+}
+
 .modal-backdrop {
   position: fixed;
   top: 0;
