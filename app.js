@@ -29,6 +29,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// forces SSL
+app.use(function(req, res, next) {
+  if(!req.secure && process.env.NODE_ENV === 'production') {
+    return res.redirect(['https://', req.get('Host'), req.url].join(''));
+  }
+  next();
+});
+
 app.use('/', routes);
 app.use('/users', users);
 app.use('/posts', posts);
