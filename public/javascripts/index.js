@@ -60,9 +60,8 @@
         swal("Success!", "Please check your email to confirm your account.", "success");
       },
       error: function(err) {
-        console.log("signup failed");
         $('#signup-modal').modal('hide');
-        swal("Error!", "Please make sure you have not already signed up with this email.", "error");
+        swal("Oops!", "Please make sure you have not already signed up with this email.", "error");
       }
     });
   }
@@ -74,7 +73,9 @@
       type: 'POST',
       data: data,
       success: function() { location.reload(); },
-      error: function(err) { console.log("login failed");}
+      error: function(err) {
+        swal("Oops!", "Your email or password did not match.", "error");
+      }
     });
   }
 }());
