@@ -64,7 +64,7 @@ module.exports = {
         var salt = user.salt;
         var DBPassword = user.password;
         var password = crypto.createHash('sha256').update(salt + newUser.password).digest('hex');
-        if (password === DBPassword){
+        if (password === DBPassword || req.session.resetPassword){
           user.password = crypto.createHash('sha256').update(salt + newUser.new_password).digest('hex');
           user.save().then(function() {
             res.status(200).end();
