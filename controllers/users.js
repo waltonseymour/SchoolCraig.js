@@ -41,7 +41,7 @@ module.exports = {
       if (!user || !user.activated) { return res.send(401); }
       var salt = user.salt;
       var DBPassword = user.password;
-      password = crypto.createHash('sha256').update(salt + password).digest('hex');
+      password = utils.SHA256(salt + password);
 
       // returns 401 if password is incorrect
       if (password !== DBPassword) { return res.send(401); }
@@ -57,22 +57,28 @@ module.exports = {
 
   // changes password
   putByID: function (req, res) {
-    if (req.session.userID !== req.params.id) { return res.send(403); }
+    var authenticated = req.session.userID === req.params.id ||
+      req.session.forgotPassword === req.params.id;
+    if (!authenticated) {
+      return res.send(403);
+    }
     var newUser = req.body;
     models.User.find({where: {id: req.params.id}}).then(function (user) {
-      if(newUser.password && newUser.new_password){
-        var salt = user.salt;
-        var DBPassword = user.password;
-        var password = crypto.createHash('sha256').update(salt + newUser.password).digest('hex');
-        if (password === DBPassword){
-          user.password = crypto.createHash('sha256').update(salt + newUser.new_password).digest('hex');
-          user.save().then(function() {
-            res.status(200).end();
-          });
-        }
-        else{
-          res.status(401).end();
-        }
+      if (!user) { return res.status(401).end(); }
+      var salt = user.salt;
+      var DBPassword = user.password;
+      var password;
+      if (newUser.password) {
+        password = utils.SHA256(salt + newUser.password);
+      }
+      if (password === DBPassword || req.session.forgotPassword) {
+        user.password = utils.SHA256(salt + newUser.new_password);
+        user.save().then(function() {
+          if (req.session.forgotPassword){
+            req.session = null;
+          }
+          res.status(200).end();
+        });
       }
       else{
         res.status(401).end();
@@ -128,9 +134,8 @@ module.exports = {
 
   activate: function (req, res) {
     if (!utils.isUUID(req.params.id)) { return res.send(401); }
-
     models.User.find({where: {id: req.params.id}}).then(function (user) {
-      if (user && crypto.createHash('sha256').update(user.salt).digest('hex') === req.query.key) {
+      if (user && utils.SHA256(user.salt) === req.query.key) {
         user.activated = true;
         user.save().then(function (){
           req.session.userID = user.id;
@@ -148,7 +153,7 @@ module.exports = {
 function createUser (req, res, user) {
   if (user.email && user.password) {
     var salt = crypto.randomBytes(16).toString('hex');
-    var password = crypto.createHash('sha256').update(salt + user.password).digest('hex');
+    var password = utils.SHA256(salt + user.password);
     user.id = user.id || uuid.v4();
     user.salt = salt;
     user.password = password;
@@ -156,7 +161,7 @@ function createUser (req, res, user) {
     user.activated = process.env.NODE_ENV !== 'production';
     models.User.create(user).then(function (){
       if(!user.activated){
-        var url = "https://trybazaar.com/users/activate/" + user.id + '?key=' + crypto.createHash('sha256').update(salt).digest('hex');
+        var url = "https://trybazaar.com/users/activate/" + user.id + '?key=' + utils.SHA256(salt);
         sendgrid.send({
           to: user.email,
           from: 'noreply@trybazaar.com',

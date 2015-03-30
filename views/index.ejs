@@ -39,28 +39,28 @@
 
 <body>
   <div class="modal fade" id="signup-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-              <h4 class="modal-title">Sign Up</h4>
-            </div>
-            <form id="signup-form">
-              <div class="modal-body">
-                  <input class="form-control" id="signup-email" type="email" placeholder="University Email" data-parsley-student required
-                  data-parsley-required-message="Looks like you forgot to fill this out">
-                  <input class="form-control" id="signup-password" type="password" placeholder="Password" required data-parsley-minlength="6"
-                   data-parsley-required-message="Looks like you forgot to fill this out">
-                  <input class="form-control" id="signup-password-confirm" type="password" placeholder="Confirm Password" required data-parsley-equalto="#signup-password"
-                  data-parsley-required-message="Looks like you forgot to fill this out">
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" id="signup-submit" class="btn btn-primary">Submit</button>
-              </div>
-            </form>
-          </div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          <h4 class="modal-title">Sign Up</h4>
         </div>
+        <form id="signup-form">
+          <div class="modal-body">
+            <input class="form-control" id="signup-email" type="email" placeholder="University Email" data-parsley-student required
+            data-parsley-required-message="Looks like you forgot to fill this out">
+            <input class="form-control" id="signup-password" type="password" placeholder="Password" required data-parsley-minlength="6"
+             data-parsley-required-message="Looks like you forgot to fill this out">
+            <input class="form-control" id="signup-password-confirm" type="password" placeholder="Confirm Password" required data-parsley-equalto="#signup-password"
+            data-parsley-required-message="Looks like you forgot to fill this out">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" id="signup-submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
   <div class="main">
     <div class="container-narrow">
@@ -72,6 +72,7 @@
                     <input class="form-control" name="email" type="email" placeholder="Email" id="login-email" required>
                     <input class="form-control" name="password" type="password" placeholder="Password" id="login-password" required>
                     <button class="form-control btn btn-primary btn-block" type="submit" id="login-submit">Sign In</button>
+                    <a href="/forgot_password" class="pull-right">Forgot your password?</a>
                   </form>
                 </li>
             </ul>
@@ -103,7 +104,7 @@
       </div>
       <hr>
       <div class="footer">
-          <p>&copy; Bazaar 2014</p>
+        <p>&copy; Bazaar 2015</p>
       </div>
   </div>
   <!-- /container -->
