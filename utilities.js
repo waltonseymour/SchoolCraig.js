@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var crypto = require('crypto');
 var aws = require('aws-sdk');
 aws.config.reigon = 'us-west-2';
 var s3 = new aws.S3({params: {Bucket: process.env.S3_BUCKET}});
@@ -7,6 +8,10 @@ module.exports = {
   isUUID: function (id) {
     var regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return id ? !!id.match(regex) : false;
+  },
+
+  SHA256: function(text){
+    return crypto.createHash('sha256').update(text).digest('hex');
   },
 
   isValidCoordinate: function(lat, lon){
