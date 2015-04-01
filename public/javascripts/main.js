@@ -308,6 +308,7 @@
     if (data.photos[0]) {
       var url = '/posts/' + data.id + '/photos/' + data.photos[0].id;
       $('#post-modal .modal-image').attr("src", url).show();
+      $('#post-modal .modal-tumbnail').attr("src", url).show();
     }
     else {
       $('#post-modal .modal-image').hide();
