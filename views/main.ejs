@@ -41,12 +41,11 @@
   </head>
   <body>
     <input type="hidden" id="user-id" value="<%=userID%>"></input>
-    <div class="container">
-      <div class="row">
-        <div class="col-xs-12 navbar-container">
-          <nav class="navbar navbar-default" role="navigation">
-            <a class="navbar-brand" href="/">Bazaar</a>
-            <div class="">
+
+        <nav class="navbar navbar-default" role="navigation">
+          <div class="container">
+            <div class="row">
+              <a class="navbar-brand" href="/">Bazaar</a>
               <ul class="nav navbar-nav navbar-right mynavbar">
                 <li>
                   <a href="#" id="create" data-toggle="modal" data-target="#create-modal"><i class="fa fa-plus-circle fa-lg"></i></a>
@@ -69,10 +68,13 @@
                   </div>
                 </div>
               </form>
-            </div><!-- /.navbar-collapse -->
-          </nav><!-- /navbar -->
-        </div>
-      </div>
+            </div>
+          </div><!-- /.navbar-collapse -->
+        </nav><!-- /navbar -->
+
+
+    <div class="container">
+
 
       <!-- Create Modal -->
       <div class="modal fade" id="create-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -128,7 +130,7 @@
           </div>
         </div>
       </div>
-        <div class="row">
+      <div class="row main-content">
           <div class="col-md-3">
             <div class="control-panel row panel panel-success">
               <div class="panel-heading">
@@ -153,7 +155,6 @@
                 </div>
               </div>
             </div>
-
             <div class="row panel panel-info">
               <div class="panel-heading">
                 Map
@@ -162,13 +163,9 @@
                 <div id="map-canvas"></div>
               </div>
             </div>
-
           </div>
-
-          <div id="post-container" class="col-md-7 col-md-offset-1 bg-primary">
-            <div class="posts">
-            </div>
-
+          <div id="post-container" class="col-md-8 col-md-offset-1 bg-primary">
+            <div class="posts"></div>
             <nav>
               <ul class="pager">
                 <li class="previous"><a href="#" onclick="this.blur();"><span aria-hidden="true">&larr;</span> Newer</a></li>
