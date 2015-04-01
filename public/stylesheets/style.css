@@ -276,10 +276,6 @@ input[type="radio"]{
   margin-bottom: 5px;
 }
 
-#post-modal .modal-body{
-  white-space: pre-wrap;
-}
-
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -302,6 +298,10 @@ input[type="radio"]{
   width: 60%;
 }
 
+.modal-body{
+  overflow-y: auto;
+}
+
 .modal-title{
   font-weight: 600;
   font-size: 20px;
@@ -310,7 +310,6 @@ input[type="radio"]{
 .modal-image{
   width: 60%;
   height: auto;
-  margin-top: 20px;
   margin-left: 20%;
   border: 1px #18bc9c solid;
   border-radius: 3px;

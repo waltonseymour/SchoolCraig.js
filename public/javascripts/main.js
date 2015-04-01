@@ -236,6 +236,19 @@
 
   $('#logout').click(logout);
 
+  $(document).ready(function(){
+    resizeModal();
+  });
+
+  window.onresize = function(event) {
+    resizeModal();
+  };
+
+  function resizeModal(){
+    var vph = $(window).height();
+    $('.modal-body').css({'max-height': (vph - 200) + 'px'});
+  }
+
   function formatPrice(price){
     if (price > 1000){
       return numeral(price).format('$0a').toUpperCase();
@@ -291,7 +304,7 @@
       $('.delete').hide();
     }
     $('#post-modal .modal-title').text(title);
-    $('#post-modal .modal-body').text(data.description);
+    $('#post-modal .modal-body .post-description').text(data.description);
     if (data.photos[0]) {
       var url = '/posts/' + data.id + '/photos/' + data.photos[0].id;
       $('#post-modal .modal-image').attr("src", url).show();
