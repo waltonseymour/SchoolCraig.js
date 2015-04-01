@@ -281,8 +281,7 @@
   function renderPostModal(data) {
     var title = data.title;
     var price = data.price;
-    price = formatPrice(price);
-    if (price != "Free"){
+    if (price !== "Free"){
       title += ' - ' + price;
     }
     if (data.user.id === $('#user-id').val()) {
@@ -314,7 +313,7 @@
       return post.id;
     });
     _.each(data, function(post){
-      POST_CACHE[post.id] = _.omit(post, 'id');
+      POST_CACHE[post.id] = post;
     });
     addMarkers(data, initial);
     var temp = _.map(data, function(post){

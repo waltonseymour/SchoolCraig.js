@@ -189,6 +189,10 @@ ul, .navbar-right{
   padding-bottom: 21px;
 }
 
+.post-title{
+  font-weight: 600;
+}
+
 .post:hover, .post.hover {
   background-color: #3b536b;
 }
@@ -294,11 +298,22 @@ input[type="radio"]{
   filter: alpha(opacity=80);
 }
 
+.modal-dialog{
+  width: 60%;
+}
+
+.modal-title{
+  font-weight: 600;
+  font-size: 20px;
+}
+
 .modal-image{
-  width: 50%;
+  width: 60%;
   height: auto;
   margin-top: 20px;
-  margin-left: 25%;
+  margin-left: 20%;
+  border: 1px #18bc9c solid;
+  border-radius: 3px;
 }
 
 @media (max-width: 983px) {
