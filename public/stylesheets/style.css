@@ -294,6 +294,13 @@ input[type="radio"]{
   filter: alpha(opacity=80);
 }
 
+.modal-image{
+  width: 50%;
+  height: auto;
+  margin-top: 20px;
+  margin-left: 25%;
+}
+
 @media (max-width: 983px) {
   .jumbotron h1{
     font-size: 65px;
