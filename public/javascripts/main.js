@@ -305,10 +305,16 @@
     }
     $('#post-modal .modal-title').text(title);
     $('#post-modal .modal-body .post-description').text(data.description);
+    $('#post-modal .modal-thumbnails').html('');
     if (data.photos[0]) {
       var url = '/posts/' + data.id + '/photos/' + data.photos[0].id;
       $('#post-modal .modal-image').attr("src", url).show();
-      $('#post-modal .modal-tumbnail').attr("src", url).show();
+      for (var i = 0; i< data.photos.length; i++) {
+        url = '/posts/' + data.id + '/photos/' + data.photos[0].id;
+        var img = '<img class="modal-thumbnail" src="'+ url +'">';
+        $('#post-modal .modal-thumbnails').append(img);
+      }
+
     }
     else {
       $('#post-modal .modal-image').hide();
