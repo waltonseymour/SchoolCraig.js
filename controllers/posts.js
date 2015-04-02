@@ -26,6 +26,7 @@ module.exports = {
     var postsPerPage = req.param('postsPerPage') || 5;
     var latitude = req.param('latitude');
     var longitude = req.param('longitude');
+    var user = req.param('user');
     // radius of search in miles
     var radius = req.param('radius') || 100;
     if (!util.isValidCoordinate(latitude, longitude)) {
@@ -46,6 +47,11 @@ module.exports = {
       options.where[0] += " and category_id = ?";
       options.where.push(category);
     }
+
+    if (util.isUUID(user)){
+      options.where = ["user_id = ?", user];
+    }
+
     // page number starts at 1
     if (page && !isNaN(page) && page > 1){
       options = _.extend(options, {offset: (page - 1) * postsPerPage});
@@ -86,12 +92,15 @@ module.exports = {
     });
   },
 
+  getByUser: function(req, res){
+    req.params.user = req.params.id;
+    module.exports.listAll(req, res);
+  },
+
   // searches by full text
   search: function(req, res){
     if (req.session.userID === undefined) { return res.status(403).end(); }
     var query = req.params.query;
-
-    console.log(query);
     var options = {where: ["tsv @@ plainto_tsquery('english', ?)", query],
     include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
