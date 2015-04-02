@@ -26,6 +26,7 @@ module.exports = {
     var postsPerPage = req.param('postsPerPage') || 5;
     var latitude = req.param('latitude');
     var longitude = req.param('longitude');
+    var user = req.param('user');
     // radius of search in miles
     var radius = req.param('radius') || 100;
     if (!util.isValidCoordinate(latitude, longitude)) {
@@ -46,6 +47,11 @@ module.exports = {
       options.where[0] += " and category_id = ?";
       options.where.push(category);
     }
+
+    if (util.isUUID(user)){
+      options.where = ["user_id = ?", user];
+    }
+
     // page number starts at 1
     if (page && !isNaN(page) && page > 1){
       options = _.extend(options, {offset: (page - 1) * postsPerPage});
@@ -86,12 +92,15 @@ module.exports = {
     });
   },
 
+  getByUser: function(req, res){
+    req.params.user = req.params.id;
+    module.exports.listAll(req, res);
+  },
+
   // searches by full text
   search: function(req, res){
     if (req.session.userID === undefined) { return res.status(403).end(); }
     var query = req.params.query;
-
-    console.log(query);
     var options = {where: ["tsv @@ plainto_tsquery('english', ?)", query],
     include: [
       {model: models.User, as: 'user', attributes: userOptions.attributes},
@@ -169,29 +178,44 @@ module.exports = {
   // inserts row into database and returns presigned url for uploading
   upload: function(req, res) {
     if (req.session.userID === undefined) { return res.send(403); }
-    if (!util.isUUID(req.params.id) || !req.body.contentType) { return res.send(401); }
-    var photoID = req.body.id || uuid.v4();
-    var postID = req.params.id;
-    var photo = { id: photoID, post_id: postID };
-    models.Post.find({where: {id: postID}})
-    .then(function (post) {
-      return post && post.user_id === req.session.userID;
-    })
-    .then(function (valid){
-      if (valid) {
-        models.Photo.create(photo)
-        .then(function (ret) {
-          var contentType = req.body.contentType;
-          var options = {key: 'bazaar/' + photoID, method: 'put', contentType: contentType};
-          util.sign_s3(options, function (data) {
-            res.send(data);
-          });
+    if (!util.isUUID(req.params.id)) { return res.send(401); }
+    if (_.isArray(req.body)){
+      var payload = [];
+      async.each(req.body, function(item, callback){
+        var photo = {
+          id: item.id || uuid.v4(),
+          post_id: req.params.id,
+          contentType: item.contentType
+        };
+        createPhoto(req, res, photo, function(url, error){
+          if(error){
+            callback("createPhoto failed");
+          }
+          else{
+            payload.push(url);
+            callback();
+          }
         });
-      }
-      else {
-        return res.status(403).end();
-      }
-    });
+      }, function(err){
+        if(err){
+          console.log(err);
+          res.status(401).end();
+        }
+        else{
+          res.send(payload);
+        }
+      });
+    }
+    else{
+      var photo = {
+        id: req.body.id || uuid.v4(),
+        post_id: req.params.id,
+        contentType: req.body.contentType
+      };
+      createPhoto(req, res, photo, function(url){
+        res.send(url);
+      });
+    }
   },
 
   // returns a list of presigned urls associated with a post
@@ -224,6 +248,34 @@ module.exports = {
   }
 
 };
+
+// should use bulkCreate in the future
+function createPhoto (req, res, photo, callback){
+  models.Post.find({where: {id: photo.post_id}})
+  .then(function (post) {
+    return post && post.user_id === req.session.userID;
+  })
+  .then(function (valid){
+    if (valid) {
+      models.Photo.create(photo)
+      .then(function (ret) {
+        var options = {
+          key: 'bazaar/' + photo.id,
+          method: 'put',
+          contentType: photo.contentType};
+        util.sign_s3(options, function (data) {
+          callback(data);
+        });
+      }).catch(function(error){
+        console.log(error);
+        callback(null, error);
+      });
+    }
+    else {
+      callback(null, "unauthorized");
+    }
+  });
+}
 
 // Creates post with sepecified fields
 function CreatePost (req, res, post) {
