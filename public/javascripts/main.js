@@ -1,6 +1,27 @@
 (function() {
   "use strict";
 
+  $(function () {
+      $('#create-file').fileupload({
+          dataType: 'json',
+          add: function(e, data){
+            console.log(data);
+            data.submit();
+          },
+          submit: function(e, data){
+            console.log('submitting');
+            return false;
+          },
+
+          done: function (e, data) {
+            console.log('done');
+              $.each(data.result.files, function (index, file) {
+                  $('<p/>').text(file.name).appendTo(document.body);
+              });
+          }
+      });
+  });
+
   // Stores JSON data for posts
   var POST_CACHE = {};
 
