@@ -1,27 +1,6 @@
 (function() {
   "use strict";
 
-  $(function () {
-      $('#create-file').fileupload({
-          dataType: 'json',
-          add: function(e, data){
-            console.log(data);
-            data.submit();
-          },
-          submit: function(e, data){
-            console.log('submitting');
-            return false;
-          },
-
-          done: function (e, data) {
-            console.log('done');
-              $.each(data.result.files, function (index, file) {
-                  $('<p/>').text(file.name).appendTo(document.body);
-              });
-          }
-      });
-  });
-
   // Stores JSON data for posts
   var POST_CACHE = {};
 
@@ -224,6 +203,26 @@
     errorClass: 'error'
   });
 
+  $(function () {
+    $('#create-file').fileupload({
+      dataType: 'json',
+      add: function(e, data){
+        if (data.files && data.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            $('#target').attr('src', e.target.result);
+          };
+          reader.readAsDataURL(data.files[0]);
+          if(!globals.uploadFiles){
+            globals.uploadFiles = [];
+          }
+          globals.uploadFiles.push(data.files[0]);
+        }
+      }
+    });
+  });
+
+
   $('#create-form').submit(function () {
     var post = {};
     post.id =  uuid.v4();
@@ -331,7 +330,7 @@
       var url = '/posts/' + data.id + '/photos/' + data.photos[0].id;
       $('#post-modal .modal-image').attr("src", url).show();
       for (var i = 0; i< data.photos.length; i++) {
-        url = '/posts/' + data.id + '/photos/' + data.photos[0].id;
+        url = '/posts/' + data.id + '/photos/' + data.photos[i].id;
         var img = '<img class="modal-thumbnail" src="'+ url +'">';
         $('#post-modal .modal-thumbnails').append(img);
       }
@@ -375,59 +374,61 @@
       type: 'POST',
       data: post,
       success: function(){
-        getSignedUrl(post.id);
+        getSignedUrls(post.id);
       },
       error: function(err) { console.log("create post failed"); }
     });
   }
 
-  function getSignedUrl(postID) {
-    var contentType = $('#create-file').val().split('.').pop();
-    if (!contentType) {
-      location.reload();
-      return;
-    }
-    var MIME = {
-      "jpg": 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'png': 'image/png'
-    };
-    contentType = MIME[contentType];
-    var photo = {contentType: contentType};
+  function getSignedUrls(postID) {
+    var contentType = globals.uploadFiles[0].type;
+    var photos = _.map(globals.uploadFiles, function(file){
+      return {contentType: file.type};
+    });
     $.ajax({
       url: 'posts/' + postID + '/photos',
       type: 'POST',
-      data: photo,
-      success: function(url) {
-        uploadFile({url: url, contentType: contentType});
+      contentType: "application/json",
+      data: JSON.stringify(photos),
+      success: function(urls) {
+        var temp = [];
+        for (var i=0; i<urls.length; i++){
+          temp.push(_.extend({}, photos[i], {url: urls[i]}));
+        }
+        uploadFiles(temp);
       },
       error: function(err) { console.log("get signed url failed"); }
     });
   }
 
-  function uploadFile(options) {
-    var file = document.getElementById('create-file').files[0];
-    $.ajax({
-      xhr: function() {
-        var xhr = new window.XMLHttpRequest();
-        xhr.upload.addEventListener("progress", function(evt) {
-          if (evt.lengthComputable) {
-            var percentComplete = evt.loaded / evt.total;
-            // add in progress bar here
-          }
-        }, false);
-        return xhr;
-      },
-      url: options.url,
-      type: 'PUT',
-      data: file,
-      contentType: options.contentType,
-      processData: false,
-      success: function(){
-        location.reload();
-      },
-      error: function(err) { console.log("upload file failed"); }
-    });
+  function uploadFiles(photos) {
+    for (var i = 0; i<photos.length; i++){
+      var file = globals.uploadFiles[i];
+      $.ajax({
+        xhr: function() {
+          var xhr = new window.XMLHttpRequest();
+          xhr.upload.addEventListener("progress", function(evt) {
+            if (evt.lengthComputable) {
+              var percentComplete = evt.loaded / evt.total;
+              // add in progress bar here
+            }
+          }, false);
+          return xhr;
+        },
+        url: photos[i].url,
+        type: 'PUT',
+        data: file,
+        contentType: photos[i].contentType,
+        processData: false,
+        success: function(){
+          // handle success here
+        },
+        error: function(err) {
+          console.log(err);
+          console.log("upload file failed"); }
+      });
+    }
+
   }
 
   function logout(){
