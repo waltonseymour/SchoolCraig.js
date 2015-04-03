@@ -242,7 +242,7 @@ module.exports = {
     var photoID = req.params.photoID;
     models.Photo.find({where: {id: photoID}}).then(function (photo) {
       util.sign_s3({method: 'get', key: 'bazaar/' + photo.id}, function(url){
-        res.redirect(301, url);
+        res.redirect(307, url);
       });
     });
   }

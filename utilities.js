@@ -23,7 +23,7 @@ module.exports = {
     if (!_.contains(['get', 'put'], options.method)){ return new Error('method must be get or put'); }
     var s3_params = {
       Key: options.key,
-      Expires: 60,
+      Expires: 180,
     };
     if (options.method === 'put'){
       s3_params.ContentType = options.contentType;

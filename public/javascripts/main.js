@@ -114,6 +114,12 @@
   $('body').on('click', '.post', function (event) {
     getPost($(this).attr('data-id'));
   });
+
+  $('body').on('mouseover', '.modal-thumbnail', function(event){
+    var url = $(this).attr('src');
+    $('.modal-image').css('background-image', "url(" + url + ")");
+  });
+
   $('input[type=radio][name=order]').change(function() {
     // resets page to 1 on ordering change
     getPosts(getCurrentOptions({page: 1}));
@@ -203,6 +209,26 @@
     errorClass: 'error'
   });
 
+  $(function () {
+    $('#create-file').fileupload({
+      dataType: 'json',
+      add: function(e, data){
+        if (data.files && data.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            var img = '<img class="modal-thumbnail" src="'+ e.target.result +'">';
+            $('#create-form .modal-thumbnails').append(img);
+          };
+          reader.readAsDataURL(data.files[0]);
+          if(!globals.uploadFiles){
+            globals.uploadFiles = [];
+          }
+          globals.uploadFiles.push(data.files[0]);
+        }
+      }
+    });
+  });
+
   $('#create-form').submit(function () {
     var post = {};
     post.id =  uuid.v4();
@@ -235,6 +261,19 @@
   });
 
   $('#logout').click(logout);
+
+  $(document).ready(function(){
+    resizeModal();
+  });
+
+  window.onresize = function(event) {
+    resizeModal();
+  };
+
+  function resizeModal(){
+    var vph = $(window).height();
+    $('.modal-body').css({'max-height': (vph - 200) + 'px'});
+  }
 
   function formatPrice(price){
     if (price > 1000){
@@ -281,8 +320,7 @@
   function renderPostModal(data) {
     var title = data.title;
     var price = data.price;
-    price = formatPrice(price);
-    if (price != "Free"){
+    if (price !== "Free"){
       title += ' - ' + price;
     }
     if (data.user.id === $('#user-id').val()) {
@@ -292,10 +330,17 @@
       $('.delete').hide();
     }
     $('#post-modal .modal-title').text(title);
-    $('#post-modal .modal-body').text(data.description);
+    $('#post-modal .modal-body .post-description').text(data.description);
+    $('#post-modal .modal-thumbnails').html('');
     if (data.photos[0]) {
       var url = '/posts/' + data.id + '/photos/' + data.photos[0].id;
-      $('#post-modal .modal-image').attr("src", url).show();
+      $('#post-modal .modal-image').css('background-image', "url(" + url + ")").show();
+      for (var i = 0; i< data.photos.length; i++) {
+        url = '/posts/' + data.id + '/photos/' + data.photos[i].id;
+        var img = '<img class="modal-thumbnail" src="'+ url +'">';
+        $('#post-modal .modal-thumbnails').append(img);
+      }
+
     }
     else {
       $('#post-modal .modal-image').hide();
@@ -314,7 +359,7 @@
       return post.id;
     });
     _.each(data, function(post){
-      POST_CACHE[post.id] = _.omit(post, 'id');
+      POST_CACHE[post.id] = post;
     });
     addMarkers(data, initial);
     var temp = _.map(data, function(post){
@@ -335,39 +380,47 @@
       type: 'POST',
       data: post,
       success: function(){
-        getSignedUrl(post.id);
+        getSignedUrls(post.id);
       },
       error: function(err) { console.log("create post failed"); }
     });
   }
 
-  function getSignedUrl(postID) {
-    var contentType = $('#create-file').val().split('.').pop();
-    if (!contentType) {
-      location.reload();
-      return;
-    }
-    var MIME = {
-      "jpg": 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'png': 'image/png'
-    };
-    contentType = MIME[contentType];
-    var photo = {contentType: contentType};
+  function getSignedUrls(postID) {
+    var contentType = globals.uploadFiles[0].type;
+    var photos = _.map(globals.uploadFiles, function(file){
+      return {contentType: file.type};
+    });
     $.ajax({
       url: 'posts/' + postID + '/photos',
       type: 'POST',
-      data: photo,
-      success: function(url) {
-        uploadFile({url: url, contentType: contentType});
+      contentType: "application/json",
+      data: JSON.stringify(photos),
+      success: function(urls) {
+        var temp = [];
+        for (var i=0; i<urls.length; i++){
+          temp.push(_.extend({}, photos[i], {url: urls[i]}));
+        }
+        uploadFiles(temp);
       },
       error: function(err) { console.log("get signed url failed"); }
     });
   }
 
-  function uploadFile(options) {
-    var file = document.getElementById('create-file').files[0];
-    $.ajax({
+  function uploadFiles(photos) {
+    var ajaxCalls = [];
+    for (var i = 0; i<photos.length; i++){
+      var file = globals.uploadFiles[i];
+      var deferred = createDeferred(photos[i], file);
+      ajaxCalls.push(deferred);
+    }
+    $.when.apply($, ajaxCalls).then(function(){
+      location.reload();
+    });
+  }
+
+  function createDeferred(photo, file){
+    return $.ajax({
       xhr: function() {
         var xhr = new window.XMLHttpRequest();
         xhr.upload.addEventListener("progress", function(evt) {
@@ -378,15 +431,15 @@
         }, false);
         return xhr;
       },
-      url: options.url,
+      url: photo.url,
       type: 'PUT',
       data: file,
-      contentType: options.contentType,
+      success: function(){},
+      contentType: photo.contentType,
       processData: false,
-      success: function(){
-        location.reload();
-      },
-      error: function(err) { console.log("upload file failed"); }
+      error: function(err) {
+        console.log(err);
+        console.log("upload file failed"); }
     });
   }
 

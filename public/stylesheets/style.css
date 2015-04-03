@@ -1,5 +1,4 @@
 body {
-  padding-top: 20px !important;
   padding-bottom: 40px !important;
   background-color: #ECF0F1;
   font-family: "Lato","Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -35,15 +34,11 @@ h1, h2, h3, h4, h5, h6{
   padding: 0;
 }
 
-
 .list-group-item button i{
   float: left;
   margin-top: 4px;
 }
 
-.navbar-container{
-  padding: 0;
-}
 .bg-primary{
   background-color: #34495e;
 }
@@ -58,6 +53,10 @@ h1, h2, h3, h4, h5, h6{
 ul, .navbar-right{
   color: #18bc9c;
   margin-right: 0;
+}
+
+.navbar{
+  border-radius: 0;
 }
 
 .navbar-nav>li{
@@ -189,6 +188,10 @@ ul, .navbar-right{
   padding-bottom: 21px;
 }
 
+.post-title{
+  font-weight: 600;
+}
+
 .post:hover, .post.hover {
   background-color: #3b536b;
 }
@@ -272,10 +275,6 @@ input[type="radio"]{
   margin-bottom: 5px;
 }
 
-#post-modal .modal-body{
-  white-space: pre-wrap;
-}
-
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -293,6 +292,109 @@ input[type="radio"]{
   opacity: 0.8;
   filter: alpha(opacity=80);
 }
+
+.modal-dialog{
+  width: 60%;
+}
+
+.modal-body{
+  overflow-y: auto;
+}
+
+.modal-body .post-description{
+  white-space: pre;
+}
+
+.modal-title{
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.modal-image-container{
+  display: inline-block;
+  width: 60%;
+  margin-left: 20%;
+  position: relative;
+  border: 1px #18bc9c solid;
+  border-radius: 3px;
+  background-color: #ECF0F1;
+}
+
+.modal-image-container:after{
+  content: '';
+  display: block;
+  margin-top: 70%;
+}
+
+.modal-image{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.modal-thumbnails{
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 20%;
+}
+
+.modal-thumbnail{
+  border: 1px solid #34495e;
+  height: 40px;
+  width: 40px;
+  margin-right: 3px;
+}
+
+#create-modal .modal-thumbnail{
+  height: 50px;
+  width: 50px;
+  margin: 5px;
+}
+
+#create-modal .modal-thumbnails{
+  margin-left: 0;
+}
+
+.modal-body::-webkit-scrollbar-track{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #F5F5F5;
+}
+
+.modal-body::-webkit-scrollbar{
+	width: 4px;
+	background-color: #F5F5F5;
+}
+
+.modal-body::-webkit-scrollbar-thumb{
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #34495e;
+}
+
+
+body::-webkit-scrollbar-track{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #F5F5F5;
+}
+
+body::-webkit-scrollbar{
+	width: 4px;
+	background-color: #F5F5F5;
+}
+
+body::-webkit-scrollbar-thumb{
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #18bc9c;
+}
+
 
 @media (max-width: 983px) {
   .jumbotron h1{

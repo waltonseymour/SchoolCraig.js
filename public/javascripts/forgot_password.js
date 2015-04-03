@@ -28,7 +28,6 @@
 
   $('#new-password-form').submit(function(){
     var userID = $('#user-id').val();
-    console.log(userID);
     $.ajax({
       url: 'users/' + userID,
       type: 'PUT',
