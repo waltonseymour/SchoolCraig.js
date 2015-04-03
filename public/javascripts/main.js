@@ -115,10 +115,6 @@
     getPost($(this).attr('data-id'));
   });
 
-  $('body').on('click', '.post', function (event) {
-    getPost($(this).attr('data-id'));
-  });
-
   $('body').on('mouseover', '.modal-thumbnail', function(event){
     var url = $(this).attr('src');
     $('.modal-image').css('background-image', "url(" + url + ")");
@@ -232,7 +228,6 @@
       }
     });
   });
-
 
   $('#create-form').submit(function () {
     var post = {};
@@ -421,8 +416,6 @@
     }
     $.when.apply($, ajaxCalls).then(function(){
       location.reload();
-    }).catch(function(error){
-      console.log(error);
     });
   }
 
@@ -441,6 +434,7 @@
       url: photo.url,
       type: 'PUT',
       data: file,
+      success: function(){},
       contentType: photo.contentType,
       processData: false,
       error: function(err) {
