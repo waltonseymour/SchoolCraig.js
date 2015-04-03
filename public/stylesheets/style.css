@@ -30,6 +30,11 @@ h1, h2, h3, h4, h5, h6{
   margin-bottom: 20px;
 }
 
+.control-panel .panel-heading .fa{
+  margin-top: 4px;
+  cursor: pointer;
+}
+
 .control-panel, .settings-panel{
   padding: 0;
 }
@@ -190,6 +195,10 @@ ul, .navbar-right{
 
 .post-title{
   font-weight: 600;
+}
+
+.post .post-description{
+  margin-top: 0;
 }
 
 .post:hover, .post.hover {
