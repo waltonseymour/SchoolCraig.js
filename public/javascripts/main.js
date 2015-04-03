@@ -115,6 +115,11 @@
     getPost($(this).attr('data-id'));
   });
 
+  $('body').on('click', '.post .category-tag', function (event) {
+    $('#category-filter').val($(this).attr('value')).change();
+    return false;
+  });
+
   $('body').on('mouseover', '.modal-thumbnail', function(event){
     var url = $(this).attr('src');
     $('.modal-image').css('background-image', "url(" + url + ")");
