@@ -334,7 +334,8 @@
     $('#post-modal .modal-thumbnails').html('');
     if (data.photos[0]) {
       var url = '/posts/' + data.id + '/photos/' + data.photos[0].id;
-      $('#post-modal .modal-image').css('background-image', "url(" + url + ")").show();
+      $('#post-modal .modal-image').css('background-image', "url(" + url + ")");
+      $('#post-modal .modal-image-container').show();
       for (var i = 0; i< data.photos.length; i++) {
         url = '/posts/' + data.id + '/photos/' + data.photos[i].id;
         var img = '<img class="modal-thumbnail" src="'+ url +'">';
@@ -343,7 +344,7 @@
 
     }
     else {
-      $('#post-modal .modal-image').hide();
+      $('#post-modal .modal-image-container').hide();
     }
 
     $('#modal-contact').attr("href", "https://mail.google.com/mail/?view=cm&fs=1&to="+data.user.email+"&su="+data.title);
@@ -387,6 +388,7 @@
   }
 
   function getSignedUrls(postID) {
+    if (!globals.uploadFiles){ return location.reload(); }
     var contentType = globals.uploadFiles[0].type;
     var photos = _.map(globals.uploadFiles, function(file){
       return {contentType: file.type};
