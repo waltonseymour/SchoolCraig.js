@@ -310,12 +310,31 @@ input[type="radio"]{
   font-size: 20px;
 }
 
-.modal-image{
+.modal-image-container{
+  display: inline-block;
   width: 60%;
-  height: auto;
   margin-left: 20%;
+  position: relative;
   border: 1px #18bc9c solid;
   border-radius: 3px;
+  background-color: #ECF0F1;
+}
+
+.modal-image-container:after{
+  content: '';
+  display: block;
+  margin-top: 70%;
+}
+
+.modal-image{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
 }
 
 .modal-thumbnails{
@@ -324,8 +343,10 @@ input[type="radio"]{
 }
 
 .modal-thumbnail{
-  height: 20px;
-  width: 20px;
+  border: 1px solid #34495e;
+  height: 30px;
+  width: 30px;
+  margin-right: 3px;
 }
 
 .modal-body::-webkit-scrollbar-track{

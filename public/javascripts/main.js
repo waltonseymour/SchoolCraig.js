@@ -114,6 +114,16 @@
   $('body').on('click', '.post', function (event) {
     getPost($(this).attr('data-id'));
   });
+
+  $('body').on('click', '.post', function (event) {
+    getPost($(this).attr('data-id'));
+  });
+
+  $('body').on('mouseover', '.modal-thumbnail', function(event){
+    var url = $(this).attr('src');
+    $('.modal-image').css('background-image', "url(" + url + ")");
+  });
+
   $('input[type=radio][name=order]').change(function() {
     // resets page to 1 on ordering change
     getPosts(getCurrentOptions({page: 1}));
@@ -328,7 +338,7 @@
     $('#post-modal .modal-thumbnails').html('');
     if (data.photos[0]) {
       var url = '/posts/' + data.id + '/photos/' + data.photos[0].id;
-      $('#post-modal .modal-image').attr("src", url).show();
+      $('#post-modal .modal-image').css('background-image', "url(" + url + ")").show();
       for (var i = 0; i< data.photos.length; i++) {
         url = '/posts/' + data.id + '/photos/' + data.photos[i].id;
         var img = '<img class="modal-thumbnail" src="'+ url +'">';
