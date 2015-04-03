@@ -340,13 +340,20 @@ input[type="radio"]{
 .modal-thumbnails{
   margin-top: 5px;
   margin-bottom: 5px;
+  margin-left: 20%;
 }
 
 .modal-thumbnail{
   border: 1px solid #34495e;
-  height: 30px;
-  width: 30px;
+  height: 40px;
+  width: 40px;
   margin-right: 3px;
+}
+
+#create-modal .modal-thumbnail{
+  height: 50px;
+  width: 50px;
+  margin: 5px;
 }
 
 .modal-body::-webkit-scrollbar-track{

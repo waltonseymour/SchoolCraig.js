@@ -220,7 +220,8 @@
         if (data.files && data.files[0]) {
           var reader = new FileReader();
           reader.onload = function(e) {
-            $('#target').attr('src', e.target.result);
+            var img = '<img class="modal-thumbnail" src="'+ e.target.result +'">';
+            $('#create-form .modal-thumbnails').append(img);
           };
           reader.readAsDataURL(data.files[0]);
           if(!globals.uploadFiles){
