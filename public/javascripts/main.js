@@ -335,6 +335,8 @@
     if (data.photos[0]) {
       var url = '/posts/' + data.id + '/photos/' + data.photos[0].id;
       $('#post-modal .modal-image').css('background-image', "url(" + url + ")");
+      $('#post-modal .post-description').css('margin-top', '20px');
+      $('#post-modal .category-tag').text(data.category.name);
       $('#post-modal .modal-image-container').show();
       for (var i = 0; i< data.photos.length; i++) {
         url = '/posts/' + data.id + '/photos/' + data.photos[i].id;
@@ -345,6 +347,7 @@
     }
     else {
       $('#post-modal .modal-image-container').hide();
+      $('#post-modal .post-description').css('margin-top', '0');
     }
 
     $('#modal-contact').attr("href", "https://mail.google.com/mail/?view=cm&fs=1&to="+data.user.email+"&su="+data.title);

@@ -303,11 +303,17 @@ input[type="radio"]{
 
 .modal-body .post-description{
   white-space: pre;
+  margin-left: 5px;
+  margin-top: 20px;
 }
 
 .modal-title{
   font-weight: 600;
   font-size: 20px;
+}
+
+.modal-body .category-tag{
+  margin-top: 20px;
 }
 
 .modal-image-container{
