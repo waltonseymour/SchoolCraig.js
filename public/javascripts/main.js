@@ -402,33 +402,40 @@
   }
 
   function uploadFiles(photos) {
+    var ajaxCalls = [];
     for (var i = 0; i<photos.length; i++){
       var file = globals.uploadFiles[i];
-      $.ajax({
-        xhr: function() {
-          var xhr = new window.XMLHttpRequest();
-          xhr.upload.addEventListener("progress", function(evt) {
-            if (evt.lengthComputable) {
-              var percentComplete = evt.loaded / evt.total;
-              // add in progress bar here
-            }
-          }, false);
-          return xhr;
-        },
-        url: photos[i].url,
-        type: 'PUT',
-        data: file,
-        contentType: photos[i].contentType,
-        processData: false,
-        success: function(){
-          // handle success here
-        },
-        error: function(err) {
-          console.log(err);
-          console.log("upload file failed"); }
-      });
+      var deferred = createDeferred(photos[i], file);
+      ajaxCalls.push(deferred);
     }
+    $.when.apply($, ajaxCalls).then(function(){
+      location.reload();
+    }).catch(function(error){
+      console.log(error);
+    });
+  }
 
+  function createDeferred(photo, file){
+    return $.ajax({
+      xhr: function() {
+        var xhr = new window.XMLHttpRequest();
+        xhr.upload.addEventListener("progress", function(evt) {
+          if (evt.lengthComputable) {
+            var percentComplete = evt.loaded / evt.total;
+            // add in progress bar here
+          }
+        }, false);
+        return xhr;
+      },
+      url: photo.url,
+      type: 'PUT',
+      data: file,
+      contentType: photo.contentType,
+      processData: false,
+      error: function(err) {
+        console.log(err);
+        console.log("upload file failed"); }
+    });
   }
 
   function logout(){
