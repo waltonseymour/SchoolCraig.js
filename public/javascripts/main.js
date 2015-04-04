@@ -249,7 +249,13 @@
 
     post.latitude = globals.latitude;
     post.longitude = globals.longitude;
+
+    if(globals.uploadFiles){
+      $('#create-modal').modal('hide');
+      $('#loading-modal').modal('show');
+    }
     createPost(post);
+
     ga('send', 'event', 'Posts', 'Create', post.id);
     return false;
   });
@@ -430,7 +436,9 @@
       ajaxCalls.push(deferred);
     }
     $.when.apply($, ajaxCalls).then(function(){
-      location.reload();
+      setTimeout(function(){
+        location.reload();
+      }, 750);
     });
   }
 
@@ -441,7 +449,8 @@
         xhr.upload.addEventListener("progress", function(evt) {
           if (evt.lengthComputable) {
             var percentComplete = evt.loaded / evt.total;
-            // add in progress bar here
+            $('#loading-modal .progress-bar span').css('width',
+            (percentComplete*100).toString() + "%");
           }
         }, false);
         return xhr;
