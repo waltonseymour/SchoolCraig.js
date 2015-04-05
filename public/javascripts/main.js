@@ -54,7 +54,7 @@
     });
   }
 
-  (function preload(){
+  function preload(){
     var urls = [];
     $('.post').each(function(){
       var postID = $(this).attr('data-id');
@@ -66,7 +66,7 @@
     $(urls).each(function(){
       $('<img/>')[0].src = this;
     });
-  })();
+  }
 
   // retrieves location on load
   getLocation(function(pos){
@@ -391,6 +391,7 @@
     $container.fadeOut(200, function(){
       $container.html(posts);
       $container.fadeIn(200);
+      preload();
     });
   }
 
