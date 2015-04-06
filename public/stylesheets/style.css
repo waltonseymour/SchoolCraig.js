@@ -311,7 +311,7 @@ input[type="radio"]{
 }
 
 .modal-body .post-description{
-  white-space: pre;
+  white-space: pre-line;
   margin-left: 5px;
   margin-top: 20px;
 }
