@@ -40,6 +40,10 @@ app.use(function(req, res, next) {
 
 app.use('/', routes);
 app.use('/users', users);
+app.use(function(req, res, next){
+  if (req.session.userID === undefined) { return res.status(403).end(); }
+  next();
+});
 app.use('/posts', posts);
 app.use('/categories', categories);
 

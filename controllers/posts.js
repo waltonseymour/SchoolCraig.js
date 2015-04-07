@@ -17,8 +17,6 @@ module.exports = {
 
   // lists all posts
   listAll: function(req, res, callback) {
-    if (req.session.userID === undefined) { return res.send(403); }
-
     // defaults ordering by date
     var order = _.contains(['createdAt', 'price'], req.param('order')) ? req.param('order') : 'createdAt';
     var category = req.param('category');
@@ -72,7 +70,6 @@ module.exports = {
 
   // get post by id
   getByID: function(req, res){
-    if (req.session.userID === undefined) { return res.status(403).end(); }
     if (!util.isUUID(req.params.id)) { return res.status(401).end(); }
 
     var options = _.extend({}, publicOptions, {where: {id: req.params.id}, include: [
@@ -99,7 +96,6 @@ module.exports = {
 
   // searches by full text
   search: function(req, res){
-    if (req.session.userID === undefined) { return res.status(403).end(); }
     var query = req.params.query;
     var options = {where: ["tsv @@ plainto_tsquery('english', ?)", query],
     include: [
@@ -160,7 +156,6 @@ module.exports = {
   },
 
   create: function(req, res) {
-    if (req.session.userID === undefined) { return res.send(403); }
     var post = req.body;
     models.Post.find({where: {id: post.id}}).then(function (ret) {
       // returns true if post with id exists
@@ -179,7 +174,6 @@ module.exports = {
 
   // inserts row into database and returns presigned url for uploading
   upload: function(req, res) {
-    if (req.session.userID === undefined) { return res.send(403); }
     if (!util.isUUID(req.params.id)) { return res.send(401); }
     if (_.isArray(req.body)){
       var payload = [];
@@ -222,7 +216,6 @@ module.exports = {
 
   // returns a list of presigned urls associated with a post
   getPhotos: function(req, res) {
-    if (req.session.userID === undefined) { return res.send(403); }
     var postID = req.params.id;
     models.Photo.findAll({where: {post_id: postID}}).then(function (photos) {
       async.map(photos, function(photo, callback) {
@@ -239,7 +232,6 @@ module.exports = {
 
   // returns a list of presigned urls associated with a post
   getPhotoByID: function(req, res) {
-    if (req.session.userID === undefined) { return res.send(403); }
     var postID = req.params.id;
     var photoID = req.params.photoID;
     models.Photo.find({where: {id: photoID}}).then(function (photo) {

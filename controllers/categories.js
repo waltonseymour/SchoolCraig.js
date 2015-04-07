@@ -7,7 +7,6 @@ models.Category.hasMany(models.Post, {as: 'posts', foreignKey: {name: 'category_
 
 module.exports = {
   listAll: function (req, res, callback) {
-    if (req.session.userID === undefined) { return res.send(403); }
     models.Category.findAll().success(function (categories) {
       if (callback) {
         callback(categories);
@@ -19,17 +18,19 @@ module.exports = {
   },
 
   getByID: function (req, res) {
-    if (req.session.userID === undefined) { return res.send(403); }
     if (!util.isUUID(req.params.id)) { return res.send(401); }
-
     var options = {where: {id: req.params.id}};
-    models.Category.find(options).success(function(category){
-      category ? res.send(category) : res.send(404);
+    models.Category.find(options).then(function(category){
+      if (category) {
+        res.send(category);
+      }
+      else{
+        res.status(404).end();
+      }
     });
   },
 
   create: function (req, res) {
-    if (req.session.userID === undefined) { return res.send(403); }
     var category = req.body;
 
     if (!category.id) { return createCategory(req, res, category); }
