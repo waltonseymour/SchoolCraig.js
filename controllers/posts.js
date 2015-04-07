@@ -279,14 +279,21 @@ function createPhoto (req, res, photo, callback){
 
 // Creates post with sepecified fields
 function CreatePost (req, res, post) {
-  if (post.title && post.description && post.category_id && post.price &&
-    !isNaN(post.price) && post.latitude && post.longitude) {
+  post.price = parseInt(post.price);
+  var required = [post.title, post.description, post.price, post.category_id];
+  var valid = !_.any(required, _.isUndefined) &&
+    post.price >= 0 &&
+    util.isValidCoordinate(post.latitude, post.longitude);
+  if (valid) {
     post.user_id = req.session.userID;
     models.Post.create(post).then(function () {
       res.status(204).end();
       var activity = {user: req.session.userID, activity: "Create Post",
       value: post.id};
       models.Activity.create(activity);
+    }).catch(function(err){
+      console.log(err);
+      res.status(401).end();
     });
   }
   else {
