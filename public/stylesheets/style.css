@@ -274,9 +274,16 @@ input[type="radio"]{
   background-color: #ffffff;
 }
 
-#create-modal .form-control{
-  margin-top: 5px;
-  margin-bottom: 5px;
+.error{
+  border-color: #e74c3c;
+  -webkit-transition : border 500ms ease-out;
+  -moz-transition : border 500ms ease-out;
+  -o-transition : border 500ms ease-out;
+  transition : border 500ms ease-out;
+}
+
+.create-price + ul{
+  display: none;
 }
 
 #signup-modal .form-control{
@@ -468,17 +475,10 @@ body::-webkit-scrollbar-thumb{
   }
 }
 
-input.parsley-success,
-select.parsley-success,
-textarea.parsley-success {
-  color: #468847;
-  background-color: #DFF0D8;
-  border: 1px solid #D6E9C6;
-}
-
 .parsley-errors-list {
   margin: 2px 0 3px;
   padding: 0;
+  color: #2c3e50;
   list-style-type: none;
   font-size: 0.9em;
   line-height: 0.9em;
@@ -495,7 +495,6 @@ textarea.parsley-success {
 .parsley-errors-list.filled {
   opacity: 1;
 }
-
 
 .btn-file {
     position: relative;
