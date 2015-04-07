@@ -113,13 +113,15 @@ module.exports = {
 
   // modifies by id
   putByID: function(req, res) {
+    if (!util.isUUID(req.params.id)) { return res.send(401); }
     models.Post.find({where: {id: req.params.id}}).then(function (post) {
       if (!post) { return res.status(404).end(); }
       if (req.session.userID !== post.user_id) { return res.status(403).end(); }
       var newPost = _.pick(req.body, ['title', 'description', 'price', 'category_id']);
       // ensures all fields are set
-      if (newPost.title && newPost.description && newPost.price &&
-      util.isUUID(newPost.category_id)){
+      newPost.latitude = post.latitude;
+      newPost.longitude = post.longitude;
+      if (isValidPost(newPost)){
         post.updateAttributes(newPost).then(function(){
           res.send(post);
           var activity = {user: req.session.userID, activity: "Modify Post",
@@ -280,11 +282,7 @@ function createPhoto (req, res, photo, callback){
 // Creates post with sepecified fields
 function CreatePost (req, res, post) {
   post.price = parseInt(post.price);
-  var required = [post.title, post.description, post.price, post.category_id];
-  var valid = !_.any(required, _.isUndefined) &&
-    post.price >= 0 &&
-    util.isValidCoordinate(post.latitude, post.longitude);
-  if (valid) {
+  if (isValidPost(post)) {
     post.user_id = req.session.userID;
     models.Post.create(post).then(function () {
       res.status(204).end();
@@ -299,4 +297,13 @@ function CreatePost (req, res, post) {
   else {
     res.status(401).end();
   }
+}
+
+function isValidPost(post){
+  var required = [post.title, post.description, post.price];
+  var valid = !_.any(required, _.isUndefined) &&
+    post.price >= 0 &&
+    util.isValidCoordinate(post.latitude, post.longitude) &&
+    util.isUUID(post.category_id);
+  return valid;
 }
