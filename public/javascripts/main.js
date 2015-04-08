@@ -141,6 +141,30 @@
     }
   });
 
+  $('body').on('click', '.edit', function (event) {
+    $('#post-modal .post-description, #post-modal .post-title, ' +
+    '#post-modal .post-price').attr('contenteditable', 'true')
+    .addClass('editable');
+    $("#post-modal .post-price-container").show();
+    $('#post-modal .edit-confirm').show();
+    $('#post-modal .edit').hide();
+  });
+
+  $('body').on('click', '.edit-confirm', function (event) {
+    var id = $('#post-modal').attr('data-id');
+    var post = POST_CACHE[id];
+    var price = $('#post-modal .post-price').text();
+    post = _.defaults({
+      description: $('#post-modal .post-description').text(),
+      title: $('#post-modal .post-title').text()
+      }, post);
+    if (!isNaN(price)){
+      post.price = price;
+    }
+    updatePost(post);
+    resetModalButtons(post);
+  });
+
   $('body').on('click', '.delete', function (event) {
     $('#post-modal').modal('hide');
     var id = $('#post-modal').attr('data-id');
@@ -336,30 +360,29 @@
   function renderPostModal(data) {
     var title = data.title;
     var price = data.price;
-    if (price !== "Free"){
-      title += ' - ' + price;
-    }
-    if (data.user.id === $('#user-id').val()) {
-      $('.delete').show();
-    }
-    else {
-      $('.delete').hide();
-    }
-    $('#post-modal .modal-title').text(title);
+
+    resetModalButtons(data);
+
+    // Assign values in modal
+    $('#post-modal .modal-title .post-title').text(title);
+    $('#post-modal .modal-title .post-price').text(price);
+
     $('#post-modal .modal-body .post-description').text(data.description);
     $('#post-modal .category-tag').text(data.category.name);
     $('#post-modal .modal-thumbnails').html('');
+
+    // Handle images
     if (data.photos[0]) {
       var url = '/posts/' + data.id + '/photos/' + data.photos[0].id;
       $('#post-modal .modal-image').css('background-image', "url(" + url + ")");
       $('#post-modal .post-description').css('margin-top', '20px');
       $('#post-modal .modal-image-container').show();
+      // Add thumbnails
       for (var i = 0; i< data.photos.length; i++) {
         url = '/posts/' + data.id + '/photos/' + data.photos[i].id;
         var img = '<img class="modal-thumbnail" src="'+ url +'">';
         $('#post-modal .modal-thumbnails').append(img);
       }
-
     }
     else {
       $('#post-modal .modal-image-container').hide();
@@ -379,7 +402,8 @@
       return post.id;
     });
     _.each(data, function(post){
-      POST_CACHE[post.id] = post;
+      // uses extend to create copy
+      POST_CACHE[post.id] = _.extend({}, post);
     });
     addMarkers(data, initial);
     var temp = _.map(data, function(post){
@@ -395,6 +419,33 @@
     });
   }
 
+  function resetModalButtons(data){
+    if (data.user.id === $('#user-id').val()) {
+      $('#post-modal .delete').show();
+      $('#post-modal .edit').show();
+      $('#modal-contact').hide();
+    }
+    else {
+      $('#post-modal .delete').hide();
+      $('#post-modal .edit').hide();
+      $('#modal-contact').show();
+    }
+
+    if (data.price === 0){
+      $('#post-modal .modal-title .post-price-container').hide();
+    }
+    else{
+      $('#post-modal .modal-title .post-price-container').show();
+    }
+
+    $('#post-modal .cancel').hide();
+    $('#post-modal .edit-confirm').hide();
+    $('#post-modal .post-description, #post-modal .post-title, ' +
+    '#post-modal .post-price').attr('contenteditable', 'false')
+    .removeClass('editable');
+
+  }
+
   function createPost(post){
     $.ajax({
       url: 'posts',
@@ -402,6 +453,19 @@
       data: post,
       success: function(){
         getSignedUrls(post.id);
+      },
+      error: function(err) { console.log("create post failed"); }
+    });
+  }
+
+  function updatePost(post){
+    $.ajax({
+      url: 'posts/' + post.id,
+      type: 'PUT',
+      data: post,
+      success: function(data){
+        globals.current_posts = null;
+        getPosts();
       },
       error: function(err) { console.log("create post failed"); }
     });
