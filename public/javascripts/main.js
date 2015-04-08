@@ -89,7 +89,7 @@
       order: $('input[type=radio][name=order]:checked').val(),
       latitude: globals.latitude,
       longitude: globals.longitude,
-      radius: globals.radius || 20
+      radius: globals.radius || 2
     });
     return options;
   }
