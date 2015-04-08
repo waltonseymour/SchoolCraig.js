@@ -23,6 +23,11 @@
           <button class="btn btn-info btn-xs category-tag" value='<%= posts[i].category.id%>'>
             <%= posts[i].category.name%>
           </button>
+          <% if (posts[i].photos[0]){ %>
+            <button class="btn btn-info btn-xs photo-tag" value='<%= posts[i].category.id%>'>
+              <i class="fa fa-camera"></i>
+            </button>
+          <% } %>
         </div>
       </div>
     </div>

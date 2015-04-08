@@ -117,7 +117,12 @@
 
   $('body').on('click', '.post .category-tag', function (event) {
     $('#category-filter').val($(this).attr('value')).change();
-    return false;
+    event.stopPropagation();
+  });
+
+  $('body').on('click', '.post .photo-tag', function (event) {
+    // add filter for posts with photos
+    event.stopPropagation();
   });
 
   $('body').on('mouseover', '.modal-thumbnail', function(event){
