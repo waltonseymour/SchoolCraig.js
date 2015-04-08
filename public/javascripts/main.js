@@ -142,20 +142,27 @@
   });
 
   $('body').on('click', '.edit', function (event) {
-    $('#post-modal .post-description').attr('contenteditable', 'true')
+    $('#post-modal .post-description, #post-modal .post-title, ' +
+    '#post-modal .post-price').attr('contenteditable', 'true')
     .addClass('editable');
-    $('#post-modal .cancel').show();
-    $('#post-modal .confirm').show();
+    $("#post-modal .post-price-container").show();
+    $('#post-modal .edit-confirm').show();
     $('#post-modal .edit').hide();
   });
 
-  $('body').on('click', '.confirm', function (event) {
+  $('body').on('click', '.edit-confirm', function (event) {
     var id = $('#post-modal').attr('data-id');
     var post = POST_CACHE[id];
+    var price = $('#post-modal .post-price').text();
     post = _.defaults({
-      description: $('#post-modal .post-description').text()
+      description: $('#post-modal .post-description').text(),
+      title: $('#post-modal .post-title').text()
       }, post);
-
+    if (!isNaN(price)){
+      post.price = price;
+    }
+    updatePost(post);
+    resetModalButtons(post);
   });
 
   $('body').on('click', '.delete', function (event) {
@@ -354,28 +361,7 @@
     var title = data.title;
     var price = data.price;
 
-    if (data.user.id === $('#user-id').val()) {
-      $('#post-modal .delete').show();
-      $('#post-modal .edit').show();
-      $('#modal-contact').hide();
-    }
-    else {
-      $('#post-modal .delete').hide();
-      $('#post-modal .edit').hide();
-      $('#modal-contact').show();
-    }
-    
-    if (price === 0){
-      $('#post-modal .modal-title .post-price-container').hide();
-    }
-    else{
-      $('#post-modal .modal-title .post-price-container').show();
-    }
-
-    $('#post-modal .cancel').hide();
-    $('#post-modal .confirm').hide();
-    $('#post-modal .post-description').attr('contenteditable', 'false')
-    .removeClass('editable');
+    resetModalButtons(data);
 
     // Assign values in modal
     $('#post-modal .modal-title .post-title').text(title);
@@ -433,6 +419,33 @@
     });
   }
 
+  function resetModalButtons(data){
+    if (data.user.id === $('#user-id').val()) {
+      $('#post-modal .delete').show();
+      $('#post-modal .edit').show();
+      $('#modal-contact').hide();
+    }
+    else {
+      $('#post-modal .delete').hide();
+      $('#post-modal .edit').hide();
+      $('#modal-contact').show();
+    }
+
+    if (data.price === 0){
+      $('#post-modal .modal-title .post-price-container').hide();
+    }
+    else{
+      $('#post-modal .modal-title .post-price-container').show();
+    }
+
+    $('#post-modal .cancel').hide();
+    $('#post-modal .edit-confirm').hide();
+    $('#post-modal .post-description, #post-modal .post-title, ' +
+    '#post-modal .post-price').attr('contenteditable', 'false')
+    .removeClass('editable');
+
+  }
+
   function createPost(post){
     $.ajax({
       url: 'posts',
@@ -440,6 +453,19 @@
       data: post,
       success: function(){
         getSignedUrls(post.id);
+      },
+      error: function(err) { console.log("create post failed"); }
+    });
+  }
+
+  function updatePost(post){
+    $.ajax({
+      url: 'posts/' + post.id,
+      type: 'PUT',
+      data: post,
+      success: function(data){
+        globals.current_posts = null;
+        getPosts();
       },
       error: function(err) { console.log("create post failed"); }
     });
