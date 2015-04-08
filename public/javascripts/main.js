@@ -1,6 +1,10 @@
 (function() {
   "use strict";
 
+  var moment = require('moment');
+  var _ = require('underscore');
+  var uuid = require('node-uuid');
+
   // Stores JSON data for posts
   var POST_CACHE = {};
 
@@ -415,7 +419,7 @@
       post.price = formatPrice(post.price);
       return post;
     });
-    var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: temp});
+    var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: temp, moment: moment});
     var $container  = $('#post-container .posts');
     $container.fadeOut(200, function(){
       $container.html(posts);

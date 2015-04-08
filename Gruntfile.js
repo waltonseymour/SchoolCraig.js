@@ -9,9 +9,15 @@ module.exports = function(grunt) {
       },
       build: {
         files: {
-          'public/javascripts/main.min.js': 'public/javascripts/main.js',
+          'public/javascripts/main.min.js': 'public/javascripts/main.min.js',
           'public/javascripts/index.min.js': 'public/javascripts/index.js'
         }
+      }
+    },
+    browserify: {
+      main: {
+        src: 'public/javascripts/main.js',
+        dest: 'public/javascripts/main.min.js'
       }
     },
     cssmin: {
@@ -30,7 +36,9 @@ module.exports = function(grunt) {
   // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-cssmin');
 
+  grunt.loadNpmTasks('grunt-browserify');
+
   // Default task(s).
-  grunt.registerTask('default', ['uglify', 'cssmin']);
+  grunt.registerTask('default', ['browserify', 'uglify', 'cssmin']);
 
 };

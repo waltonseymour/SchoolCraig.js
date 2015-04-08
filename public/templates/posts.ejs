@@ -31,7 +31,14 @@
         </div>
       </div>
     </div>
-    <div class="col-sm-2 bg-success price"><h4><%= posts[i].price %></h4></div>
+    <div class="col-sm-2">
+      <div class="row">
+        <div class="bg-success price"><h4><%= posts[i].price %></h4></div>
+      </div>
+      <div class="row post-time">
+        <h6><%= moment(posts[i].updatedAt).fromNow() %></h6>
+      </div>
+    </div>
   </div>
   <hr class="end-post row">
 <% } %>

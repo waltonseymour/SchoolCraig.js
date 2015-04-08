@@ -34,6 +34,8 @@
     "grunt-contrib-uglify": "~0.7.0",
     "grunt-contrib-jshint": "~0.11.0",
     "pg-hstore": "~2.3.1",
-    "geoip-lite": "~1.1.5"
+    "geoip-lite": "~1.1.5",
+    "moment": "~2.10.0",
+    "grunt-browserify": "~3.6.0"
   }
 }

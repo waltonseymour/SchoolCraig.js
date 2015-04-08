@@ -177,6 +177,7 @@ ul, .navbar-right{
 }
 
 .price {
+  margin: 0;
   transition: 0.2s;
   border-radius: 2px;
   text-align: center;
@@ -184,6 +185,22 @@ ul, .navbar-right{
 
 .price:active{
   background-color: #24e3be;
+}
+
+.price h4{
+  margin: 0;
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+
+.post-time{
+  margin-top: 42px;
+}
+
+.post-time h6{
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 0;
 }
 
 .post {
@@ -437,7 +454,11 @@ body::-webkit-scrollbar-thumb{
   .post {
     text-align: center;
   }
+  .post-time {
+    margin-top: 0;
+  }
   .price {
+    margin-top: 10px;
     width: 100px !important;
     margin-left: calc(50% - 50px);
   }
