@@ -1,7 +1,9 @@
 /* jshint indent: 2 */
 
+var utils = require('../utilities');
+
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('Photo', { 
+  return sequelize.define('Photo', {
     id: {
       type: 'UUID',
       primaryKey: true,
@@ -13,6 +15,12 @@ module.exports = function(sequelize, DataTypes) {
     }
   },
   {
+    hooks:{
+      afterDestroy: function(photo, options) {
+        console.log(photo);
+        utils.deletePhotos([photo.id]);
+      }
+    },
     tableName: 'photos'
   });
 };
