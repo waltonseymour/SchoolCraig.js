@@ -41,12 +41,23 @@ module.exports = {
 
   // Deletes all photos in s3, receieves a list of photos ids as a param
   deletePhotos: function(photos, callback) {
+    if (_.isUndefined(photos) || photos.length === 0){
+      if (callback && typeof(callback) === "function") {
+        callback(null, "no photos passed");
+      }
+      return;
+    }
     var params = {Bucket: process.env.S3_BUCKET, Delete: {Objects: []}};
     params.Delete.Objects = _.map(photos, function(photoID){
       return {Key: "bazaar/" + photoID};
     });
     s3.deleteObjects(params, function(err, data){
-      if (err) { console.log(err); }
+      if (err) {
+        console.log(err);
+        if (callback && typeof(callback) === "function") {
+          callback(null, err);
+        }
+      }
       else if (callback && typeof(callback) === "function") {
         callback(data);
       }
