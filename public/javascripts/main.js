@@ -99,7 +99,7 @@
   }
 
   $(document).keydown(function(e) {
-    if($("input").is(":focus")){ return; }
+    if($("input").is(":focus") || $(".modal-backdrop").length > 0){ return; }
     switch(e.which) {
       case 37: changePage(false);
       break;
