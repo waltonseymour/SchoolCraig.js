@@ -54,11 +54,10 @@
 
   function preload(){
     var urls = [];
-    $('.post').each(function(){
-      var postID = $(this).attr('data-id');
-      var photoID = $(this).attr('data-photo');
-      if (photoID) {
-        urls.push('/posts/' + postID + '/photos/' + photoID);
+    _.each(globals.posts, function(post){
+      var photo = post.photos[0];
+      if (photo) {
+        urls.push('/posts/' + post.id + '/photos/' + photo.id);
       }
     });
     $(urls).each(function(){
