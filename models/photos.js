@@ -17,7 +17,6 @@ module.exports = function(sequelize, DataTypes) {
   {
     hooks:{
       afterDestroy: function(photo, options) {
-        console.log(photo);
         utils.deletePhotos([photo.id]);
       }
     },

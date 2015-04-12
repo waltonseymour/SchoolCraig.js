@@ -235,6 +235,15 @@ module.exports = {
         res.redirect(307, url);
       });
     });
+  },
+
+  // deletes a given photo
+  deletePhotoByID: function(req, res) {
+    var postID = req.params.id;
+    var photoID = req.params.photoID;
+    models.Photo.destroy({where: {id: photoID}, individualHooks: true}).then(function (photo) {
+      res.status(204).end();
+    });
   }
 
 };
