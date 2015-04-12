@@ -19,7 +19,7 @@ module.exports = {
   // lists all posts
   listAll: function(req, res, callback) {
     // defaults ordering by date
-    var order = _.contains(['createdAt', 'price'], req.param('order')) ? req.param('order') : 'createdAt';
+    var order = _.contains(['updatedAt', 'price'], req.param('order')) ? req.param('order') : 'updatedAt';
     var category = req.param('category');
     var page = req.param('page');
     var postsPerPage = req.param('postsPerPage') || 5;

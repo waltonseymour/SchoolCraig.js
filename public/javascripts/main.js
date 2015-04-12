@@ -20,17 +20,9 @@
       zoom: 11
     };
     globals.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-    globals.markers = [];
 
-    google.maps.event.addListener(globals.map, 'idle', function() {
-      var bounds = globals.map.getBounds();
-      var center = globals.map.getCenter();
-      globals.latitude = center.lat();
-      globals.longitude = center.lng();
-      var distance = google.maps.geometry.spherical.computeDistanceBetween(bounds.getNorthEast(), bounds.getSouthWest());
-      globals.radius = distance*0.000621371192;
-      getPosts();
-    });
+    //google.maps.event.addListener(globals.map, 'idle', function() {
+    //});
   }
 
   function addMarkers(posts, initial){
@@ -495,6 +487,11 @@
       data: post,
       success: function(data){
         globals.currentPostIds = null;
+        var  globalPost = _.findWhere(globals.posts, {id: post.id});
+        globalPost.title = data.title;
+        globalPost.price = data.price;
+        globalPost.description = data.description;
+        globalPost.updatedAt = data.updatedAt;
         getPosts();
       },
       error: function(err) { console.log("create post failed"); }
