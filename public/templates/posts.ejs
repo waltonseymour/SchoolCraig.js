@@ -33,7 +33,19 @@
     </div>
     <div class="col-sm-2">
       <div class="row">
-        <div class="bg-success price"><h4><%= posts[i].price %></h4></div>
+        <%
+        var priceStr;
+        if (posts[i].price > 1000){
+          priceStr = numeral(posts[i].price).format('$0a').toUpperCase();
+        }
+        else if (posts[i].price > 0){
+          priceStr = '$' + posts[i].price;
+        }
+        else{
+          priceStr = "Free";
+        }
+        %>
+        <div class="bg-success price"><h4><%= priceStr %></h4></div>
       </div>
       <div class="row post-time">
         <h6><%= moment(posts[i].updatedAt).fromNow() %></h6>

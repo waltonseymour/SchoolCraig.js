@@ -4,6 +4,7 @@
   var moment = require('moment');
   var _ = require('underscore');
   var uuid = require('node-uuid');
+  var numeral = require('numeral');
 
   // Stores JSON data for posts
   var POST_CACHE = {};
@@ -86,7 +87,8 @@
       order: $('input[type=radio][name=order]:checked').val(),
       latitude: globals.latitude || 36.1658897400,
       longitude: globals.longitude || -86.7844467163,
-      radius: globals.radius || 12.6
+      radius: globals.radius || 1000,
+      postsPerPage: 100
     });
     return options;
   }
@@ -361,12 +363,27 @@
     $('#post-container').attr('data-page', options.page);
     // Converts to url parameters
     var params = jQuery.param(options);
-    $.ajax({
-      url: 'posts?' + params,
-      type: 'GET',
-      success: renderPosts,
-      error: function(err) { console.log("get post failed"); }
-    });
+
+    if (!globals.posts){
+      $.ajax({
+        url: 'posts?' + params,
+        type: 'GET',
+        success: function(posts) {
+          globals.posts = posts;
+          // slices first five posts to render
+          renderPosts(posts.slice(0, 4));
+        },
+        error: function(err) { console.log("get post failed"); }
+      });
+    }
+    else{
+      var posts = _.filter(globals.posts, function(post){
+        return post.category.id === options.category || options.category === "All";
+      });
+      posts = _.sortBy(posts, options.order).reverse();
+      var offset = (options.page - 1) * 5;
+      renderPosts(posts.slice(offset, offset + 4));
+    }
   }
 
   function renderPostModal(data) {
@@ -406,23 +423,24 @@
   }
 
   function renderPosts (data) {
-    var initial = !globals.current_posts;
-    if (_.isEqual(globals.current_posts, _.map(data, function(post){return post.id;}))){
+    var initial = !globals.currentPostIds;
+    if (_.isEqual(globals.currentPostIds, _.pluck(data, 'id'))){
       return;
     }
-    globals.current_posts = _.map(data, function(post){
-      return post.id;
-    });
+    globals.currentPostIds = _.pluck(data, 'id');
+
     _.each(data, function(post){
       // uses extend to create copy
       POST_CACHE[post.id] = _.extend({}, post);
     });
+
     addMarkers(data, initial);
-    var temp = _.map(data, function(post){
-      post.price = formatPrice(post.price);
-      return post;
+
+    var posts = new EJS({url: 'templates/posts.ejs'}).render({
+      posts: data,
+      numeral: numeral,
+      moment: moment
     });
-    var posts = new EJS({url: 'templates/posts.ejs'}).render({posts: temp, moment: moment});
     var $container  = $('#post-container .posts');
     $container.fadeOut(200, function(){
       $container.html(posts);
@@ -476,7 +494,7 @@
       type: 'PUT',
       data: post,
       success: function(data){
-        globals.current_posts = null;
+        globals.currentPostIds = null;
         getPosts();
       },
       error: function(err) { console.log("create post failed"); }
