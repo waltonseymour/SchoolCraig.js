@@ -17,7 +17,9 @@
     var mapOptions = {
       // hardcodes to nashville for now
       center: { lat: options.latitude, lng: options.longitude},
-      zoom: 11
+      zoom: 11,
+      disableDefaultUI: true,
+      zoomControl: true
     };
     globals.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
