@@ -365,8 +365,7 @@
 
           // populates cache with data
           _.each(posts, function(post){
-            // uses extend to create copy
-            POST_CACHE[post.id] = _.extend({}, post);
+            POST_CACHE[post.id] = post;
           });
 
           // slices first five posts to render
@@ -504,6 +503,7 @@
         globalPost.price = data.price;
         globalPost.description = data.description;
         globalPost.updatedAt = data.updatedAt;
+
         getPosts();
       },
       error: function(err) { console.log("create post failed"); }
