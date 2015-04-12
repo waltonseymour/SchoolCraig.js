@@ -21,20 +21,19 @@
     };
     globals.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
-    //google.maps.event.addListener(globals.map, 'idle', function() {
-    //});
+    google.maps.event.addListener(globals.map, 'idle', function() {
+      getPosts();
+    });
   }
 
-  function addMarkers(posts, initial){
-    _.each(globals.markers, function(marker){
-      marker.setMap(null);
-    });
-    globals.markers = [];
+  // initializes markers on the map
+  function addMarkers(posts){
+    globals.markers = {};
     _.each(posts, function(post){
       var marker = new google.maps.Marker({
         position: { lat: post.latitude, lng: post.longitude},
         map: globals.map,
-        animation: initial ? google.maps.Animation.DROP : null
+        animation: google.maps.Animation.DROP
       });
       marker.postID = post.id;
       google.maps.event.addListener(marker, 'mouseover', function(marker) {
@@ -49,7 +48,8 @@
         var $post = $("div").find("[data-id='" + this.postID + "']");
         $post.removeClass('hover');
       });
-      globals.markers.push(marker);
+      // indexes markers by postID
+      globals.markers[marker.postID] = marker;
     });
   }
 
@@ -68,7 +68,6 @@
   }
 
   // initialization
-  getPosts();
   initializeMap();
 
   function getCurrentOptions(overrides){
@@ -362,6 +361,8 @@
         type: 'GET',
         success: function(posts) {
           globals.posts = posts;
+          // adds markers
+          addMarkers(posts);
           // slices first five posts to render
           renderPosts(posts.slice(0, 4));
         },
@@ -369,9 +370,15 @@
       });
     }
     else{
+
       var posts = _.filter(globals.posts, function(post){
         return post.category.id === options.category || options.category === "All";
       });
+
+      posts = _.filter(posts, function(post){
+        return globals.map.getBounds().contains(globals.markers[post.id].getPosition());
+      });
+
       posts = _.sortBy(posts, options.order).reverse();
       var offset = (options.page - 1) * 5;
       renderPosts(posts.slice(offset, offset + 4));
@@ -414,29 +421,34 @@
     $('#post-modal').modal('show');
   }
 
-  function renderPosts (data) {
-    var initial = !globals.currentPostIds;
-    if (_.isEqual(globals.currentPostIds, _.pluck(data, 'id'))){
+  function renderPosts (posts) {
+    // no-op if current selection equals new selection
+    if (_.isEqual(globals.currentPostIds, _.pluck(posts, 'id'))){
       return;
     }
-    globals.currentPostIds = _.pluck(data, 'id');
 
-    _.each(data, function(post){
+    // otherwise reassigns current selection
+    globals.currentPostIds = _.pluck(posts, 'id');
+
+    // populates cache with data
+    _.each(posts, function(post){
       // uses extend to create copy
       POST_CACHE[post.id] = _.extend({}, post);
     });
 
-    addMarkers(data, initial);
-
-    var posts = new EJS({url: 'templates/posts.ejs'}).render({
-      posts: data,
+    // renders ejs template passing in posts and npm modules
+    var renderedPosts = new EJS({url: 'templates/posts.ejs'}).render({
+      posts: posts,
       numeral: numeral,
       moment: moment
     });
+
+    // places rendered template in the DOM
     var $container  = $('#post-container .posts');
     $container.fadeOut(200, function(){
-      $container.html(posts);
+      $container.html(renderedPosts);
       $container.fadeIn(200);
+      // eagerly fetches images for new posts
       preload();
     });
   }
