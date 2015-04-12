@@ -12,9 +12,11 @@
   var globals = {};
 
   function initializeMap() {
+    var options = getCurrentOptions();
     var mapOptions = {
-      center: { lat: globals.latitude, lng: globals.longitude},
-      zoom: 14
+      // hardcodes to nashville for now
+      center: { lat: options.latitude, lng: options.longitude},
+      zoom: 11
     };
     globals.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     globals.markers = [];
@@ -72,18 +74,9 @@
     });
   }
 
-  // retrieves location on load
-  getLocation(function(pos){
-    var crd = pos.coords;
-    globals.latitude = crd.latitude;
-    globals.longitude = crd.longitude;
-    getPosts();
-    initializeMap();
-  },
-  function(error){
-    console.log(error);
-    swal("Oops...", "You must have location enabled to see posts around you", "error");
-  });
+  // initialization
+  getPosts();
+  initializeMap();
 
   function getCurrentOptions(overrides){
     overrides = overrides || {};
@@ -91,9 +84,9 @@
       page: parseInt($('#post-container').attr('data-page')) || 1,
       category: $('#category-filter').val(),
       order: $('input[type=radio][name=order]:checked').val(),
-      latitude: globals.latitude,
-      longitude: globals.longitude,
-      radius: globals.radius || 2
+      latitude: globals.latitude || 36.1658897400,
+      longitude: globals.longitude || -86.7844467163,
+      radius: globals.radius || 12.6
     });
     return options;
   }
@@ -273,23 +266,33 @@
   });
 
   $('#create-form').submit(function () {
-    var post = {};
-    post.id =  uuid.v4();
-    post.title = $('#create-form .create-title').val();
-    post.description = $('#create-form .create-description').val();
-    post.price = $('#create-form .create-price').val();
-    post.category_id = $('#create-form select').val();
+    // retrieves location on form submission
+    getLocation(function(pos){
+      var crd = pos.coords;
+      globals.latitude = crd.latitude;
+      globals.longitude = crd.longitude;
 
-    post.latitude = globals.latitude;
-    post.longitude = globals.longitude;
+      var post = {};
+      post.id =  uuid.v4();
+      post.title = $('#create-form .create-title').val();
+      post.description = $('#create-form .create-description').val();
+      post.price = $('#create-form .create-price').val();
+      post.category_id = $('#create-form select').val();
 
-    if(globals.uploadFiles){
-      $('#create-modal').modal('hide');
-      $('#loading-modal').modal('show');
-    }
-    createPost(post);
+      post.latitude = globals.latitude;
+      post.longitude = globals.longitude;
 
-    ga('send', 'event', 'Posts', 'Create', post.id);
+      if(globals.uploadFiles){
+        $('#create-modal').modal('hide');
+        $('#loading-modal').modal('show');
+      }
+      createPost(post);
+      ga('send', 'event', 'Posts', 'Create', post.id);
+    },
+    function(error){
+      console.log(error);
+      swal("Oops...", "You must have location enabled to create a post", "error");
+    });
     return false;
   });
 
