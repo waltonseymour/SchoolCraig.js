@@ -41,8 +41,7 @@
         $post.addClass('hover');
       });
       google.maps.event.addListener(marker, 'click', function(marker) {
-        var $post = $("div").find("[data-id='" + this.postID + "']");
-        $post.trigger('click');
+        getPost(this.postID);
       });
       google.maps.event.addListener(marker, 'mouseout', function(marker) {
         var $post = $("div").find("[data-id='" + this.postID + "']");
@@ -363,6 +362,13 @@
           globals.posts = posts;
           // adds markers
           addMarkers(posts);
+
+          // populates cache with data
+          _.each(posts, function(post){
+            // uses extend to create copy
+            POST_CACHE[post.id] = _.extend({}, post);
+          });
+
           // slices first five posts to render
           renderPosts(posts.slice(0, 4));
         },
@@ -429,12 +435,6 @@
 
     // otherwise reassigns current selection
     globals.currentPostIds = _.pluck(posts, 'id');
-
-    // populates cache with data
-    _.each(posts, function(post){
-      // uses extend to create copy
-      POST_CACHE[post.id] = _.extend({}, post);
-    });
 
     // renders ejs template passing in posts and npm modules
     var renderedPosts = new EJS({url: 'templates/posts.ejs'}).render({
