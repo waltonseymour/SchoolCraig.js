@@ -370,7 +370,7 @@
           });
 
           // slices first five posts to render
-          renderPosts(posts.slice(0, 4));
+          renderPosts(posts.slice(0, 5));
         },
         error: function(err) { console.log("get post failed"); }
       });
@@ -387,7 +387,7 @@
 
       posts = _.sortBy(posts, options.order).reverse();
       var offset = (options.page - 1) * 5;
-      renderPosts(posts.slice(offset, offset + 4));
+      renderPosts(posts.slice(offset, offset + 5));
     }
   }
 
