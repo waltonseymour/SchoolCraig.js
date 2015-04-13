@@ -13,6 +13,8 @@ var categories = require('./routes/categories');
 
 var app = express();
 
+app.disable('etag');
+
 app.use(session({
   secret: process.env.SESSION_SECRET,
   signed: true
