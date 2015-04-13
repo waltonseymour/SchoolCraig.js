@@ -513,12 +513,23 @@ body::-webkit-scrollbar-thumb{
     padding-right: 0;
     width: 100%;
   }
+
+  #post-container{
+    width: 94%;
+    margin-left: 3%;
+  }
+
   .row .post{
     padding-bottom: 10px;
   }
   .row .post h1, h2, h3, h4, h5{
     margin-top: 4px;
     margin-bottom: 4px;
+  }
+
+  .row .post .col-sm-10{
+    width: 70%;
+    margin-left: 15%;
   }
   .modal-dialog{
     width: auto;
