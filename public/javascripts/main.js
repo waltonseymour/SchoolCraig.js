@@ -103,6 +103,11 @@
     return false;
   });
 
+  $(".btn-group .btn").on("click", function(){
+     $(".btn-group").find(".active").removeClass("active");
+     $(this).parent().addClass("active");
+  });
+
   $('body').on('click', '.post', function (event) {
     getPost($(this).attr('data-id'));
   });
@@ -118,7 +123,7 @@
   });
 
   $('.control-panel .panel-heading .fa').click(function(){
-    $('#category-filter').val('All');
+    $('#category-filter').selectpicker('val', 'All');
     $('#search-form input').val('');
     getPosts(getCurrentOptions({page: 1, category: "All"}));
   });

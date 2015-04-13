@@ -12,6 +12,35 @@ h1, h2, h3, h4, h5, h6{
   font-weight: 500;
 }
 
+.btn-group>.btn:hover, .btn-group-vertical>.btn:hover,
+.btn-group>.btn:focus, .btn-group-vertical>.btn:focus,
+.btn-group>.btn:active, .btn-group-vertical>.btn:active,
+.btn-group>.btn.active, .btn-group-vertical>.btn.active{
+  z-index: 0;
+}
+
+.dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus{
+  background-color: #217dbb;
+}
+
+.dropdown-menu>.active>a, .dropdown-menu>.active>a:hover, .dropdown-menu>.active>a:focus{
+  background-color: #217dbb;
+}
+
+select {
+   visibility: hidden;
+}
+
+.bootstrap-select.form-control:not([class*=col-]){
+  width: calc(100% - 20px);
+  margin-left: 5px;
+}
+
+.control-panel .btn-group{
+  margin-left: calc(50% - 79px);
+}
+
+
 .truncate {
   white-space: nowrap;
   overflow: hidden;
@@ -260,10 +289,6 @@ ul, .navbar-right{
   margin-top: -6px;
 }
 
-#category-filter{
-  width: calc(100% - 20px);
-  margin-left: 2px;
-}
 
 input[type="radio"]{
   margin-left: 25px;
@@ -471,10 +496,6 @@ body::-webkit-scrollbar-thumb{
   .row{
     margin-left: 0;
     margin-right: 0;
-  }
-  #category-filter{
-    display: inline-block !important;
-    margin-left: 0;
   }
   .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1,
   .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2,

@@ -10,9 +10,10 @@
     <!-- TODO: make sure bootstrap.min.css points to BootTheme generated file
         -->
     <link href="bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="stylesheets/style.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="stylesheets/sweet-alert.css">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/css/bootstrap-select.min.css" rel="stylesheet">
+    <link href="stylesheets/style.min.css" rel="stylesheet" type="text/css" />
     <!-- TODO: make sure bootstrap-responsive.min.css points to BootTheme
         generated file -->
     <!-- <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet"> -->
@@ -99,7 +100,7 @@
                 </div>
                 <div class="form-group">
                   <label>Category</label>
-                  <select class='form-control create-categories' required>
+                  <select class='form-control create-categories selectpicker' data-style='btn-info' data-live-search="true" required>
                     <% for (var i = 0; i < categories.length; i++) { %>
                       <option value="<%= categories[i].id %>"><%= categories[i].name %></option>
                     <% } %>
@@ -176,7 +177,7 @@
                 <div class="list-group">
                   <div class="list-group-item form-inline">
                     <i class="fa fa-filter list-group-item-heading"></i>
-                    <select class="form-control" data-style="btn-primary" id="category-filter">
+                    <select class="form-control selectpicker" data-style="btn btn-info" data-live-search="true" id="category-filter">
                       <option>All</option>
                       <% for (var i = 0; i < categories.length; i++) { %>
                         <option value="<%= categories[i].id %>"><%= categories[i].name %></option>
@@ -185,8 +186,14 @@
                   </div>
                   <div class="list-group-item">
                     <i class="fa fa-sort-amount-desc"></i>
-                      <input type="radio" name='order' value="createdAt" checked="checked">Date
-                      <input type="radio" name='order' value="price">Price
+                    <div class="btn-group" data-toggle="buttons">
+                      <label class="btn btn-success active">
+                        <input type="radio" name="order" value-"createdAt" autocomplete="off" checked>Date</input>
+                      </label>
+                      <label class="btn btn-success">
+                        <input type="radio" name="order" value="price" autocomplete="off">Price</input>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -220,6 +227,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="/javascripts/jquery.min.js"></script>
     <script src="/javascripts/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.min.js"></script>
     <script src="/javascripts/jquery.ui.widget.js"></script>
     <script src="/javascripts/jquery.iframe-transport.js"></script>
     <script src="/javascripts/jquery.fileupload.js"></script>
