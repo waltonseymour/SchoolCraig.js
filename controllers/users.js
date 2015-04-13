@@ -46,6 +46,7 @@ module.exports = {
       // returns 401 if password is incorrect
       if (password !== DBPassword) { return res.send(401); }
       req.session.userID = user.id;
+      req.session.admin = user.admin;
       res.send(_.pick(user, publicOptions.attributes));
     });
   },
@@ -159,6 +160,7 @@ function createUser (req, res, user) {
     user.password = password;
     user.email = user.email.toLowerCase();
     user.activated = process.env.NODE_ENV !== 'production';
+    user.admin = false;
     models.User.create(user).then(function (){
       if(!user.activated){
         var url = "https://trybazaar.com/users/activate/" + user.id + '?key=' + utils.SHA256(salt);

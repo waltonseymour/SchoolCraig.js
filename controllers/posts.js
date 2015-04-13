@@ -241,8 +241,18 @@ module.exports = {
   deletePhotoByID: function(req, res) {
     var postID = req.params.id;
     var photoID = req.params.photoID;
-    models.Photo.destroy({where: {id: photoID}, individualHooks: true}).then(function (photo) {
-      res.status(204).end();
+    models.Post.find({id: postID}).then(function(post){
+      if (post.user_id === req.session.userID || req.session.admin){
+        models.Photo.destroy({where: {id: photoID}, individualHooks: true}).then(function (photo) {
+          res.status(204).end();
+        });
+      }
+      else{
+        res.status(403).end();
+      }
+    }).catch(function(err){
+      console.log(err);
+      res.status(401).end();
     });
   }
 
