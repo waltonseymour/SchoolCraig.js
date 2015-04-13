@@ -122,6 +122,7 @@
 
   $('.control-panel .panel-heading .fa').click(function(){
     $('#category-filter').val('All');
+    $('#search-form input').val('');
     getPosts(getCurrentOptions({page: 1, category: "All"}));
   });
 
