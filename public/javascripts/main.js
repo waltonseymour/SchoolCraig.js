@@ -73,6 +73,11 @@
 
   // initialization
   initializeMap();
+  if (md.mobile()) {
+    $('#panels > div').each(function() {
+      $(this).prependTo(this.parentNode);
+    });
+  }
 
   function getCurrentOptions(overrides){
     overrides = overrides || {};
