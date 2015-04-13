@@ -30,6 +30,11 @@ h1, h2, h3, h4, h5, h6{
   margin-bottom: 20px;
 }
 
+.pager .page-info{
+  vertical-align: -webkit-baseline-middle;
+  color: #eeeeee;
+}
+
 .control-panel .panel-heading .fa,
 .map-panel .panel-heading .fa{
   margin-top: 4px;

@@ -333,10 +333,11 @@
   }
 
   function changePage(isNext){
-    if ($(".no-posts-warning")[0] && isNext){ return; }
     var options = getCurrentOptions();
-    options.page = isNext ? options.page + 1 : options.page - 1;
-    if(options.page > 0){
+    var valid = !((options.page === globals.totalPages && isNext) ||
+      (options.page === 1 && !isNext));
+    if (valid){
+      options.page = isNext ? options.page + 1 : options.page - 1;
       getPosts(options);
       ga('send', 'event', 'Page', 'Change', options.page.toString());
     }
@@ -371,12 +372,14 @@
 
           // slices first five posts to render
           renderPosts(posts.slice(0, 5));
+          globals.totalPages = posts.length / 5;
+
+          $('.pager .page-info').text("Page 1 of "+ globals.totalPages);
         },
         error: function(err) { console.log("get post failed"); }
       });
     }
     else{
-
       var posts = _.filter(globals.posts, function(post){
         return post.category.id === options.category || options.category === "All";
       });
@@ -388,6 +391,8 @@
       posts = _.sortBy(posts, options.order).reverse();
       var offset = (options.page - 1) * 5;
       renderPosts(posts.slice(offset, offset + 5));
+      globals.totalPages = posts.length / 5;
+      $('.pager .page-info').text("Page "+ options.page +" of "+ globals.totalPages);
     }
   }
 
