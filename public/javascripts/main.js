@@ -110,11 +110,6 @@
     event.stopPropagation();
   });
 
-  $('body').on('click', '.post .photo-tag', function (event) {
-    // add filter for posts with photos
-    event.stopPropagation();
-  });
-
   $('body').on('mouseover', '.modal-thumbnail', function(event){
     var url = $(this).attr('src');
     $('.modal-image').css('background-image', "url(" + url + ")");
@@ -388,7 +383,10 @@
         return globals.map.getBounds().contains(globals.markers[post.id].getPosition());
       });
 
-      posts = _.sortBy(posts, options.order).reverse();
+      posts = _.sortBy(posts, options.order);
+      if (options.order === 'createdAt') {
+        posts = posts.reverse();
+      }
       var offset = (options.page - 1) * 5;
       renderPosts(posts.slice(offset, offset + 5));
       globals.totalPages = Math.ceil(posts.length / 5);
