@@ -16,12 +16,14 @@
 
   function initializeMap() {
     var options = getCurrentOptions();
+
     var mapOptions = {
       // hardcodes to nashville for now
       center: { lat: options.latitude, lng: options.longitude},
       zoom: 11,
       disableDefaultUI: true,
-      zoomControl: true
+      zoomControl: true,
+      draggable: !md.mobile()
     };
     globals.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
@@ -377,6 +379,7 @@
           renderPosts(posts.slice(0, 5));
           globals.totalPages = Math.ceil(posts.length / 5);
           $('.pager .page-info').text("Page 1 of "+ globals.totalPages);
+          $('.pager .next').css('visibility', 'visible');
         },
         error: function(err) { console.log("get post failed"); }
       });
