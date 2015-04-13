@@ -113,7 +113,7 @@ module.exports = {
     if (!util.isUUID(req.params.id)) { return res.send(401); }
     models.Post.find({where: {id: req.params.id}}).then(function (post) {
       if (!post) { return res.status(404).end(); }
-      if (req.session.userID !== post.user_id) { return res.status(403).end(); }
+      if (!(req.session.userID === post.user_id || req.session.admin)) { return res.status(403).end(); }
       var newPost = _.pick(req.body, ['title', 'description', 'price', 'category_id']);
       // ensures all fields are set
       newPost.latitude = post.latitude;
@@ -139,7 +139,7 @@ module.exports = {
   deleteByID: function(req, res) {
     if (!util.isUUID(req.params.id)) { return res.send(401); }
     models.Post.find({where: {id: req.params.id}}).then(function (post) {
-      if (post.user_id !== req.session.userID) { return res.send(403); }
+      if (!(req.session.userID === post.user_id || req.session.admin)) { return res.send(403); }
       models.Photo.destroy({where: {post_id: req.params.id}, individualHooks: true})
       .then(function () { models.Post.destroy({where: {id: req.params.id}}); })
       .then(function () {
