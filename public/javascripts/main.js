@@ -374,7 +374,6 @@
           // slices first five posts to render
           renderPosts(posts.slice(0, 5));
           globals.totalPages = Math.ceil(posts.length / 5);
-
           $('.pager .page-info').text("Page 1 of "+ globals.totalPages);
         },
         error: function(err) { console.log("get post failed"); }
@@ -393,7 +392,24 @@
       var offset = (options.page - 1) * 5;
       renderPosts(posts.slice(offset, offset + 5));
       globals.totalPages = Math.ceil(posts.length / 5);
+    }
+
+    $('.pager .next').css('visibility', 'visible');
+    $('.pager .previous').css('visibility', 'visible');
+    if(globals.totalPages > 0){
       $('.pager .page-info').text("Page "+ options.page +" of "+ globals.totalPages);
+    }
+    else{
+      $('.pager .page-info').text("");
+      $('.pager .previous, .pager .next').css('visibility', 'hidden');
+      return;
+    }
+
+    if (options.page === 1){
+      $('.pager .previous').css('visibility', 'hidden');
+    }
+    else if(options.page === globals.totalPages){
+      $('.pager .next').css('visibility', 'hidden');
     }
   }
 
