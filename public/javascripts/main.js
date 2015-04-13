@@ -5,6 +5,8 @@
   var _ = require('underscore');
   var uuid = require('node-uuid');
   var numeral = require('numeral');
+  var MobileDetect = require('mobile-detect');
+  var md = new MobileDetect(window.navigator.userAgent);
 
   // Stores JSON data for posts
   var POST_CACHE = {};
@@ -443,7 +445,14 @@
       $('#post-modal .post-description').css('margin-top', '0');
     }
 
-    $('#modal-contact').attr("href", "https://mail.google.com/mail/?view=cm&fs=1&to="+data.user.email+"&su="+data.title);
+    var href;
+    if (md.mobile()) {
+      href = "mailto:"+ data.user.email +"?Subject=" + data.title;
+    }
+    else {
+      href = "https://mail.google.com/mail/?view=cm&fs=1&to="+data.user.email+"&su="+data.title;
+    }
+    $('#modal-contact').attr("href", href);
     $('#post-modal').modal('show');
   }
 
