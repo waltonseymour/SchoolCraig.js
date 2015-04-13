@@ -372,7 +372,7 @@
 
           // slices first five posts to render
           renderPosts(posts.slice(0, 5));
-          globals.totalPages = posts.length / 5;
+          globals.totalPages = Math.ceil(posts.length / 5);
 
           $('.pager .page-info').text("Page 1 of "+ globals.totalPages);
         },
@@ -391,7 +391,7 @@
       posts = _.sortBy(posts, options.order).reverse();
       var offset = (options.page - 1) * 5;
       renderPosts(posts.slice(offset, offset + 5));
-      globals.totalPages = posts.length / 5;
+      globals.totalPages = Math.ceil(posts.length / 5);
       $('.pager .page-info').text("Page "+ options.page +" of "+ globals.totalPages);
     }
   }
