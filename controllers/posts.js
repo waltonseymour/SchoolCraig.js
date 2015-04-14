@@ -10,8 +10,8 @@ var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'up
 var userOptions = {attributes: ['id', 'email']};
 var categoryOptions = {attributes: ['id', 'name']};
 
-models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'cascade'});
-models.Post.belongsTo(models.Category, {as: 'category', foreignKey: {name: 'category_id', allowNull: false}, onDelete: 'cascade'});
+models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', allowNull: false}});
+models.Post.belongsTo(models.Category, {as: 'category', foreignKey: {name: 'category_id', allowNull: false}});
 // hooks: true not working for some reason, deleteing explicitly to invoke hook currently
 models.Post.hasMany(models.Photo, {as: 'photos', foreignKey: 'post_id', onDelete: 'cascade', hooks: true});
 models.Photo.belongsTo(models.Post, {as: 'post', foreignKey: 'post_id', hooks: true});

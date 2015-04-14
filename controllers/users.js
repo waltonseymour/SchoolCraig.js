@@ -7,7 +7,7 @@ var utils = require('../utilities');
 
 var publicOptions = {attributes: ['id', 'email']};
 
-models.User.hasMany(models.Post, {as: 'posts', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'CASCADE'});
+models.User.hasMany(models.Post, {as: 'posts', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'cascade', hooks: true});
 module.exports = {
   listAll: function (req, res) {
     if (req.session.userID === undefined) { return res.send(403); }
@@ -91,11 +91,11 @@ module.exports = {
     if (req.session.userID !== req.params.id) { return res.send(403); }
 
     var options = _.extend({where: {id: req.params.id}}, publicOptions);
-    models.Post.destroy({where: {user_id: req.params.id}})
-    .then(models.User.destroy(options))
-    .then(function (user) {
-      req.session = null;
-      res.send(204);
+    models.User.findOne({where: {id: req.params.id}}).then(function(user){
+      user.destroy().then(function (user) {
+        req.session = null;
+        res.send(204);
+      });
     });
   },
 
