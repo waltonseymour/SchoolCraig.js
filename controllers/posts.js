@@ -14,7 +14,7 @@ models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', al
 models.Post.belongsTo(models.Category, {as: 'category', foreignKey: {name: 'category_id', allowNull: false}, onDelete: 'cascade'});
 // hooks: true not working for some reason, deleteing explicitly to invoke hook currently
 models.Post.hasMany(models.Photo, {as: 'photos', foreignKey: 'post_id', onDelete: 'cascade', hooks: true});
-models.Photo.belongsTo(models.Post, {as: 'post', foreignKey: 'post_id', onDelete: 'cascade', hooks: true});
+models.Photo.belongsTo(models.Post, {as: 'post', foreignKey: 'post_id', hooks: true});
 
 module.exports = {
 
@@ -142,9 +142,7 @@ module.exports = {
     if (!util.isUUID(req.params.id)) { return res.send(401); }
     models.Post.find({where: {id: req.params.id}}).then(function (post) {
       if (!(req.session.userID === post.user_id || req.session.admin)) { return res.send(403); }
-      models.Photo.destroy({where: {post_id: req.params.id}, individualHooks: true})
-      .then(function () { models.Post.destroy({where: {id: req.params.id}}); })
-      .then(function () {
+      post.destroy().then(function () {
         res.status(204).end();
         var activity = {user: req.session.userID, activity: "Delete Post",
         value: req.params.id};
