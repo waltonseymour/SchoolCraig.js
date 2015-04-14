@@ -1,4 +1,5 @@
 var models = require('../models');
+var sequelize = require('sequelize');
 var _ = require('underscore');
 var async = require('async');
 var util = require('../utilities');
@@ -13,6 +14,7 @@ models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', al
 models.Post.belongsTo(models.Category, {as: 'category', foreignKey: {name: 'category_id', allowNull: false}, onDelete: 'cascade'});
 // hooks: true not working for some reason, deleteing explicitly to invoke hook currently
 models.Post.hasMany(models.Photo, {as: 'photos', foreignKey: 'post_id', onDelete: 'cascade', hooks: true});
+models.Photo.belongsTo(models.Post, {as: 'post', foreignKey: 'post_id', onDelete: 'cascade', hooks: true});
 
 module.exports = {
 
@@ -241,10 +243,13 @@ module.exports = {
   deletePhotoByID: function(req, res) {
     var postID = req.params.id;
     var photoID = req.params.photoID;
-    var options = {where: {id: postID}};
-    models.Post.find(options).then(function(post){
-      if (post.user_id === req.session.userID || req.session.admin){
-        models.Photo.destroy({where: {id: photoID}, individualHooks: true}).then(function (photo) {
+    var options = {
+      where: sequelize.and({post_id: postID}, {id: photoID}),
+      include: [{model: models.Post, as: 'post'}]
+    };
+    models.Photo.find(options).then(function(photo){
+      if (photo.post.user_id === req.session.userID || req.session.admin){
+        models.Photo.destroy({where: {id: photoID}}).then(function () {
           res.status(204).end();
         });
       }
