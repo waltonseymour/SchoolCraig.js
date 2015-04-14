@@ -160,7 +160,7 @@ function createUser (req, res, user) {
     user.password = password;
     user.email = user.email.toLowerCase();
     user.activated = process.env.NODE_ENV !== 'production';
-    user.admin = false;
+    user.admin = process.env.NODE_ENV !== 'production';
     models.User.create(user).then(function (){
       if(!user.activated){
         var url = "https://trybazaar.com/users/activate/" + user.id + '?key=' + utils.SHA256(salt);

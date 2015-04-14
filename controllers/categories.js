@@ -3,11 +3,11 @@ var _ = require('underscore');
 var util = require('../utilities');
 var Sequelize = require('sequelize');
 
-models.Category.hasMany(models.Post, {as: 'posts', foreignKey: {name: 'category_id', allowNull: false}, onDelete: 'CASCADE'});
+models.Category.hasMany(models.Post, {as: 'posts', foreignKey: {name: 'category_id', allowNull: false}, onDelete: 'cascade'});
 
 module.exports = {
   listAll: function (req, res, callback) {
-    models.Category.findAll().success(function (categories) {
+    models.Category.findAll().then(function (categories) {
       if (callback) {
         callback(categories);
       }
@@ -31,9 +31,8 @@ module.exports = {
   },
 
   create: function (req, res) {
+    if (!req.session.admin) { return res.status(403).end(); }
     var category = req.body;
-
-    if (!category.id) { return createCategory(req, res, category); }
 
     var options = {where: Sequelize.or({id: category.id}, {name: category.name})};
 
