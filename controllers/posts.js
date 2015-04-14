@@ -241,7 +241,8 @@ module.exports = {
   deletePhotoByID: function(req, res) {
     var postID = req.params.id;
     var photoID = req.params.photoID;
-    models.Post.find({id: postID}).then(function(post){
+    var options = {where: {id: postID}};
+    models.Post.find(options).then(function(post){
       if (post.user_id === req.session.userID || req.session.admin){
         models.Photo.destroy({where: {id: photoID}, individualHooks: true}).then(function (photo) {
           res.status(204).end();
