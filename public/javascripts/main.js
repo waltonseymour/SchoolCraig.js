@@ -351,6 +351,8 @@
             POST_CACHE[post.id] = post;
           });
 
+          parseURL();
+
           // slices first five posts to render
           renderPosts(posts.slice(0, 5));
           globals.totalPages = Math.ceil(posts.length / 5);
@@ -490,7 +492,16 @@
     $('#post-modal .post-description, #post-modal .post-title, ' +
     '#post-modal .post-price').attr('contenteditable', 'false')
     .removeClass('editable');
+  }
 
+  function parseURL(){
+    var parser = document.createElement('a');
+    parser.href = window.location;
+    var regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    var match = parser.hash.substr(1).match(regex);
+    if (match && POST_CACHE[match[0]]){
+      getPost(match[0]);
+    }
   }
 
   function createPost(post){
