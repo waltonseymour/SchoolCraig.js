@@ -87,7 +87,7 @@
       order: $('input[type=radio][name=order]:checked').val(),
       latitude: globals.latitude || 36.1658897400,
       longitude: globals.longitude || -86.7844467163,
-      radius: globals.radius || 1000,
+      radius: globals.radius || 50,
       postsPerPage: 100
     });
     return options;

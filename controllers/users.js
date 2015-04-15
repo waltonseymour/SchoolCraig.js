@@ -166,7 +166,7 @@ function createUser (req, res, user) {
         var url = "https://trybazaar.com/users/activate/" + user.id + '?key=' + utils.SHA256(salt);
         sendgrid.send({
           to: user.email,
-          from: 'noreply@trybazaar.com',
+          from: 'activation@trybazaar.com',
           subject: 'Account Activation',
           html: 'Please click <a href="'+ url +'">here</a> to confirm your email.'
         }, function(err, json){
