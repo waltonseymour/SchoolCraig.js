@@ -7,7 +7,7 @@ models.Category.hasMany(models.Post, {as: 'posts', foreignKey: {name: 'category_
 
 module.exports = {
   listAll: function (req, res, callback) {
-    models.Category.findAll().then(function (categories) {
+    models.Category.findAll({order: [["updatedAt", "DESC"]]}).then(function (categories) {
       if (callback) {
         callback(categories);
       }
