@@ -11,18 +11,19 @@ module.exports = function(sequelize, DataTypes) {
     email: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
     salt: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
     activated: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
+      allowNull: false
     },
     admin: {
       type: DataTypes.BOOLEAN,
