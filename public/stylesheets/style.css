@@ -370,6 +370,10 @@ input[type="radio"]{
   width: 60%;
 }
 
+#travel-modal .modal-dialog{
+  width: 600px;
+}
+
 .modal-body{
   overflow-y: auto;
 }

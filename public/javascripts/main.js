@@ -326,7 +326,7 @@
   });
 
   $('#search-form').submit(function () {
-    var query = $('input[type=search]').val();
+    var query = $('#search-form input[type=search]').val();
     if(query === ""){
       getPosts();
       return false;
@@ -338,6 +338,25 @@
       error: function(err) { console.log("get post failed"); }
     });
     ga('send', 'event', 'Posts', 'Search', query);
+    return false;
+  });
+
+  $('#travel-form').submit(function () {
+    var query = $('#travel-form input[type=search]').val();
+    $.ajax({
+      url: 'https://maps.googleapis.com/maps/api/geocode/json?address='+query,
+      type: 'GET',
+      success: function(data){
+        globals.latitude = data.results[0].geometry.location.lat;
+        globals.longitude = data.results[0].geometry.location.lng;
+        initializeMap();
+        getPosts(null, true);
+        $('#travel-modal').modal('hide');
+        $('#travel-form input[type=search]').val('');
+      },
+      error: function(err) { console.log("get post failed"); }
+    });
+    ga('send', 'event', 'Posts', 'Travel', query);
     return false;
   });
 
@@ -385,14 +404,15 @@
     ga('send', 'event', 'Posts', 'Open', id);
   }
 
-  function getPosts(options){
+  function getPosts(options, reset){
     options = options || getCurrentOptions();
+    reset = reset || false;
     // sets data in the DOM
     $('#post-container').attr('data-page', options.page);
     // Converts to url parameters
     var params = jQuery.param(options);
 
-    if (!globals.posts){
+    if (!globals.posts || reset){
       $.ajax({
         url: 'posts?' + params,
         type: 'GET',

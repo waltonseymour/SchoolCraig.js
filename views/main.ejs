@@ -138,6 +138,28 @@
         </div>
       </div>
 
+      <div class="modal fade" id="travel-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="myModalLabel">Where would you like to see posts?</h4>
+            </div>
+              <div class="modal-body">
+                <form class="" id="travel-form" action="#" role="search">
+                 <div class="form-group">
+                   <div class="input-group">
+                     <input class="form-control" type="search" placeholder="ex. New York City">
+                     <span class="input-group-btn">
+                       <button type="submit" class="btn btn-success"><i class="fa fa-search"></i></button>
+                     </span>
+                   </div>
+                 </div>
+               </form>
+              </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Post Modal -->
       <div class="modal fade" id="post-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -202,7 +224,7 @@
             </div>
             <div class="map-panel row panel panel-info">
               <div class="panel-heading">
-                Map <i class="fa fa-plane pull-right"></i>
+                Map <i data-toggle="modal" data-target="#travel-modal" class="fa fa-plane pull-right"></i>
               </div>
               <div class="panel-body">
                 <div id="map-canvas"></div>
