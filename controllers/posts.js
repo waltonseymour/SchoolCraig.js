@@ -226,14 +226,20 @@ module.exports = {
     });
   },
 
-  // returns a list of presigned urls associated with a post
+  // redirects to pre signed url for a given photo
   getPhotoByID: function(req, res) {
     var postID = req.params.id;
     var photoID = req.params.photoID;
     models.Photo.find({where: {id: photoID}}).then(function (photo) {
-      util.sign_s3({method: 'get', key: 'bazaar/' + photo.id}, function(url){
-        res.redirect(307, url);
-      });
+      if (photo) {
+        util.sign_s3({method: 'get', key: 'bazaar/' + photo.id}, function(url){
+          res.redirect(307, url);
+        });
+      }
+      else{
+        res.status(404).end();
+      }
+
     });
   },
 

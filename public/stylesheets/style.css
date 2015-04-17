@@ -423,11 +423,33 @@ input[type="radio"]{
 }
 
 .modal-thumbnail{
+  display: inline-block;
   border: 1px solid #34495e;
   height: 40px;
   width: 40px;
   margin-right: 3px;
+  background-size: cover;
+  background-position: center center;
 }
+
+.modal-thumbnail i{
+  display: none;
+}
+
+.modal-thumbnail.editable{
+  background-color: rgba(0, 0, 0, 0.7);
+  background-blend-mode: overlay;
+}
+
+.modal-thumbnail.editable i{
+  position: absolute;
+  cursor: pointer;
+  margin-left: 14px;
+  margin-top: 10px;
+  color: white;
+  display: block;
+}
+
 
 #create-modal .modal-thumbnail{
   height: 50px;

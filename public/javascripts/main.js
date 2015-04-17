@@ -125,8 +125,8 @@
   });
 
   $('body').on('mouseover', '.modal-thumbnail', function(event){
-    var url = $(this).attr('src');
-    $('.modal-image').css('background-image', "url(" + url + ")");
+    var url = $(this).css('background-image');
+    $('.modal-image').css('background-image', url);
   });
 
   $('.control-panel .panel-heading .fa').click(function(){
@@ -150,6 +150,8 @@
     $('#post-modal .post-description, #post-modal .post-title, ' +
     '#post-modal .post-price').attr('contenteditable', 'true')
     .addClass('editable');
+
+    $("#post-modal .modal-thumbnail").addClass('editable');
 
     $('#post-modal .btn-file').show();
     $("#post-modal .post-price-container").show();
@@ -205,6 +207,26 @@
     });
   });
 
+  $('body').on('click', '.delete-photo', function (event) {
+    var $this = $(this);
+    var photoID = $(this).parent().data('photoid');
+    var postID = $(this).parent().data('postid');
+
+    $.ajax({
+      url: 'posts/'+postID+"/photos/"+photoID,
+      type: 'DELETE',
+      success: function() {
+        ga('send', 'event', 'Posts', 'Delete Photo', postID);
+        var globalPost = _.findWhere(globals.posts, {id: postID});
+        globalPost.photos = _.without(globalPost.photos,
+          _.findWhere(globalPost.photos, {id: photoID}));
+        getPost(postID);
+        $('.edit').trigger('click');
+      },
+      error: function(err) { console.log("delete photo failed"); }
+    });
+  });
+
   $('#create-modal').on('shown.bs.modal', function () {
     $('.create-title').focus();
   });
@@ -247,13 +269,16 @@
         var file;
         reader.onload = function(e) {
           var id = $('#post-modal').attr('data-id');
-          var img = '<img class="modal-thumbnail" src="'+ e.target.result +'">';
-          $('#post-modal .modal-thumbnails').append(img);
+          var $img = $('<div class="modal-thumbnail editable"><i class="delete-photo fa fa-trash"></i></div>')
+          .css('background-image', "url(" + e.target.result + ")");
+          $('#post-modal .modal-thumbnails').append($img);
           $('#post-modal .modal-image')
           .css('background-image', "url(" + e.target.result + ")");
           $('#post-modal .modal-image-container').show();
 
           uploadFiles(id, file, null, function (newPhotoIDs) {
+            $img.data('postid', $('#post-modal').data('id'));
+            $img.data('photoid', newPhotoIDs[0]);
             var photos = _.map(newPhotoIDs, function (id) {
               return {id: id};
             });
@@ -452,7 +477,9 @@
       // Add thumbnails
       for (var i = 0; i< data.photos.length; i++) {
         url = '/posts/' + data.id + '/photos/' + data.photos[i].id;
-        var img = '<img class="modal-thumbnail" src="'+ url +'">';
+        var img = $('<div class="modal-thumbnail" data-postid="'+data.id+'" data-photoid="'+data.photos[i].id+'">'+
+        '<i class="delete-photo fa fa-trash"></i></div>')
+        .css('background-image', "url(" + url + ")");
         $('#post-modal .modal-thumbnails').append(img);
       }
     }
@@ -524,6 +551,7 @@
     $('#post-modal .post-description, #post-modal .post-title, ' +
     '#post-modal .post-price').attr('contenteditable', 'false')
     .removeClass('editable');
+    $("#post-modal .modal-thumbnail").removeClass('editable');
   }
 
   function parseURL(){
