@@ -88,7 +88,7 @@ module.exports = {
   },
 
   deleteByID: function (req, res) {
-    if (req.session.userID !== req.params.id) { return res.send(403); }
+    if (!(req.session.userID === req.params.id || req.session.admin)) { return res.send(403); }
 
     var options = _.extend({where: {id: req.params.id}}, publicOptions);
     models.User.findOne({where: {id: req.params.id}}).then(function(user){
