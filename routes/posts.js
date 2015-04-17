@@ -29,4 +29,7 @@ router.get('/:id/photos', controller.getPhotos);
 // Retrieves url for a photo
 router.get('/:id/photos/:photoID', controller.getPhotoByID);
 
+// delete photo in database and i s3
+router.delete('/:id/photos/:photoID', controller.deletePhotoByID);
+
 module.exports = router;

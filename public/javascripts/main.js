@@ -5,6 +5,8 @@
   var _ = require('underscore');
   var uuid = require('node-uuid');
   var numeral = require('numeral');
+  var MobileDetect = require('mobile-detect');
+  var md = new MobileDetect(window.navigator.userAgent);
 
   // Stores JSON data for posts
   var POST_CACHE = {};
@@ -14,12 +16,14 @@
 
   function initializeMap() {
     var options = getCurrentOptions();
+
     var mapOptions = {
       // hardcodes to nashville for now
       center: { lat: options.latitude, lng: options.longitude},
       zoom: 11,
       disableDefaultUI: true,
-      zoomControl: true
+      zoomControl: true,
+      draggable: !md.mobile()
     };
     globals.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
@@ -69,6 +73,11 @@
 
   // initialization
   initializeMap();
+  if (md.mobile()) {
+    $('#panels > div').each(function() {
+      $(this).prependTo(this.parentNode);
+    });
+  }
 
   function getCurrentOptions(overrides){
     overrides = overrides || {};
@@ -78,7 +87,7 @@
       order: $('input[type=radio][name=order]:checked').val(),
       latitude: globals.latitude || 36.1658897400,
       longitude: globals.longitude || -86.7844467163,
-      radius: globals.radius || 1000,
+      radius: globals.radius || 50,
       postsPerPage: 100
     });
     return options;
@@ -101,6 +110,11 @@
     return false;
   });
 
+  $(".btn-group .btn").on("click", function(){
+     $(".btn-group").find(".active").removeClass("active");
+     $(this).parent().addClass("active");
+  });
+
   $('body').on('click', '.post', function (event) {
     getPost($(this).attr('data-id'));
   });
@@ -110,18 +124,14 @@
     event.stopPropagation();
   });
 
-  $('body').on('click', '.post .photo-tag', function (event) {
-    // add filter for posts with photos
-    event.stopPropagation();
-  });
-
   $('body').on('mouseover', '.modal-thumbnail', function(event){
-    var url = $(this).attr('src');
-    $('.modal-image').css('background-image', "url(" + url + ")");
+    var url = $(this).css('background-image');
+    $('.modal-image').css('background-image', url);
   });
 
   $('.control-panel .panel-heading .fa').click(function(){
-    $('#category-filter').val('All');
+    $('#category-filter').selectpicker('val', 'All');
+    $('#search-form input').val('');
     getPosts(getCurrentOptions({page: 1, category: "All"}));
   });
 
@@ -140,6 +150,10 @@
     $('#post-modal .post-description, #post-modal .post-title, ' +
     '#post-modal .post-price').attr('contenteditable', 'true')
     .addClass('editable');
+
+    $("#post-modal .modal-thumbnail").addClass('editable');
+
+    $('#post-modal .btn-file').show();
     $("#post-modal .post-price-container").show();
     $('#post-modal .edit-confirm').show();
     $('#post-modal .edit').hide();
@@ -193,32 +207,23 @@
     });
   });
 
-  $('#delete-account').click(function(){
-    var id = $('#user-id').val();
-    swal({
-      title: "Are you sure?",
-      text: "Your account cannot be recovered",
-      type: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#e74c3c",
-      confirmButtonText: "Yes, I understand",
-      cancelButtonText: "No, cancel",
-      closeOnConfirm: false,
-      closeOnCancel: true
-    },
-    function(isConfirm){
-      if (isConfirm) {
-        swal("Deleted!", "Your account has been deleted.", "success");
-        $.ajax({
-          url: 'users/' + id,
-          type: 'DELETE',
-          success: function() {
-            ga('send', 'event', 'User', 'Delete', id);
-            setTimeout(function(){ location.reload(); }, 1000);
-            },
-          error: function(err) { console.log("delete user failed"); }
-        });
-      }
+  $('body').on('click', '.delete-photo', function (event) {
+    var $this = $(this);
+    var photoID = $(this).parent().data('photoid');
+    var postID = $(this).parent().data('postid');
+
+    $.ajax({
+      url: 'posts/'+postID+"/photos/"+photoID,
+      type: 'DELETE',
+      success: function() {
+        ga('send', 'event', 'Posts', 'Delete Photo', postID);
+        var globalPost = _.findWhere(globals.posts, {id: postID});
+        globalPost.photos = _.without(globalPost.photos,
+          _.findWhere(globalPost.photos, {id: photoID}));
+        getPost(postID);
+        $('.edit').trigger('click');
+      },
+      error: function(err) { console.log("delete photo failed"); }
     });
   });
 
@@ -238,24 +243,55 @@
     errorClass: 'error'
   });
 
-  $(function () {
-    $('#create-file').fileupload({
-      dataType: 'json',
-      add: function(e, data){
-        if (data.files && data.files[0]) {
-          var reader = new FileReader();
-          reader.onload = function(e) {
-            var img = '<img class="modal-thumbnail" src="'+ e.target.result +'">';
-            $('#create-form .modal-thumbnails').append(img);
-          };
-          reader.readAsDataURL(data.files[0]);
-          if(!globals.uploadFiles){
-            globals.uploadFiles = [];
-          }
-          globals.uploadFiles.push(data.files[0]);
+  $('#create-file').fileupload({
+    dataType: 'json',
+    add: function(e, data){
+      if (data.files && data.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var img = '<img class="modal-thumbnail" src="'+ e.target.result +'">';
+          $('#create-form .modal-thumbnails').append(img);
+        };
+        reader.readAsDataURL(data.files[0]);
+        if(!globals.uploadFiles){
+          globals.uploadFiles = [];
         }
+        globals.uploadFiles.push(data.files[0]);
       }
-    });
+    }
+  });
+
+  $('#edit-file').fileupload({
+    dataType: 'json',
+    add: function(e, data){
+      if (data.files && data.files[0]) {
+        var reader = new FileReader();
+        var file;
+        reader.onload = function(e) {
+          var id = $('#post-modal').attr('data-id');
+          var $img = $('<div class="modal-thumbnail editable"><i class="delete-photo fa fa-trash"></i></div>')
+          .css('background-image', "url(" + e.target.result + ")");
+          $('#post-modal .modal-thumbnails').append($img);
+          $('#post-modal .modal-image')
+          .css('background-image', "url(" + e.target.result + ")");
+          $('#post-modal .modal-image-container').show();
+
+          uploadFiles(id, file, null, function (newPhotoIDs) {
+            $img.data('postid', $('#post-modal').data('id'));
+            $img.data('photoid', newPhotoIDs[0]);
+            var photos = _.map(newPhotoIDs, function (id) {
+              return {id: id};
+            });
+            var globalPost = _.findWhere(globals.posts, {id: id});
+            globalPost.photos.push.apply(globalPost.photos, photos);
+          });
+        };
+        // somewhat of a hack for now
+        // prevents files being uploaded multiple times
+        file = [data.files[0]];
+        reader.readAsDataURL(data.files[0]);
+      }
+    }
   });
 
   $('#create-form').submit(function () {
@@ -333,10 +369,11 @@
   }
 
   function changePage(isNext){
-    if ($(".no-posts-warning")[0] && isNext){ return; }
     var options = getCurrentOptions();
-    options.page = isNext ? options.page + 1 : options.page - 1;
-    if(options.page > 0){
+    var valid = !((options.page === globals.totalPages && isNext) ||
+      (options.page === 1 && !isNext));
+    if (valid){
+      options.page = isNext ? options.page + 1 : options.page - 1;
       getPosts(options);
       ga('send', 'event', 'Page', 'Change', options.page.toString());
     }
@@ -369,14 +406,18 @@
             POST_CACHE[post.id] = post;
           });
 
+          parseURL();
+
           // slices first five posts to render
-          renderPosts(posts.slice(0, 4));
+          renderPosts(posts.slice(0, 5));
+          globals.totalPages = Math.ceil(posts.length / 5);
+          $('.pager .page-info').text("Page 1 of "+ globals.totalPages);
+          $('.pager .next').css('visibility', 'visible');
         },
         error: function(err) { console.log("get post failed"); }
       });
     }
     else{
-
       var posts = _.filter(globals.posts, function(post){
         return post.category.id === options.category || options.category === "All";
       });
@@ -385,9 +426,31 @@
         return globals.map.getBounds().contains(globals.markers[post.id].getPosition());
       });
 
-      posts = _.sortBy(posts, options.order).reverse();
+      posts = _.sortBy(posts, options.order);
+      if (options.order === 'createdAt') {
+        posts = posts.reverse();
+      }
       var offset = (options.page - 1) * 5;
-      renderPosts(posts.slice(offset, offset + 4));
+      renderPosts(posts.slice(offset, offset + 5));
+      globals.totalPages = Math.ceil(posts.length / 5);
+    }
+
+    $('.pager .next').css('visibility', 'visible');
+    $('.pager .previous').css('visibility', 'visible');
+    if(globals.totalPages > 0){
+      $('.pager .page-info').text("Page "+ options.page +" of "+ globals.totalPages);
+    }
+    else{
+      $('.pager .page-info').text("");
+      $('.pager .previous, .pager .next').css('visibility', 'hidden');
+      return;
+    }
+
+    if (options.page === 1){
+      $('.pager .previous').css('visibility', 'hidden');
+    }
+    else if(options.page === globals.totalPages){
+      $('.pager .next').css('visibility', 'hidden');
     }
   }
 
@@ -414,7 +477,9 @@
       // Add thumbnails
       for (var i = 0; i< data.photos.length; i++) {
         url = '/posts/' + data.id + '/photos/' + data.photos[i].id;
-        var img = '<img class="modal-thumbnail" src="'+ url +'">';
+        var img = $('<div class="modal-thumbnail" data-postid="'+data.id+'" data-photoid="'+data.photos[i].id+'">'+
+        '<i class="delete-photo fa fa-trash"></i></div>')
+        .css('background-image', "url(" + url + ")");
         $('#post-modal .modal-thumbnails').append(img);
       }
     }
@@ -423,7 +488,14 @@
       $('#post-modal .post-description').css('margin-top', '0');
     }
 
-    $('#modal-contact').attr("href", "https://mail.google.com/mail/?view=cm&fs=1&to="+data.user.email+"&su="+data.title);
+    var href;
+    if (md.mobile()) {
+      href = "mailto:"+ data.user.email +"?Subject=" + data.title;
+    }
+    else {
+      href = "https://mail.google.com/mail/?view=cm&fs=1&to="+data.user.email+"&su="+data.title;
+    }
+    $('#modal-contact').attr("href", href);
     $('#post-modal').modal('show');
   }
 
@@ -460,6 +532,7 @@
       $('#modal-contact').hide();
     }
     else {
+      $('#post-modal .btn-file').hide();
       $('#post-modal .delete').hide();
       $('#post-modal .edit').hide();
       $('#modal-contact').show();
@@ -474,10 +547,21 @@
 
     $('#post-modal .cancel').hide();
     $('#post-modal .edit-confirm').hide();
+    $('#post-modal .btn-file').hide();
     $('#post-modal .post-description, #post-modal .post-title, ' +
     '#post-modal .post-price').attr('contenteditable', 'false')
     .removeClass('editable');
+    $("#post-modal .modal-thumbnail").removeClass('editable');
+  }
 
+  function parseURL(){
+    var parser = document.createElement('a');
+    parser.href = window.location;
+    var regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    var match = parser.hash.substr(1).match(regex);
+    if (match && POST_CACHE[match[0]]){
+      getPost(match[0]);
+    }
   }
 
   function createPost(post){
@@ -486,7 +570,12 @@
       type: 'POST',
       data: post,
       success: function(){
-        getSignedUrls(post.id);
+        var $progressBar = $('#loading-modal .progress-bar span');
+        uploadFiles(post.id, globals.uploadFiles, $progressBar, function(){
+          setTimeout(function(){
+            location.reload();
+          }, 750);
+        });
       },
       error: function(err) { console.log("create post failed"); }
     });
@@ -499,7 +588,7 @@
       data: post,
       success: function(data){
         globals.currentPostIds = null;
-        var  globalPost = _.findWhere(globals.posts, {id: post.id});
+        var globalPost = _.findWhere(globals.posts, {id: post.id});
         globalPost.title = data.title;
         globalPost.price = data.price;
         globalPost.description = data.description;
@@ -511,11 +600,10 @@
     });
   }
 
-  function getSignedUrls(postID) {
-    if (!globals.uploadFiles){ return location.reload(); }
-    var contentType = globals.uploadFiles[0].type;
-    var photos = _.map(globals.uploadFiles, function(file){
-      return {contentType: file.type};
+  function getSignedUrls(postID, files, callback) {
+    if (!files) { return location.reload(); }
+    var photos = _.map(files, function(file){
+      return {id: uuid.v4(), contentType: file.type};
     });
     $.ajax({
       url: 'posts/' + postID + '/photos',
@@ -523,38 +611,39 @@
       contentType: "application/json",
       data: JSON.stringify(photos),
       success: function(urls) {
-        var temp = [];
-        for (var i=0; i<urls.length; i++){
-          temp.push(_.extend({}, photos[i], {url: urls[i]}));
+        var signedURLS = [];
+        for (var i = 0; i < urls.length; i++) {
+          signedURLS.push(_.extend({}, photos[i], {url: urls[i]}));
         }
-        uploadFiles(temp);
+        callback(signedURLS, files);
       },
       error: function(err) { console.log("get signed url failed"); }
     });
   }
 
-  function uploadFiles(photos) {
-    var ajaxCalls = [];
-    for (var i = 0; i<photos.length; i++){
-      var file = globals.uploadFiles[i];
-      var deferred = createDeferred(photos[i], file);
-      ajaxCalls.push(deferred);
-    }
-    $.when.apply($, ajaxCalls).then(function(){
-      setTimeout(function(){
-        location.reload();
-      }, 750);
+  function uploadFiles(postID, files, $progressBar, callback) {
+    getSignedUrls(postID, files, function(signedURLS, files){
+      var ajaxCalls = [];
+      for (var i = 0; i < signedURLS.length; i++){
+        var deferred = createDeferred(signedURLS[i], files[i], $progressBar);
+        ajaxCalls.push(deferred);
+      }
+      $.when.apply($, ajaxCalls).then(function(){
+        if (callback) {
+          callback(_.pluck(signedURLS, 'id'));
+        }
+      });
     });
   }
 
-  function createDeferred(photo, file){
+  function createDeferred(photo, file, $progressBar){
     return $.ajax({
       xhr: function() {
         var xhr = new window.XMLHttpRequest();
         xhr.upload.addEventListener("progress", function(evt) {
-          if (evt.lengthComputable) {
+          if (evt.lengthComputable && $progressBar) {
             var percentComplete = evt.loaded / evt.total;
-            $('#loading-modal .progress-bar span').css('width',
+            $progressBar.css('width',
             (percentComplete*100).toString() + "%");
           }
         }, false);

@@ -7,7 +7,7 @@ var utils = require('../utilities');
 
 var publicOptions = {attributes: ['id', 'email']};
 
-models.User.hasMany(models.Post, {as: 'posts', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'CASCADE'});
+models.User.hasMany(models.Post, {as: 'posts', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'cascade', hooks: true});
 module.exports = {
   listAll: function (req, res) {
     if (req.session.userID === undefined) { return res.send(403); }
@@ -46,6 +46,7 @@ module.exports = {
       // returns 401 if password is incorrect
       if (password !== DBPassword) { return res.send(401); }
       req.session.userID = user.id;
+      req.session.admin = user.admin;
       res.send(_.pick(user, publicOptions.attributes));
     });
   },
@@ -90,11 +91,11 @@ module.exports = {
     if (req.session.userID !== req.params.id) { return res.send(403); }
 
     var options = _.extend({where: {id: req.params.id}}, publicOptions);
-    models.Post.destroy({where: {user_id: req.params.id}})
-    .then(models.User.destroy(options))
-    .then(function (user) {
-      req.session = null;
-      res.send(204);
+    models.User.findOne({where: {id: req.params.id}}).then(function(user){
+      user.destroy().then(function (user) {
+        req.session = null;
+        res.send(204);
+      });
     });
   },
 
@@ -159,12 +160,13 @@ function createUser (req, res, user) {
     user.password = password;
     user.email = user.email.toLowerCase();
     user.activated = process.env.NODE_ENV !== 'production';
+    user.admin = process.env.NODE_ENV !== 'production';
     models.User.create(user).then(function (){
       if(!user.activated){
         var url = "https://trybazaar.com/users/activate/" + user.id + '?key=' + utils.SHA256(salt);
         sendgrid.send({
           to: user.email,
-          from: 'noreply@trybazaar.com',
+          from: 'activation@trybazaar.com',
           subject: 'Account Activation',
           html: 'Please click <a href="'+ url +'">here</a> to confirm your email.'
         }, function(err, json){

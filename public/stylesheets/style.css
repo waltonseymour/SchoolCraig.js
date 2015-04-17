@@ -12,6 +12,35 @@ h1, h2, h3, h4, h5, h6{
   font-weight: 500;
 }
 
+.btn-group>.btn:hover, .btn-group-vertical>.btn:hover,
+.btn-group>.btn:focus, .btn-group-vertical>.btn:focus,
+.btn-group>.btn:active, .btn-group-vertical>.btn:active,
+.btn-group>.btn.active, .btn-group-vertical>.btn.active{
+  z-index: 0;
+}
+
+.dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus{
+  background-color: #217dbb;
+}
+
+.dropdown-menu>.active>a, .dropdown-menu>.active>a:hover, .dropdown-menu>.active>a:focus{
+  background-color: #217dbb;
+}
+
+select {
+   visibility: hidden;
+}
+
+.bootstrap-select.form-control:not([class*=col-]){
+  width: calc(100% - 20px);
+  margin-left: 5px;
+}
+
+.control-panel .btn-group{
+  margin-left: calc(50% - 79px);
+}
+
+
 .truncate {
   white-space: nowrap;
   overflow: hidden;
@@ -28,6 +57,11 @@ h1, h2, h3, h4, h5, h6{
   text-align: center;
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.pager .page-info{
+  vertical-align: -webkit-baseline-middle;
+  color: #eeeeee;
 }
 
 .control-panel .panel-heading .fa,
@@ -255,10 +289,6 @@ ul, .navbar-right{
   margin-top: -6px;
 }
 
-#category-filter{
-  width: calc(100% - 20px);
-  margin-left: 2px;
-}
 
 input[type="radio"]{
   margin-left: 25px;
@@ -393,11 +423,33 @@ input[type="radio"]{
 }
 
 .modal-thumbnail{
+  display: inline-block;
   border: 1px solid #34495e;
   height: 40px;
   width: 40px;
   margin-right: 3px;
+  background-size: cover;
+  background-position: center center;
 }
+
+.modal-thumbnail i{
+  display: none;
+}
+
+.modal-thumbnail.editable{
+  background-color: rgba(0, 0, 0, 0.7);
+  background-blend-mode: overlay;
+}
+
+.modal-thumbnail.editable i{
+  position: absolute;
+  cursor: pointer;
+  margin-left: 14px;
+  margin-top: 10px;
+  color: white;
+  display: block;
+}
+
 
 #create-modal .modal-thumbnail{
   height: 50px;
@@ -467,10 +519,6 @@ body::-webkit-scrollbar-thumb{
     margin-left: 0;
     margin-right: 0;
   }
-  #category-filter{
-    display: inline-block !important;
-    margin-left: 0;
-  }
   .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1,
   .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2,
   .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3,
@@ -487,12 +535,23 @@ body::-webkit-scrollbar-thumb{
     padding-right: 0;
     width: 100%;
   }
+
+  #post-container{
+    width: 94%;
+    margin-left: 3%;
+  }
+
   .row .post{
     padding-bottom: 10px;
   }
   .row .post h1, h2, h3, h4, h5{
     margin-top: 4px;
     margin-bottom: 4px;
+  }
+
+  .row .post .col-sm-10{
+    width: 70%;
+    margin-left: 15%;
   }
   .modal-dialog{
     width: auto;
@@ -545,6 +604,15 @@ body::-webkit-scrollbar-thumb{
     background: white;
     cursor: inherit;
     display: block;
+}
+
+#edit-file{
+  z-index: 3;
+}
+
+#post-modal .btn-file{
+  float: right;
+  margin-right: 10px;
 }
 
 .sweet-overlay{

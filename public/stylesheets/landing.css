@@ -23,6 +23,8 @@
 .main{
   background-attachment: scroll;
   background-image: url("/images/splash-min.jpg");
+  background-color: rgba(52, 73, 94, 0.7);
+  background-blend-mode: overlay;
   background-size: 100%;
   background-position: center center;
   color: white;
@@ -41,4 +43,3 @@ h1, .h1, h2, .h2, h3, .h3, .dropdown{
   margin-top: 0;
   padding-top: 21px;
 }
-

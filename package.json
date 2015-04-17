@@ -37,6 +37,7 @@
     "geoip-lite": "~1.1.5",
     "moment": "~2.10.0",
     "grunt-browserify": "~3.6.0",
-    "numeral": "~1.5.3"
+    "numeral": "~1.5.3",
+    "mobile-detect": "~1.0.0"
   }
 }

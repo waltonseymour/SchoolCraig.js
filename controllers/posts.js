@@ -1,4 +1,5 @@
 var models = require('../models');
+var sequelize = require('sequelize');
 var _ = require('underscore');
 var async = require('async');
 var util = require('../utilities');
@@ -9,17 +10,18 @@ var publicOptions = {attributes: ['id', 'title', 'description', 'createdAt', 'up
 var userOptions = {attributes: ['id', 'email']};
 var categoryOptions = {attributes: ['id', 'name']};
 
-models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', allowNull: false}, onDelete: 'cascade'});
-models.Post.belongsTo(models.Category, {as: 'category', foreignKey: {name: 'category_id', allowNull: false}, onDelete: 'cascade'});
+models.Post.belongsTo(models.User, {as: 'user', foreignKey: {name: 'user_id', allowNull: false}});
+models.Post.belongsTo(models.Category, {as: 'category', foreignKey: {name: 'category_id', allowNull: false}});
 // hooks: true not working for some reason, deleteing explicitly to invoke hook currently
 models.Post.hasMany(models.Photo, {as: 'photos', foreignKey: 'post_id', onDelete: 'cascade', hooks: true});
+models.Photo.belongsTo(models.Post, {as: 'post', foreignKey: 'post_id', hooks: true});
 
 module.exports = {
 
   // lists all posts
   listAll: function(req, res, callback) {
     // defaults ordering by date
-    var order = _.contains(['updatedAt', 'price'], req.param('order')) ? req.param('order') : 'updatedAt';
+    var order = _.contains(['createdAt', 'price'], req.param('order')) ? req.param('order') : 'createdAt';
     var category = req.param('category');
     var page = req.param('page');
     var postsPerPage = req.param('postsPerPage') || 5;
@@ -113,7 +115,7 @@ module.exports = {
     if (!util.isUUID(req.params.id)) { return res.send(401); }
     models.Post.find({where: {id: req.params.id}}).then(function (post) {
       if (!post) { return res.status(404).end(); }
-      if (req.session.userID !== post.user_id) { return res.status(403).end(); }
+      if (!(req.session.userID === post.user_id || req.session.admin)) { return res.status(403).end(); }
       var newPost = _.pick(req.body, ['title', 'description', 'price', 'category_id']);
       // ensures all fields are set
       newPost.latitude = post.latitude;
@@ -139,10 +141,8 @@ module.exports = {
   deleteByID: function(req, res) {
     if (!util.isUUID(req.params.id)) { return res.send(401); }
     models.Post.find({where: {id: req.params.id}}).then(function (post) {
-      if (post.user_id !== req.session.userID) { return res.send(403); }
-      models.Photo.destroy({where: {post_id: req.params.id}, individualHooks: true})
-      .then(function () { models.Post.destroy({where: {id: req.params.id}}); })
-      .then(function () {
+      if (!(req.session.userID === post.user_id || req.session.admin)) { return res.send(403); }
+      post.destroy().then(function () {
         res.status(204).end();
         var activity = {user: req.session.userID, activity: "Delete Post",
         value: req.params.id};
@@ -180,7 +180,7 @@ module.exports = {
           contentType: item.contentType
         };
         createPhoto(req, res, photo, function(url, error){
-          if(error){
+          if (error){
             callback("createPhoto failed");
           }
           else{
@@ -189,7 +189,7 @@ module.exports = {
           }
         });
       }, function(err){
-        if(err){
+        if (err){
           console.log(err);
           res.status(401).end();
         }
@@ -204,7 +204,7 @@ module.exports = {
         post_id: req.params.id,
         contentType: req.body.contentType
       };
-      createPhoto(req, res, photo, function(url){
+      createPhoto(req, res, photo, function (url) {
         res.send(url);
       });
     }
@@ -226,14 +226,43 @@ module.exports = {
     });
   },
 
-  // returns a list of presigned urls associated with a post
+  // redirects to pre signed url for a given photo
   getPhotoByID: function(req, res) {
     var postID = req.params.id;
     var photoID = req.params.photoID;
     models.Photo.find({where: {id: photoID}}).then(function (photo) {
-      util.sign_s3({method: 'get', key: 'bazaar/' + photo.id}, function(url){
-        res.redirect(307, url);
-      });
+      if (photo) {
+        util.sign_s3({method: 'get', key: 'bazaar/' + photo.id}, function(url){
+          res.redirect(307, url);
+        });
+      }
+      else{
+        res.status(404).end();
+      }
+
+    });
+  },
+
+  // deletes a given photo
+  deletePhotoByID: function(req, res) {
+    var postID = req.params.id;
+    var photoID = req.params.photoID;
+    var options = {
+      where: sequelize.and({post_id: postID}, {id: photoID}),
+      include: [{model: models.Post, as: 'post'}]
+    };
+    models.Photo.find(options).then(function(photo){
+      if (photo.post.user_id === req.session.userID || req.session.admin){
+        models.Photo.destroy({where: {id: photoID}}).then(function () {
+          res.status(204).end();
+        });
+      }
+      else{
+        res.status(403).end();
+      }
+    }).catch(function(err){
+      console.log(err);
+      res.status(401).end();
     });
   }
 

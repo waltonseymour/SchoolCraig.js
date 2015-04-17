@@ -10,9 +10,10 @@
     <!-- TODO: make sure bootstrap.min.css points to BootTheme generated file
         -->
     <link href="bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="stylesheets/style.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="stylesheets/sweet-alert.css">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/css/bootstrap-select.min.css" rel="stylesheet">
+    <link href="stylesheets/style.min.css" rel="stylesheet" type="text/css" />
     <!-- TODO: make sure bootstrap-responsive.min.css points to BootTheme
         generated file -->
     <!-- <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet"> -->
@@ -99,7 +100,7 @@
                 </div>
                 <div class="form-group">
                   <label>Category</label>
-                  <select class='form-control create-categories' required>
+                  <select class='form-control create-categories selectpicker' data-style='btn-info' data-live-search="true" required>
                     <% for (var i = 0; i < categories.length; i++) { %>
                       <option value="<%= categories[i].id %>"><%= categories[i].name %></option>
                     <% } %>
@@ -107,8 +108,7 @@
                 </div>
                 <div class="form-group">
                   <label>Images</label>
-                  <div class="modal-thumbnails">
-                  </div>
+                  <div class="modal-thumbnails"></div>
                   <span class="btn btn-primary btn-file form-control">
                     Upload an Image <input id='create-file' type="file" names="files[]" multiple>
                   </span>
@@ -116,7 +116,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" id="create-submit" class="btn btn-success">Save changes</button>
+                <button type="submit" id="create-submit" class="btn btn-success">Create Post</button>
               </div>
             </form>
           </div>
@@ -147,6 +147,9 @@
               <i class="delete fa fa-trash"></i>
               <i class="edit fa fa-pencil"></i>
               <i class="edit-confirm fa fa-floppy-o"></i>
+              <span class="btn btn-primary btn-xs btn-file">
+                Upload a new image <input id='edit-file' type="file" names="files[]" multiple>
+              </span>
               <h3 class="modal-title">
                 <span class="post-title"></span>
                 <span class="post-price-container"> - $<span class='post-price'></span></span>
@@ -154,8 +157,8 @@
             </div>
             <div class="modal-body">
               <div class="modal-image-container"><div class='modal-image'></div></div>
-              <div class="modal-thumbnails">
-              </div>
+
+              <div class="modal-thumbnails"></div>
               <div class="post-description"></div>
               <button class="btn btn-info btn-xs category-tag"></button>
             </div>
@@ -167,7 +170,7 @@
         </div>
       </div>
       <div class="row main-content">
-          <div class="col-md-3">
+          <div class="col-md-3" id="panels">
             <div class="control-panel row panel panel-success">
               <div class="panel-heading">
                 Control Panel <i class="fa fa-undo pull-right"></i>
@@ -176,7 +179,7 @@
                 <div class="list-group">
                   <div class="list-group-item form-inline">
                     <i class="fa fa-filter list-group-item-heading"></i>
-                    <select class="form-control" data-style="btn-primary" id="category-filter">
+                    <select class="form-control selectpicker" data-style="btn btn-info" data-live-search="true" id="category-filter">
                       <option>All</option>
                       <% for (var i = 0; i < categories.length; i++) { %>
                         <option value="<%= categories[i].id %>"><%= categories[i].name %></option>
@@ -185,8 +188,14 @@
                   </div>
                   <div class="list-group-item">
                     <i class="fa fa-sort-amount-desc"></i>
-                      <input type="radio" name='order' value="updatedAt" checked="checked">Date
-                      <input type="radio" name='order' value="price">Price
+                    <div class="btn-group" data-toggle="buttons">
+                      <label class="btn btn-success active">
+                        <input type="radio" name="order" value-"createdAt" autocomplete="off" checked>Date</input>
+                      </label>
+                      <label class="btn btn-success">
+                        <input type="radio" name="order" value="price" autocomplete="off">Price</input>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -205,6 +214,7 @@
             <nav>
               <ul class="pager">
                 <li class="previous"><a href="#" onclick="this.blur();"><span aria-hidden="true">&larr;</span> Newer</a></li>
+                <li class="page-info"></li>
                 <li class="next"><a href="#" onclick="this.blur();">Older <span aria-hidden="true">&rarr;</span></a></li>
               </ul>
             </nav>
@@ -219,6 +229,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="/javascripts/jquery.min.js"></script>
     <script src="/javascripts/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.min.js"></script>
     <script src="/javascripts/jquery.ui.widget.js"></script>
     <script src="/javascripts/jquery.iframe-transport.js"></script>
     <script src="/javascripts/jquery.fileupload.js"></script>
