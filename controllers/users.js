@@ -101,11 +101,12 @@ module.exports = {
 
   create: function (req, res) {
     var user = req.body;
+    var email = user.email.toLowerCase();
     if (!/.edu$/.test(user.email)){
       return res.status(401).end();
     }
 
-    models.User.find({where: {email: user.email}}).then(function (ret) {
+    models.User.find({where: {email: email}}).then(function (ret) {
       // returns true if user with email exists
       return !!ret;
     }).then(function(user_email_exists) {
