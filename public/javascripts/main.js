@@ -150,6 +150,8 @@
     $('#post-modal .post-description, #post-modal .post-title, ' +
     '#post-modal .post-price').attr('contenteditable', 'true')
     .addClass('editable');
+
+    $('#post-modal .btn-file').show();
     $("#post-modal .post-price-container").show();
     $('#post-modal .edit-confirm').show();
     $('#post-modal .edit').hide();
@@ -219,24 +221,52 @@
     errorClass: 'error'
   });
 
-  $(function () {
-    $('#create-file').fileupload({
-      dataType: 'json',
-      add: function(e, data){
-        if (data.files && data.files[0]) {
-          var reader = new FileReader();
-          reader.onload = function(e) {
-            var img = '<img class="modal-thumbnail" src="'+ e.target.result +'">';
-            $('#create-form .modal-thumbnails').append(img);
-          };
-          reader.readAsDataURL(data.files[0]);
-          if(!globals.uploadFiles){
-            globals.uploadFiles = [];
-          }
-          globals.uploadFiles.push(data.files[0]);
+  $('#create-file').fileupload({
+    dataType: 'json',
+    add: function(e, data){
+      if (data.files && data.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var img = '<img class="modal-thumbnail" src="'+ e.target.result +'">';
+          $('#create-form .modal-thumbnails').append(img);
+        };
+        reader.readAsDataURL(data.files[0]);
+        if(!globals.uploadFiles){
+          globals.uploadFiles = [];
         }
+        globals.uploadFiles.push(data.files[0]);
       }
-    });
+    }
+  });
+
+  $('#edit-file').fileupload({
+    dataType: 'json',
+    add: function(e, data){
+      if (data.files && data.files[0]) {
+        var reader = new FileReader();
+        var file;
+        reader.onload = function(e) {
+          var id = $('#post-modal').attr('data-id');
+          var img = '<img class="modal-thumbnail" src="'+ e.target.result +'">';
+          $('#post-modal .modal-thumbnails').append(img);
+          $('#post-modal .modal-image')
+          .css('background-image', "url(" + e.target.result + ")");
+          $('#post-modal .modal-image-container').show();
+
+          uploadFiles(id, file, null, function (newPhotoIDs) {
+            var photos = _.map(newPhotoIDs, function (id) {
+              return {id: id};
+            });
+            var globalPost = _.findWhere(globals.posts, {id: id});
+            globalPost.photos.push.apply(globalPost.photos, photos);
+          });
+        };
+        // somewhat of a hack for now
+        // prevents files being uploaded multiple times
+        file = [data.files[0]];
+        reader.readAsDataURL(data.files[0]);
+      }
+    }
   });
 
   $('#create-form').submit(function () {
@@ -475,6 +505,7 @@
       $('#modal-contact').hide();
     }
     else {
+      $('#post-modal .btn-file').hide();
       $('#post-modal .delete').hide();
       $('#post-modal .edit').hide();
       $('#modal-contact').show();
@@ -489,6 +520,7 @@
 
     $('#post-modal .cancel').hide();
     $('#post-modal .edit-confirm').hide();
+    $('#post-modal .btn-file').hide();
     $('#post-modal .post-description, #post-modal .post-title, ' +
     '#post-modal .post-price').attr('contenteditable', 'false')
     .removeClass('editable');
@@ -510,7 +542,12 @@
       type: 'POST',
       data: post,
       success: function(){
-        getSignedUrls(post.id);
+        var $progressBar = $('#loading-modal .progress-bar span');
+        uploadFiles(post.id, globals.uploadFiles, $progressBar, function(){
+          setTimeout(function(){
+            location.reload();
+          }, 750);
+        });
       },
       error: function(err) { console.log("create post failed"); }
     });
@@ -523,7 +560,7 @@
       data: post,
       success: function(data){
         globals.currentPostIds = null;
-        var  globalPost = _.findWhere(globals.posts, {id: post.id});
+        var globalPost = _.findWhere(globals.posts, {id: post.id});
         globalPost.title = data.title;
         globalPost.price = data.price;
         globalPost.description = data.description;
@@ -535,11 +572,10 @@
     });
   }
 
-  function getSignedUrls(postID) {
-    if (!globals.uploadFiles){ return location.reload(); }
-    var contentType = globals.uploadFiles[0].type;
-    var photos = _.map(globals.uploadFiles, function(file){
-      return {contentType: file.type};
+  function getSignedUrls(postID, files, callback) {
+    if (!files) { return location.reload(); }
+    var photos = _.map(files, function(file){
+      return {id: uuid.v4(), contentType: file.type};
     });
     $.ajax({
       url: 'posts/' + postID + '/photos',
@@ -547,38 +583,39 @@
       contentType: "application/json",
       data: JSON.stringify(photos),
       success: function(urls) {
-        var temp = [];
-        for (var i=0; i<urls.length; i++){
-          temp.push(_.extend({}, photos[i], {url: urls[i]}));
+        var signedURLS = [];
+        for (var i = 0; i < urls.length; i++) {
+          signedURLS.push(_.extend({}, photos[i], {url: urls[i]}));
         }
-        uploadFiles(temp);
+        callback(signedURLS, files);
       },
       error: function(err) { console.log("get signed url failed"); }
     });
   }
 
-  function uploadFiles(photos) {
-    var ajaxCalls = [];
-    for (var i = 0; i<photos.length; i++){
-      var file = globals.uploadFiles[i];
-      var deferred = createDeferred(photos[i], file);
-      ajaxCalls.push(deferred);
-    }
-    $.when.apply($, ajaxCalls).then(function(){
-      setTimeout(function(){
-        location.reload();
-      }, 750);
+  function uploadFiles(postID, files, $progressBar, callback) {
+    getSignedUrls(postID, files, function(signedURLS, files){
+      var ajaxCalls = [];
+      for (var i = 0; i < signedURLS.length; i++){
+        var deferred = createDeferred(signedURLS[i], files[i], $progressBar);
+        ajaxCalls.push(deferred);
+      }
+      $.when.apply($, ajaxCalls).then(function(){
+        if (callback) {
+          callback(_.pluck(signedURLS, 'id'));
+        }
+      });
     });
   }
 
-  function createDeferred(photo, file){
+  function createDeferred(photo, file, $progressBar){
     return $.ajax({
       xhr: function() {
         var xhr = new window.XMLHttpRequest();
         xhr.upload.addEventListener("progress", function(evt) {
-          if (evt.lengthComputable) {
+          if (evt.lengthComputable && $progressBar) {
             var percentComplete = evt.loaded / evt.total;
-            $('#loading-modal .progress-bar span').css('width',
+            $progressBar.css('width',
             (percentComplete*100).toString() + "%");
           }
         }, false);

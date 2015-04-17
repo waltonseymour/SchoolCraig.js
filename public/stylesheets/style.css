@@ -584,6 +584,15 @@ body::-webkit-scrollbar-thumb{
     display: block;
 }
 
+#edit-file{
+  z-index: 3;
+}
+
+#post-modal .btn-file{
+  float: right;
+  margin-right: 10px;
+}
+
 .sweet-overlay{
   background-color: rgba(0,0,0,0.8) !important;
 }

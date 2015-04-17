@@ -180,7 +180,7 @@ module.exports = {
           contentType: item.contentType
         };
         createPhoto(req, res, photo, function(url, error){
-          if(error){
+          if (error){
             callback("createPhoto failed");
           }
           else{
@@ -189,7 +189,7 @@ module.exports = {
           }
         });
       }, function(err){
-        if(err){
+        if (err){
           console.log(err);
           res.status(401).end();
         }
@@ -204,7 +204,7 @@ module.exports = {
         post_id: req.params.id,
         contentType: req.body.contentType
       };
-      createPhoto(req, res, photo, function(url){
+      createPhoto(req, res, photo, function (url) {
         res.send(url);
       });
     }
