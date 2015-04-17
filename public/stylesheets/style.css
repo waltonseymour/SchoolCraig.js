@@ -371,7 +371,7 @@ input[type="radio"]{
 }
 
 #travel-modal .modal-dialog{
-  width: 600px;
+  max-width: 600px;
 }
 
 .modal-body{
