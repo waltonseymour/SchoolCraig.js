@@ -30,4 +30,16 @@
     });
   });
 
+  $('#logout').click(logout);
+
+  function logout(){
+    $.ajax({
+      url: 'users/deauth',
+      type: 'POST',
+      success: function() { location.reload(); },
+      error: function(err) { console.log("login failed"); }
+    });
+  }
+
+
 }());
